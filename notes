@@ -1,0 +1,6 @@
+Encje:
+
+- Pracownik (bileter, manager, dane osobowe)
+- Spektakl (Nazwa, czas trwania, potrzebne stanowiska, miejsce, specjalne informacje)
+- Miesięczny harmonogram spektakli
+- Mapowanie pracownik -> stanowisko na spektakle w danym miesiącu 
