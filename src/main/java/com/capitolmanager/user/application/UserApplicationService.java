@@ -15,23 +15,26 @@ package com.capitolmanager.user.application;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import com.capitolmanager.hibernate.Repository;
 import com.capitolmanager.user.domain.User;
-import com.capitolmanager.user.interfaces.UserDto;
 import com.capitolmanager.user.interfaces.UserEditForm;
+import com.capitolmanager.user.interfaces.UserListDto;
 
 
 @Service
 public class UserApplicationService {
 
 	private final UserQueries userQueries;
-	private final UserRepository userRepository;
+	private final Repository<User> userRepository;
 
 	@Autowired
-	UserApplicationService(UserQueries userQueries, UserRepository userRepository) {
+	UserApplicationService(UserQueries userQueries, Repository<User> userRepository) {
 
 		Assert.notNull(userQueries, "userQueries must not be null");
 		Assert.notNull(userRepository, "userRepository must not be null");
@@ -40,12 +43,12 @@ public class UserApplicationService {
 		this.userRepository = userRepository;
 	}
 
-	public List<UserDto> getAllUsers() {
+	public List<UserListDto> getAllUsers() {
 
-		var users = userQueries.getAllUsers();
+		var users = userQueries.getAll();
 
 		return users.stream()
-			.map(user -> new UserDto(user.getId(),
+			.map(user -> new UserListDto(user.getId(),
 				user.getEmail(),
 				user.getFirstName(),
 				user.getLastName(),
@@ -53,16 +56,30 @@ public class UserApplicationService {
 			.collect(Collectors.toList());
 	}
 
-	public void saveUser(UserEditForm form) {
+	public void saveUser(UserEditForm userEditForm) {
 
-		if (form.getId() == null) {
+		Assert.notNull(userEditForm, "userEditForm must not be null");
 
-			User user =
-		}
+		User user = new User(userEditForm.getEmail(),
+			userEditForm.getFirstName(),
+			userEditForm.getLastName(),
+			userEditForm.getPhoneNumber());
+
+		userRepository.saveOrUpdate(user);
 	}
 
-	private User createUserFromForm(UserEditForm form) {
+	public void updateUser(UserEditForm userEditForm) {
 
-		User user = new User()
+		Assert.notNull(userEditForm, "userEditForm must not be null");
+
+		User user = userQueries.findById(userEditForm.getId())
+			.orElseThrow(() -> new EntityNotFoundException("Not found User with id: " + userEditForm.getId()));
+
+		user.update(userEditForm.getEmail(),
+			userEditForm.getFirstName(),
+			userEditForm.getLastName(),
+			userEditForm.getPhoneNumber());
+
+		userRepository.saveOrUpdate(user);
 	}
 }

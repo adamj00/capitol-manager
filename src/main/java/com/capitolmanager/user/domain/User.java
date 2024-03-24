@@ -12,31 +12,44 @@
 
 package com.capitolmanager.user.domain;
 
-public class User {
+import javax.persistence.Column;
+import javax.persistence.Entity;
 
-	private Long id;
+import org.springframework.util.Assert;
+
+import com.capitolmanager.hibernate.AbstractEntity;
+
+@Entity
+public class User extends AbstractEntity {
+
+	@Column
 	private String email;
+
+	@Column
 	private String firstName;
+
+	@Column
 	private String lastName;
+
+	@Column
 	private String phoneNumber;
 
-	public User(Long id, String email, String firstName, String lastName, String phoneNumber) {
+	public User(String email, String firstName, String lastName, String phoneNumber) {
 
-		this.id = id;
 		this.email = email;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.phoneNumber = phoneNumber;
 	}
+	
+	public void update(String email, String firstName, String lastName, String phoneNumber) {
 
-	public Long getId() {
-
-		return id;
-	}
-
-	public void setId(Long id) {
-
-		this.id = id;
+		Assert.notNull(email, "email must not be null");
+		
+		this.email = email;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.phoneNumber = phoneNumber;
 	}
 
 	public String getEmail() {

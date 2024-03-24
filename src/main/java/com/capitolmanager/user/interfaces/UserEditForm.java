@@ -29,6 +29,10 @@ public class UserEditForm {
 		this.phoneNumber = phoneNumber;
 	}
 
+	public UserEditForm() {
+
+	}
+
 	public Long getId() {
 
 		return id;

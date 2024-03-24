@@ -1,5 +1,5 @@
 /*
- * Created on 24-03-2024 13:22 by ajarzabe
+ * Created on 24-03-2024 20:01 by ajarzabe
  *
  * Copyright (c) 2001-2024 Unity S.A.
  * ul. Strzegomska 2-4, 53-611 Wrocław, Poland
@@ -15,29 +15,25 @@ package com.capitolmanager.user.infrastructure;
 import java.util.List;
 import java.util.Optional;
 
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
+import com.capitolmanager.hibernate.AbstractHibernateQueries;
 import com.capitolmanager.user.application.UserQueries;
 import com.capitolmanager.user.domain.User;
 
 
 @Service
-public class InMemoryUserQueries implements UserQueries {
+public class HibernateUserQueries extends AbstractHibernateQueries<User> implements UserQueries {
 
+	@Autowired
+	HibernateUserQueries(SessionFactory sessionFactory) {
 
+		super(sessionFactory, User.class);
 
-	@Override
-	public List<User> getAllUsers() {
-
-		return List.of(new User(1L, "adam@gmail.com", "Adam", "Jarząbek", "+48123123123"),
-			new User(1L, "kasia@gmail.com", "Kasia", "Paterek", "+48123123123"),
-			new User(1L, "emilia@gmail.com", "Emilia", "Golec", "+48123123123"));
-	}
-
-	@Override
-	public Optional<User> findUser(Long id) {
-
-		return Optional.empty();
+		Assert.notNull(sessionFactory, "sessionFactory must not be null");
 	}
 
 }

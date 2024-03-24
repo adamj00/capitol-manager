@@ -12,14 +12,14 @@
 
 package com.capitolmanager.user.interfaces;
 
-public class UserDto {
+public class UserListDto {
 	private Long id;
 	private String email;
 	private String firstName;
 	private String lastName;
 	private String phoneNumber;
 
-	public UserDto(Long id, String email, String firstName, String lastName, String phoneNumber) {
+	public UserListDto(Long id, String email, String firstName, String lastName, String phoneNumber) {
 
 		this.id = id;
 		this.email = email;

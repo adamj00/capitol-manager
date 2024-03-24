@@ -14,30 +14,65 @@ package com.capitolmanager.user.interfaces;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.util.Assert;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.capitolmanager.user.application.UserApplicationService;
 
 
 @Controller
+@RequestMapping
 public class UserEditController {
 
+	static final String USER_EDIT_PATH = "user/edit";
+	static final String USER_EDIT_VIEW = "user-edit-view";
+	private static final String P_ID = "id";
+	private static final String M_USER_FORM = "user";
+	private static final String REDIRECT = "redirect:";
+
 	private final UserApplicationService userApplicationService;
+	private final UserFormFactory userFormFactory;
 
 	@Autowired
-	public UserEditController(UserApplicationService userApplicationService) {
+	UserEditController(UserApplicationService userApplicationService, UserFormFactory userFormFactory) {
 
 		Assert.notNull(userApplicationService, "userApplicationService must not be null");
+		Assert.notNull(userFormFactory, "userFormFactory must not be null");
 
 		this.userApplicationService = userApplicationService;
+		this.userFormFactory = userFormFactory;
 	}
 
-	@PostMapping()
-	String editUser(@ModelAttribute("userEditForm"), @RequestParam Long id) {
+	@GetMapping
+	String getEditView(Model model, @RequestParam(required = false, name = P_ID) Long id) {
 
+		if (id == null) {
+			model.addAttribute(M_USER_FORM, UserFormFactory.createEmptyUserForm());
+		}
 
+		else {
+			model.addAttribute(M_USER_FORM, userFormFactory.getUserEditFormById(id));
+		}
+
+		return USER_EDIT_VIEW;
+	}
+
+	@PostMapping
+	String saveOrUpdateUser(@ModelAttribute(M_USER_FORM) UserEditForm userForm, Model model) {
+
+		if (userForm.getId() == null) {
+			userApplicationService.saveUser(userForm);
+		}
+		else {
+			userApplicationService.updateUser(userForm);
+		}
+
+		return REDIRECT + USER_EDIT_PATH;
 	}
 }

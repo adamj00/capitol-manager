@@ -1,5 +1,5 @@
 /*
- * Created on 24-03-2024 13:02 by ajarzabe
+ * Created on 24-03-2024 20:23 by ajarzabe
  *
  * Copyright (c) 2001-2024 Unity S.A.
  * ul. Strzegomska 2-4, 53-611 Wrocław, Poland
@@ -10,17 +10,9 @@
  * i w zgodzie z warunkami umowy licencyjnej zawartej z Unity S.A.
  */
 
-package com.capitolmanager.user.application;
+package com.capitolmanager.hibernate;
 
-import java.util.List;
-import java.util.Optional;
+public interface Repository<Entity extends AbstractEntity> {
 
-import com.capitolmanager.user.domain.User;
-
-
-public interface UserQueries {
-
-	List<User> getAll();
-
-	Optional<User> findById(Long id);
+	void saveOrUpdate(Entity entity);
 }
