@@ -1,0 +1,33 @@
+<html
+		xmlns:th="http://www.thymeleaf.org"
+		xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+		layout:decorate="~{layout}">
+
+	<div layout:fragment="content">
+
+		<h2>Lista pracowników</h2>
+
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th scope="col">Imię</th>
+					<th scope="col">Nazwisko</th>
+					<th scope="col">Adres email</th>
+					<th scope="col">Numer telefonu</th>
+					<th scope="col">Akcja</th>
+				</tr>
+			</thead>
+			<tbody>
+			<tr>
+				<tr th:each="user : ${users}">
+					<td><span th:text="${user.firstName}"> Imię</span></td>
+					<td><span th:text="${user.lastName}"> Nazwisko </span></td>
+					<td><span th:text="${user.email}"> Adres email </span></td>
+					<td><span th:text="${user.phoneNumber}"> Number telefonu </span></td>
+					<td><a href="#">Edytuj</a></td>
+				</tr>
+			</tr>
+			</tbody>
+		</table>
+	</div>
+</html>
