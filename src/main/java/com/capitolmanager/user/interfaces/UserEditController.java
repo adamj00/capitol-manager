@@ -12,6 +12,8 @@
 
 package com.capitolmanager.user.interfaces;
 
+import static com.capitolmanager.user.interfaces.UserEditController.USER_EDIT_PATH;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,7 +29,7 @@ import com.capitolmanager.user.application.UserApplicationService;
 
 
 @Controller
-@RequestMapping
+@RequestMapping(USER_EDIT_PATH)
 public class UserEditController {
 
 	static final String USER_EDIT_PATH = "user/edit";

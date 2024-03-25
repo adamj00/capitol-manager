@@ -19,7 +19,7 @@ import org.springframework.util.Assert;
 
 import com.capitolmanager.hibernate.AbstractEntity;
 
-@Entity
+@Entity(name="users")
 public class User extends AbstractEntity {
 
 	@Column
@@ -40,6 +40,10 @@ public class User extends AbstractEntity {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.phoneNumber = phoneNumber;
+	}
+
+	public User() {
+
 	}
 	
 	public void update(String email, String firstName, String lastName, String phoneNumber) {

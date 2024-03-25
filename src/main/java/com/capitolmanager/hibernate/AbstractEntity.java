@@ -15,7 +15,11 @@ package com.capitolmanager.hibernate;
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-public class AbstractEntity {
+import javax.persistence.MappedSuperclass;
+
+
+@MappedSuperclass
+public abstract class AbstractEntity {
 
 	public static final String D_ID = "id";
 
