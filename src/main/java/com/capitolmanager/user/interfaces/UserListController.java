@@ -30,7 +30,7 @@ import com.capitolmanager.user.application.UserApplicationService;
 @RequestMapping(USER_LIST_PATH)
 public class UserListController {
 
-	static final String USER_LIST_PATH = "/user/list";
+	static final String USER_LIST_PATH = "/user-list";
 	private static final String USER_LIST_VIEW = "user-list-view";
 	private static final String M_USERS = "users";
 

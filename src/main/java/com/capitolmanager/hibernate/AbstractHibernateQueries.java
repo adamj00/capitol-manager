@@ -50,7 +50,8 @@ public abstract class AbstractHibernateQueries <Entity extends AbstractEntity> {
 			CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
 			CriteriaQuery<Entity> criteriaQuery = criteriaBuilder.createQuery(entityClass);
 			Root<Entity> root = criteriaQuery.from(entityClass);
-			criteriaQuery.select(root);
+			criteriaQuery.select(root)
+				.orderBy(criteriaBuilder.asc(root.get(D_ID)));
 
 			Query<Entity> query = session.createQuery(criteriaQuery);
 

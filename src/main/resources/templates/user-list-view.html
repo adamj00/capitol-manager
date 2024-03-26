@@ -1,33 +1,36 @@
-<html
-		xmlns:th="http://www.thymeleaf.org"
-		xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-		layout:decorate="~{layout}">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
 
-	<div layout:fragment="content">
+    <div layout:fragment="content">
+        <h1>Lista pracowników</h1>
 
-		<h2>Lista pracowników</h2>
+        <div class="mb-3">
+            <a href="/user-edit" class="btn btn-success">Utwórz</a>
+            <a href="#" class="btn btn-info">Generuj raport statystyk</a>
+        </div>
 
-		<table class="table table-striped">
-			<thead>
-				<tr>
-					<th scope="col">Imię</th>
-					<th scope="col">Nazwisko</th>
-					<th scope="col">Adres email</th>
-					<th scope="col">Numer telefonu</th>
-					<th scope="col">Akcja</th>
-				</tr>
-			</thead>
-			<tbody>
-			<tr>
-				<tr th:each="user : ${users}">
-					<td><span th:text="${user.firstName}"> Imię</span></td>
-					<td><span th:text="${user.lastName}"> Nazwisko </span></td>
-					<td><span th:text="${user.email}"> Adres email </span></td>
-					<td><span th:text="${user.phoneNumber}"> Number telefonu </span></td>
-					<td><a href="#">Edytuj</a></td>
-				</tr>
-			</tr>
-			</tbody>
-		</table>
-	</div>
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th scope="col">Imię i nazwisko</th>
+                                <th scope="col">Adres email</th>
+                                <th scope="col">Numer telefonu</th>
+                                <th scope="col">Akcja</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="user : ${users}">
+                                <td><span th:text="${user.firstName} + ' ' + ${user.lastName}">Imię i nazwisko</span></td>
+                                <td><span th:text="${user.email}">Adres email</span></td>
+                                <td><span th:text="${user.phoneNumber}">Numer telefonu</span></td>
+                                <td><a th:href="@{/user-edit(id=${user.id})}" class="btn btn-primary btn-sm">Edytuj</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 </html>

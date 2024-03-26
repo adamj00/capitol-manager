@@ -13,6 +13,7 @@
 package com.capitolmanager.user.interfaces;
 
 import static com.capitolmanager.user.interfaces.UserEditController.USER_EDIT_PATH;
+import static com.capitolmanager.user.interfaces.UserListController.USER_LIST_PATH;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -32,7 +33,7 @@ import com.capitolmanager.user.application.UserApplicationService;
 @RequestMapping(USER_EDIT_PATH)
 public class UserEditController {
 
-	static final String USER_EDIT_PATH = "user/edit";
+	static final String USER_EDIT_PATH = "/user-edit";
 	static final String USER_EDIT_VIEW = "user-edit-view";
 	private static final String P_ID = "id";
 	private static final String M_USER_FORM = "user";
@@ -75,6 +76,6 @@ public class UserEditController {
 			userApplicationService.updateUser(userForm);
 		}
 
-		return REDIRECT + USER_EDIT_PATH;
+		return REDIRECT + USER_LIST_PATH;
 	}
 }
