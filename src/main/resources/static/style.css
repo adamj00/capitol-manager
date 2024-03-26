@@ -1,0 +1,131 @@
+/* Remove the navbar's default margin-bottom and rounded borders */ 
+.navbar {
+  margin-bottom: 0;
+  border-radius: 0;
+}
+
+/* Add a gray background color and some padding to the footer */
+footer {
+  background-color: #2e2a2a;
+  padding: 5px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 0px;
+  bottom: 0;
+  position: absolute;
+  left: calc(50% - 200px);
+right: calc(50% - 200px);
+color: aliceblue;
+
+}
+.carousel-inner > .item > img,
+.carousel-inner > .item > a > img {
+  width: 70%;
+  margin: auto;
+}
+.mainAbout{
+  height: 500px;
+  width: 500px;
+  margin: auto;
+  background-color: #2e2a2a;
+  color:aliceblue;
+  padding: 5px;
+  font-size: medium;
+  text-align: center;
+}
+.mainAbout2{
+  height: 320px;
+  width: 900px;
+  margin: auto;
+  background-color: #2e2a2a;
+  color:aliceblue;
+  padding: 5px;
+  font-size: medium;
+  text-align: center;
+}
+
+.rounded-circle{
+  margin: 10px;
+  margin-bottom: 60px;
+}
+.rounded-circle2{
+  margin: 10px;
+  margin-bottom: 30px;
+  margin-top: 50px;
+}
+.media-object{
+  margin: 5px;
+}
+.icon-bar {
+  position: fixed;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+
+/* Style the icon bar links */
+.icon-bar a {
+  display: block;
+  text-align: center;
+  padding: 16px;
+  transition: all 0.3s ease;
+  color: white;
+  font-size: 12px;
+}
+
+/* Style the social media icons with color, if you want */
+.icon-bar a:hover {
+  background-color: #000;
+}
+
+.facebook {
+  background: #2e2a2a;
+  color: white;
+}
+
+.twitter {
+  background: #2e2a2a;
+  color: white;
+}
+
+.google {
+  background: #2e2a2a;
+  color: white;
+}
+
+.linkedin {
+  background: #2e2a2a;
+  color: white;
+}
+
+.youtube {
+  background: #2e2a2a;
+  color: white;
+}
+
+span{
+    font-size:15px;
+}
+a{
+  text-decoration:none;
+  color: #0062cc;
+  border-bottom:2px solid #0062cc;
+}
+.box{
+    padding:60px 0px;
+}
+
+.box-part{
+    background:#D3D3D3;
+    border-radius:0;
+    padding:60px 10px;
+    margin:30px 0px;
+}
+.text{
+    margin:20px 0px;
+}
+
+.fa{
+     color:#4183D7;
+}
