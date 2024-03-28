@@ -89,4 +89,11 @@ public class PositionApplicationService {
 
 		positionRepository.delete(position);
 	}
+
+	public List<PositionStageEditDto> getAllPositionsForStageEdit() {
+
+		return positionQueries.getAll().stream()
+			.map(position -> new PositionStageEditDto(position.getId(), position.getName()))
+			.toList();
+	}
 }

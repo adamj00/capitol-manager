@@ -1,0 +1,101 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+
+    <div layout:fragment="content">
+
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+            var allPositions = /*[[${allPositions}]]*/ [];
+            
+            function addPosition() {
+                var table = document.getElementById('positionsTable').getElementsByTagName('tbody')[0];
+                var newRow = table.insertRow(table.rows.length);
+                var cell1 = newRow.insertCell(0);
+                var cell2 = newRow.insertCell(1);
+                var cell3 = newRow.insertCell(2);
+                var newIndex = table.rows.length - 1;
+            
+                var selectHTML = '<select name="requiredPositions[' + newIndex + '].positionId" class="form-control">' +
+                                 '<option value="">Wybierz pozycję...</option>';
+            
+                allPositions.forEach(function(position) {
+                    selectHTML += '<option value="' + position.id + '">' + position.name + '</option>';
+                });
+            
+                selectHTML += '</select>';
+            
+                cell1.innerHTML = selectHTML;
+                cell2.innerHTML = '<input type="number" name="requiredPositions[' + newIndex + '].quantity" class="form-control" min="0" required />';
+                cell3.innerHTML = '<button type="button" class="btn btn-danger btn-sm" onclick="removePosition(this)">Usuń</button>';
+            }
+            
+            function removePosition(btn) {
+                var row = btn.parentNode.parentNode;
+                row.parentNode.removeChild(row);
+            }
+            /*]]>*/
+            </script>
+
+        <div class="container mt-5">
+            <h2>Edycja sceny</h2>
+            <div class="mb-3">
+                <a href="/stage-list" class="btn btn-success">Powrót</a>
+                <button  class="btn btn-danger">
+                    <i class="bi bi-trash">Usuń</i>
+                </button>
+            </div>
+            <form th:action="@{/stage-edit}" th:object="${stage}" method="post">
+                <input type="hidden" id="id" th:field="*{id}">
+                <div class="mb-3">
+                    <label for="name" class="form-label">Nazwa</label>
+                    <input type="text" id="name" th:field="*{name}" class="form-control" required>
+                </div>
+        
+                <div class="mb-3">
+                    <label for="numberOfSeats" class="form-label">Liczba miejsc</label>
+                    <input type="number" id="numberOfSeats" th:field="*{numberOfSeats}" class="form-control" required>
+                </div>
+        
+                <div class="mb-3">
+                    <label for="address" class="form-label">Adres</label>
+                    <input type="text" id="address" th:field="*{address}" class="form-control" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="requiredPositions" class="form-label">Stanowiska</label>
+                    <table id="positionsTable" class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Stanowisko</th>
+                                <th scope="col">Ilość</th>
+                                <th scope="col">Akcje</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="stagePosition, iterStat : *{requiredPositions}">
+                                <td>
+                                    <select th:field="*{requiredPositions[__${iterStat.index}__].positionId}" class="form-control">
+                                        <option value="">Wybierz stanowisko...</option>
+                                        <option th:each="position : ${allPositions}"
+                                                th:value="${position.id}"
+                                                th:text="${position.name}"
+                                                th:selected="${stagePosition.positionId == position.id}">
+                                        </option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="number" th:field="*{requiredPositions[__${iterStat.index}__].quantity}" class="form-control" min="0" required />
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-danger btn-sm" onclick="removePosition(this)">Usuń</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <button type="button" class="btn btn-primary btn-sm" onclick="addPosition()">Dodaj stanowisko</button>
+                </div>
+        
+                <button type="submit" class="btn btn-primary">Zapisz</button>
+            </form>
+        </div>
+    </div>
+</html>

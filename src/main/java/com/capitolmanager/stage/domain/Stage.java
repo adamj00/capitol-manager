@@ -12,21 +12,22 @@
 
 package com.capitolmanager.stage.domain;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
-import javax.persistence.CollectionTable;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.MapKeyJoinColumn;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
 
-import com.capitolmanager.position.domain.Position;
+import com.capitolmanager.hibernate.AbstractEntity;
 
 
 @Entity(name = "stages")
-public class Stage {
+public class Stage extends AbstractEntity {
 
 	@Column
 	private String name;
@@ -37,13 +38,10 @@ public class Stage {
 	@Column
 	private String address;
 
-	@ElementCollection
-	@CollectionTable(name = "required_positions", joinColumns = @JoinColumn(name = "stage_id"))
-	@MapKeyJoinColumn(name = "position_id")
-	@Column(name = "quantity")
-	private Map<Position, Integer> requiredPositions = new HashMap<>();
+	@OneToMany(mappedBy = "stage", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+	private List<StagePosition> requiredPositions = new LinkedList<>();
 
-	public Stage(String name, int numberOfSeats, String address, Map<Position, Integer> requiredPositions) {
+	public Stage(String name, int numberOfSeats, String address, List<StagePosition> requiredPositions) {
 
 		this.name = name;
 		this.numberOfSeats = numberOfSeats;
@@ -53,6 +51,13 @@ public class Stage {
 
 	public Stage() {
 
+	}
+
+	public void updateStage(String name, int numberOfSeats, String address) {
+
+		this.name = name;
+		this.numberOfSeats = numberOfSeats;
+		this.address = address;
 	}
 
 	public String getName() {
@@ -85,12 +90,12 @@ public class Stage {
 		this.address = address;
 	}
 
-	public Map<Position, Integer> getRequiredPositions() {
+	public List<StagePosition> getRequiredPositions() {
 
 		return requiredPositions;
 	}
 
-	public void setRequiredPositions(Map<Position, Integer> requiredPositions) {
+	public void setRequiredPositions(List<StagePosition> requiredPositions) {
 
 		this.requiredPositions = requiredPositions;
 	}

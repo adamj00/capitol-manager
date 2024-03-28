@@ -1,0 +1,35 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+
+    <div layout:fragment="content">
+
+        <div class="container mt-3">
+
+            <h1>Sceny</h1>
+
+            <div class="mb-3">
+                <a href="/stage-edit" class="btn btn-success">Utwórz</a>
+            </div>
+        
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nazwa</th>
+                        <th>Liczba miejsc</th>
+                        <th>Adres</th>
+                        <th>Akcja</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="stage : ${stages}">
+                        <td th:text="${stage.id}">ID</td>
+                        <td th:text="${stage.name}">Nazwa</td>
+                        <td th:text="${stage.numberOfSeats}">Liczba miejsc</td>
+                        <td th:text="${stage.address}">Liczba miejsc</td>
+                        <td><a th:href="@{/stage-edit(id=${stage.id})}" class="btn btn-primary btn-sm">Edytuj</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</html>

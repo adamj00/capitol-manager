@@ -20,7 +20,7 @@ import com.capitolmanager.stage.domain.Stage;
 
 public interface StageQueries {
 
-	List<Stage> findAll();
+	List<Stage> getAll();
 
 	Optional<Stage> findById(Long id);
 }
