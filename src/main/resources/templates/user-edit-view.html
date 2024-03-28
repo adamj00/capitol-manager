@@ -1,0 +1,44 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+
+    <div layout:fragment="content">
+
+        <script>
+            function confirmDelete() {
+                const userId = document.getElementById('id').value;
+                if (confirm('Czy na pewno chcesz usunąć tego użytkownika?')) {
+                    window.location = '/deleteUser?id=' + userId;
+                }
+            }
+        </script>
+
+        <div class="container mt-5">
+            <h2>Edycja pracownika</h2>
+            <div class="mb-3">
+                <a href="/user-list" class="btn btn-success">Powrót</a>
+                <button onclick="confirmDelete()" class="btn btn-danger">
+                    <i class="bi bi-trash">Usuń</i>
+                </button>
+            </div>
+            <form th:action="@{/user-edit}" th:object="${user}" method="post">
+                <input type="hidden" id="id" th:field="*{id}">
+                <div class="mb-3">
+                    <label for="email" class="form-label">Adres email</label>
+                    <input type="email" class="form-control" id="email" placeholder="Wprowadź adres email" th:field="*{email}">
+                </div>
+                <div class="mb-3">
+                    <label for="firstName" class="form-label">Imię</label>
+                    <input type="text" class="form-control" id="firstName" placeholder="Wprowadź imię" th:field="*{firstName}">
+                </div>
+                <div class="mb-3">
+                    <label for="lastName" class="form-label">Nazwisko</label>
+                    <input type="text" class="form-control" id="lastName" placeholder="Wprowadź nazwisko" th:field="*{lastName}">
+                </div>
+                <div class="mb-3">
+                    <label for="phoneNumber" class="form-label">Numer telefonu</label>
+                    <input type="tel" class="form-control" id="phoneNumber" placeholder="Wprowadź numer telefonu" th:field="*{phoneNumber}">
+                </div>
+                <button type="submit" class="btn btn-primary btn-lg mt-3">Zapisz</button>
+            </form>
+        </div>
+    </div>
+</html>

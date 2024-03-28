@@ -40,4 +40,14 @@ public abstract class AbstractHibernateRepository<Entity extends AbstractEntity>
 
 		session.close();
 	}
+
+	public void delete(Entity entity) {
+
+		Session session = sessionFactory.openSession();
+		session.beginTransaction();
+		entity = (Entity) session.merge(entity);
+		session.delete(entity);
+		session.getTransaction().commit();
+		session.close();
+	}
 }

@@ -15,14 +15,12 @@ package com.capitolmanager.position.interfaces;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.capitolmanager.position.application.PositionApplicationService;
@@ -33,8 +31,8 @@ import com.capitolmanager.position.domain.PositionType;
 @Controller
 public class PositionController {
 
+	public static final String POSITION_LIST_EDIT_VIEW = "position-list-edit-view";
 	private final PositionApplicationService positionApplicationService;
-
 
 	@Autowired
 	PositionController(PositionApplicationService positionApplicationService) {
@@ -51,25 +49,30 @@ public class PositionController {
 	}
 
 	@GetMapping("positions")
-	String getView(Model model) {
+	String getView(Model model, @RequestParam(required = false, defaultValue = "false", name = "createNew") Boolean createNew) {
 
-		model.addAttribute("positions", positionApplicationService.getAllPositions());
-		return "position-list-edit-view";
+		var positionsForm = positionApplicationService.getAllPositionsForm();
+		if (createNew) {
+			var positions = positionsForm.getPositions();
+			positions.add(new PositionDto());
+			positionsForm.setPositions(positions);
+		}
+		model.addAttribute("positionsForm", positionsForm);
+		return POSITION_LIST_EDIT_VIEW;
 	}
 
-	@GetMapping("positions-new")
-	String getViewWithNew(Model model) {
+	@PostMapping("savePositions")
+	String saveAll(PositionsForm positionsForm, Model model) {
 
-		var positions = positionApplicationService.getAllPositions();
-		positions.add(new PositionDto());
-		model.addAttribute("positions", positions);
-		return "position-list-edit-view";
+		positionApplicationService.saveAll(positionsForm.getPositions());
+		return "redirect:" + "positions";
 	}
 
-	@PostMapping("positions-save-all")
-	ResponseEntity<String> saveALl(@RequestBody List<PositionDto> positions) {
+	@GetMapping("deletePosition")
+	String deletePosition(@RequestParam Long id) {
 
-		positionApplicationService.saveAll(positions);
-		return ResponseEntity.ok("Positions saved.");
+		positionApplicationService.deletePosition(id);
+
+		return "redirect:" + "positions";
 	}
 }

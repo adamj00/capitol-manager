@@ -1,90 +1,46 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
 
     <div layout:fragment="content">
-
-    <script>
-        function enableEditing(rowId) {
-            const nameInput = document.querySelector(`#name_${rowId}`);
-            const typeSelect = document.querySelector(`#type_${rowId}`);
-
-            nameInput.disabled = !nameInput.disabled;
-            typeSelect.disabled = !typeSelect.disabled;
-        }
-
-        function saveAllChanges() {
-            let positionsData = [];
-
-            document.querySelectorAll('table tbody tr').forEach((row, index) => {
-                const nameInput = row.querySelector(`#name_${index}`);
-                const typeSelect = row.querySelector(`#type_${index}`);
-                const idInput = row.querySelector(`#id_${index}`);
-                let position = {
-                    id: idInput ? idInput.value : null, 
-                    name: nameInput ? nameInput.value : '', 
-                    type: typeSelect ? typeSelect.value : ''
-                };
-                positionsData.push(position);
-            });
-
-            console.log(positionsData);
-
-            const url = 'positions-save-all';
-            fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(positionsData),
-            })
-            .then(data => {
-                console.log('Success:', data);
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
-        }
-
-        function addNewPosition() {
-            saveAllChanges();
-            window.location.href = "positions-new";
-        }
-    </script>
-
-        <div class="container mt-4">
-            <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h2 class="mb-0">Lista stanowisk</h2>
-                    <button class="btn btn-info" id="saveAllBtn" onclick="saveAllChanges()">Zapisz zmiany</button>
-                </div>
-                <div class="card-body">
-                    <table class="table" id="positionsTable">
-                        <thead>
+        <div class="container mt-5">
+            <h2>Edycja stanowisk</h2>
+            
+            <form th:action="@{/savePositions}" th:object="${positionsForm}" method="post">
+                <div class="card">
+                    <div class="card-body">
+                        <table class="table">
+                            <thead>
                             <tr>
-                                <th>Nazwa</th>
-                                <th>Typ stanowiska</th>
-                                <th>Akcje</th>
+                                <th scope="col">#</th>
+                                <th scope="col">Nazwa</th>
+                                <th scope="col">Typ stanowiska</th>
+                                <th scope="col">Akcja</th>
                             </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="position, iterStat : ${positions}">
-                                <input type="hidden" th:id="'id_' + ${iterStat.index}" th:value="${position.id}"/>
-                                <td><input type="text" th:id="'name_' + ${iterStat.index}" th:value="${position.name}" class="form-control" disabled /></td>
-                                <td>
-                                    <select class="form-control" th:id="'type_' + ${iterStat.index}" disabled>
-                                        <option th:each="type : ${allPositionTypes}" th:value="${type}" th:text="${type.label}" th:selected="${type == position.positionType}"></option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <button class="btn btn-primary" th:attr="onclick=|enableEditing(${iterStat.index})|" >Edytuj</button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                <tr th:each="position, iterStat : *{positions}">
+                                    <th scope="row" th:text="${iterStat.count}">1</th>
+                                    <input type="hidden" th:field="*{positions[__${iterStat.index}__].id}">
+                                    <td>
+                                        <input type="text" class="form-control" th:field="*{positions[__${iterStat.index}__].name}" placeholder="Wprowadź nazwę">
+                                    </td>
+                                    <td>
+                                        <select class="form-select" th:field="*{positions[__${iterStat.index}__].positionType}">
+                                            <option th:each="type : ${allPositionTypes}" th:value="${type}" th:text="${type.label}">Typ stanowiska</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <a th:if="${position.id != null}" th:href="@{'/deletePosition?id=' + ${position.id}}" class="btn btn-danger">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-                <div class="card-footer text-end">
-                    <button class="btn btn-success" onclick="addNewPosition()">Dodaj nowe stanowisko</button>
-                </div>
-            </div>
+                <button type="submit" class="btn btn-primary">Zapisz</button>
+                <a href="/positions?createNew=true" class="btn btn-success">Utwórz</a>
+            </form>
         </div>
     </div>
 </html>

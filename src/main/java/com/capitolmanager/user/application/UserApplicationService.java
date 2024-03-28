@@ -82,4 +82,12 @@ public class UserApplicationService {
 
 		userRepository.saveOrUpdate(user);
 	}
+
+	public void deleteUser(Long id) {
+
+		User user = userQueries.findById(id)
+			.orElseThrow(() -> new EntityNotFoundException("User " + id + " not found"));
+
+		userRepository.delete(user);
+	}
 }

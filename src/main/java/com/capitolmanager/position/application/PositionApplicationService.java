@@ -22,6 +22,7 @@ import org.springframework.util.Assert;
 import com.capitolmanager.hibernate.Repository;
 import com.capitolmanager.position.domain.Position;
 import com.capitolmanager.position.domain.PositionType;
+import com.capitolmanager.position.interfaces.PositionsForm;
 
 
 @Service
@@ -50,6 +51,11 @@ public class PositionApplicationService {
 			.collect(Collectors.toList());
 	}
 
+	public PositionsForm getAllPositionsForm() {
+
+		return new PositionsForm(getAllPositions());
+	}
+
 	public List<PositionType> getAllPositionTypes() {
 
 		return List.of(PositionType.values());
@@ -74,5 +80,13 @@ public class PositionApplicationService {
 				positionRepository.saveOrUpdate(updatedPosition);
 			}
 		}
+	}
+
+	public void deletePosition(Long id) {
+
+		var position = positionQueries.findById(id)
+			.orElseThrow(IllegalStateException::new);
+
+		positionRepository.delete(position);
 	}
 }
