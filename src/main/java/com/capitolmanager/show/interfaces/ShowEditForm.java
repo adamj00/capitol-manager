@@ -1,5 +1,5 @@
 /*
- * Created on 29-03-2024 19:54 by ajarzabe
+ * Created on 30-03-2024 21:47 by ajarzabe
  *
  * Copyright (c) 2001-2024 Unity S.A.
  * ul. Strzegomska 2-4, 53-611 Wrocław, Poland
@@ -10,52 +10,40 @@
  * i w zgodzie z warunkami umowy licencyjnej zawartej z Unity S.A.
  */
 
-package com.capitolmanager.show.domain;
+package com.capitolmanager.show.interfaces;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-
-import com.capitolmanager.hibernate.AbstractEntity;
-import com.capitolmanager.stage.domain.Stage;
+import com.capitolmanager.stage.application.StageSelectionDto;
 
 
-@Entity(name="shows")
-public class Show extends AbstractEntity {
+public class ShowEditForm {
 
-	@Column
+	private Long id;
 	private String title;
-
-	@Column
 	private int duration;
-
-	@ManyToOne
-	@JoinColumn(name = "stage_id")
-	private Stage stage;
-
-	@Column
+	private StageSelectionDto stageSelectionDto = new StageSelectionDto();
 	private String additionalInformation;
 
+	public ShowEditForm(Long id, String title, int duration, StageSelectionDto stageSelectionDto, String additionalInformation) {
 
-	public Show(String title, int duration, Stage stage, String additionalInformation) {
-
+		this.id = id;
 		this.title = title;
 		this.duration = duration;
-		this.stage = stage;
+		this.stageSelectionDto = stageSelectionDto;
 		this.additionalInformation = additionalInformation;
 	}
 
-	public Show() {
+	public ShowEditForm() {
 
 	}
 
-	public void update(String title, int duration, Stage stage, String additionalInformation) {
+	public Long getId() {
 
-		this.title = title;
-		this.duration = duration;
-		this.stage = stage;
-		this.additionalInformation = additionalInformation;
+		return id;
+	}
+
+	public void setId(Long id) {
+
+		this.id = id;
 	}
 
 	public String getTitle() {
@@ -78,14 +66,14 @@ public class Show extends AbstractEntity {
 		this.duration = duration;
 	}
 
-	public Stage getStage() {
+	public StageSelectionDto getStageSelectionDto() {
 
-		return stage;
+		return stageSelectionDto;
 	}
 
-	public void setStage(Stage stage) {
+	public void setStageSelectionDto(StageSelectionDto stageSelectionDto) {
 
-		this.stage = stage;
+		this.stageSelectionDto = stageSelectionDto;
 	}
 
 	public String getAdditionalInformation() {

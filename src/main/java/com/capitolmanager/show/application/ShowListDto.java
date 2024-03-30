@@ -12,19 +12,15 @@
 
 package com.capitolmanager.show.application;
 
-import com.capitolmanager.stage.domain.Stage;
-
-
 public class ShowListDto {
 
 	private Long id;
 	private String title;
 	private int duration;
-	private Stage stage;
+	private String stage;
 	private String additionalInformation;
 
-
-	public ShowListDto(Long id, String title, int duration, Stage stage, String additionalInformation) {
+	public ShowListDto(Long id, String title, int duration, String stage, String additionalInformation) {
 
 		this.id = id;
 		this.title = title;
@@ -67,12 +63,12 @@ public class ShowListDto {
 		this.duration = duration;
 	}
 
-	public Stage getStage() {
+	public String getStage() {
 
 		return stage;
 	}
 
-	public void setStage(Stage stage) {
+	public void setStage(String stage) {
 
 		this.stage = stage;
 	}

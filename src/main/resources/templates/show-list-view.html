@@ -1,0 +1,37 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+
+    <div layout:fragment="content">
+        <h1>Spektakle</h1>
+
+        <div class="mb-3">
+            <a href="/show-edit" class="btn btn-success">Utwórz</a>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th scope="col">Tytuł</th>
+                                <th scope="col">Scena</th>
+                                <th scope="col">Czas trwania</th>
+                                <th scope="col">Dodatkowe informacje</th>
+                                <th scope="col">Akcje</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="show : ${shows}">
+                                <td><span th:text="${show.title}"></span></td>
+                                <td><span th:text="${show.stage}"></span></td>
+                                <td><span th:text="${show.duration}"></span></td>
+                                <td><span th:text="${show.additionalInformation}"></span></td>
+                                <td><a th:href="@{/show-edit(id=${show.id})}" class="btn btn-primary btn-sm">Edytuj</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</html>

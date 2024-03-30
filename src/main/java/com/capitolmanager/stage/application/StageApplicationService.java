@@ -107,6 +107,13 @@ public class StageApplicationService {
 			.toList();
 	}
 
+	public List<StageSelectionDto> getAllStagesSelectionDto() {
+
+		return stageQueries.getAll().stream()
+			.map(stage -> new StageSelectionDto(stage.getId(), stage.getName()))
+			.toList();
+	}
+
 	private void updateStagePositions(Stage stage, List<StagePositionDto> updatedPositionQuantities) {
 
 		stage.getRequiredPositions().removeIf(stagePosition ->
