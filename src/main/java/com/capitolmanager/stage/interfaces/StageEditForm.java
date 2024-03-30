@@ -12,6 +12,7 @@
 
 package com.capitolmanager.stage.interfaces;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -21,7 +22,7 @@ public class StageEditForm {
 	private String name;
 	private int numberOfSeats;
 	private String address;
-	private List<StagePositionDto> requiredPositions;
+	private List<StagePositionDto> requiredPositions = new ArrayList<>();
 
 	public StageEditForm(Long id, String name, int numberOfSeats, String address, List<StagePositionDto> requiredPositions) {
 

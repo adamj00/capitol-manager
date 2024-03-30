@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.capitolmanager.position.application.PositionStageEditDto;
+import com.capitolmanager.show.application.ShowApplicationService;
 import com.capitolmanager.stage.application.StageApplicationService;
 
 
@@ -39,19 +40,24 @@ public class StageEditController {
 	static final String STAGE_EDIT_VIEW = "stage-edit-view";
 	private static final String P_ID = "id";
 	private static final String M_STAGE_FORM = "stage";
+	private static final String M_CAN_DELETE = "canDelete";
 	private static final String REDIRECT = "redirect:";
 
 	private final StageApplicationService stageApplicationService;
 	private final StageFormFactory stageFormFactory;
+	private final ShowApplicationService showApplicationService;
+
 
 	@Autowired
-	StageEditController(StageApplicationService stageApplicationService, StageFormFactory stageFormFactory) {
+	StageEditController(StageApplicationService stageApplicationService, StageFormFactory stageFormFactory, ShowApplicationService showApplicationService) {
 
 		Assert.notNull(stageApplicationService, "stageApplicationService must not be null");
 		Assert.notNull(stageFormFactory, "stageFormFactory must not be null");
+		Assert.notNull(showApplicationService, "showApplicationService must not be null");
 
 		this.stageApplicationService = stageApplicationService;
 		this.stageFormFactory = stageFormFactory;
+		this.showApplicationService = showApplicationService;
 	}
 
 	@GetMapping
@@ -85,5 +91,11 @@ public class StageEditController {
 	List<PositionStageEditDto> getPositions() {
 
 		return stageApplicationService.getAllPositionsDto();
+	}
+
+	@ModelAttribute(name=M_CAN_DELETE)
+	boolean canDelete(@RequestParam(required = false) Long id) {
+
+		return id != null && !showApplicationService.existShowWithStage(id);
 	}
 }

@@ -1,10 +1,23 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
 
     <div layout:fragment="content">
+
+        <script>
+            function confirmDelete() {
+                const showId = document.getElementById('id').value;
+                if (confirm('Czy na pewno chcesz usunąć ten spektakl?')) {
+                    window.location = '/deleteShow?id=' + showId;
+                }
+            }
+        </script>
+
         <div class="container mt-5">
             <h2>Edycja spektaklu</h2>
             <div class="mb-3">
                 <a href="/show-list" class="btn btn-success">Powrót</a>
+                <button th:if="${show.id != null}" onclick="confirmDelete()" class="btn btn-danger">
+                    <i class="bi bi-trash">Usuń</i>
+                </button>
             </div>
             <form th:action="@{/show-edit}" th:object="${show}" method="post">
                 <div class="mb-3">

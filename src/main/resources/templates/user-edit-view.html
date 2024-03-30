@@ -15,7 +15,7 @@
             <h2>Edycja pracownika</h2>
             <div class="mb-3">
                 <a href="/user-list" class="btn btn-success">Powrót</a>
-                <button onclick="confirmDelete()" class="btn btn-danger">
+                <button th:if="${user.id != null}" onclick="confirmDelete()" class="btn btn-danger">
                     <i class="bi bi-trash">Usuń</i>
                 </button>
             </div>

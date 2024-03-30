@@ -85,4 +85,18 @@ public class ShowApplicationService {
 
 		showRepository.saveOrUpdate(show);
 	}
+
+	public void deleteShow(Long id) {
+
+		Show show = showQueries.findById(id)
+				.orElseThrow(EntityExistsException::new);
+
+		showRepository.delete(show);
+	}
+
+	public boolean existShowWithStage(Long stageId) {
+
+		return showQueries.getAll().stream()
+			.anyMatch(show -> show.getStage().getId().equals(stageId));
+	}
 }

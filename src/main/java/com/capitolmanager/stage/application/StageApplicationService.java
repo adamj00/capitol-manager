@@ -142,4 +142,12 @@ public class StageApplicationService {
 			stagePosition.setQuantity(quantity);
 		}
 	}
+
+	public void deleteStage(Long id) {
+
+		Stage stage = stageQueries.findById(id)
+			.orElseThrow(() -> new EntityNotFoundException("Stage not found"));
+
+		stageRepository.delete(stage);
+	}
 }

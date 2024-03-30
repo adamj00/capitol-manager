@@ -2,6 +2,15 @@
 
     <div layout:fragment="content">
 
+        <script>
+            function confirmDelete() {
+                const stageId = document.getElementById('id').value;
+                if (confirm('Czy na pewno chcesz usunąć tę scenę?')) {
+                    window.location = '/deleteStage?id=' + stageId;
+                }
+            }
+        </script>
+
         <script th:inline="javascript">
             /*<![CDATA[*/
             var allPositions = /*[[${allPositions}]]*/ [];
@@ -39,7 +48,7 @@
             <h2>Edycja sceny</h2>
             <div class="mb-3">
                 <a href="/stage-list" class="btn btn-success">Powrót</a>
-                <button  class="btn btn-danger">
+                <button th:if="${canDelete}" onclick="confirmDelete()" class="btn btn-danger">
                     <i class="bi bi-trash">Usuń</i>
                 </button>
             </div>
