@@ -21,6 +21,8 @@ import com.capitolmanager.position.application.PositionDto;
 
 public class PositionsForm {
 
+	public static final String F_POSITIONS = "positions";
+
 	private List<PositionDto> positions;
 
 	public PositionsForm(List<PositionDto> positions) {

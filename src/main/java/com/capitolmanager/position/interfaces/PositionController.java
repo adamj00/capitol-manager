@@ -18,7 +18,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.Assert;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -33,13 +37,23 @@ public class PositionController {
 
 	public static final String POSITION_LIST_EDIT_VIEW = "position-list-edit-view";
 	private final PositionApplicationService positionApplicationService;
+	private final PositionsValidator positionsValidator;
+
 
 	@Autowired
-	PositionController(PositionApplicationService positionApplicationService) {
+	PositionController(PositionApplicationService positionApplicationService, PositionsValidator positionsValidator) {
 
 		Assert.notNull(positionApplicationService, "positionApplicationService must not be null");
+		Assert.notNull(positionsValidator, "positionsValidator must not be null");
 
 		this.positionApplicationService = positionApplicationService;
+		this.positionsValidator = positionsValidator;
+	}
+
+	@InitBinder
+	private void customizeBinding(WebDataBinder binder) {
+
+		binder.setValidator(positionsValidator);
 	}
 
 	@ModelAttribute("allPositionTypes")
@@ -62,7 +76,12 @@ public class PositionController {
 	}
 
 	@PostMapping("savePositions")
-	String saveAll(PositionsForm positionsForm, Model model) {
+	String saveAll(@Validated PositionsForm positionsForm, BindingResult bindingResult, Model model) {
+
+		if (bindingResult.hasErrors()) {
+
+			return POSITION_LIST_EDIT_VIEW;
+		}
 
 		positionApplicationService.saveAll(positionsForm.getPositions());
 		return "redirect:" + "positions";

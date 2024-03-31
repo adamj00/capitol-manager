@@ -5,6 +5,7 @@
             <h2>Edycja stanowisk</h2>
             
             <form th:action="@{/savePositions}" th:object="${positionsForm}" method="post">
+                <div class="error" th:if="${#fields.hasErrors('positions')}" th:errors="*{positions}">Błąd walidacji</div>
                 <div class="card">
                     <div class="card-body">
                         <table class="table">
