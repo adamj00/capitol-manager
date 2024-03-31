@@ -18,6 +18,9 @@ import java.util.List;
 
 public class StageEditForm {
 
+	public static final String F_NAME = "name";
+	public static final String F_REQUIRED_POSITIONS = "requiredPositions";
+
 	private Long id;
 	private String name;
 	private int numberOfSeats;

@@ -21,7 +21,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.Assert;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,18 +50,30 @@ public class StageEditController {
 	private final StageApplicationService stageApplicationService;
 	private final StageFormFactory stageFormFactory;
 	private final ShowApplicationService showApplicationService;
+	private final StageValidator stageValidator;
 
 
 	@Autowired
-	StageEditController(StageApplicationService stageApplicationService, StageFormFactory stageFormFactory, ShowApplicationService showApplicationService) {
+	StageEditController(StageApplicationService stageApplicationService,
+		StageFormFactory stageFormFactory,
+		ShowApplicationService showApplicationService,
+		StageValidator stageValidator) {
 
 		Assert.notNull(stageApplicationService, "stageApplicationService must not be null");
 		Assert.notNull(stageFormFactory, "stageFormFactory must not be null");
 		Assert.notNull(showApplicationService, "showApplicationService must not be null");
+		Assert.notNull(stageValidator, "stageValidator must not be null");
 
 		this.stageApplicationService = stageApplicationService;
 		this.stageFormFactory = stageFormFactory;
 		this.showApplicationService = showApplicationService;
+		this.stageValidator = stageValidator;
+	}
+
+	@InitBinder
+	private void customizeBinding(WebDataBinder binder) {
+
+		binder.setValidator(stageValidator);
 	}
 
 	@GetMapping
@@ -75,7 +91,12 @@ public class StageEditController {
 	}
 
 	@PostMapping
-	String saveOrUpdateUser(@ModelAttribute(M_STAGE_FORM) StageEditForm stageForm, Model model) {
+	String saveOrUpdateUser(@Validated @ModelAttribute(M_STAGE_FORM) StageEditForm stageForm, BindingResult bindingResult, Model model) {
+
+		if (bindingResult.hasErrors()) {
+
+			return STAGE_EDIT_VIEW;
+		}
 
 		if (stageForm.getId() == null) {
 			stageApplicationService.saveStage(stageForm);

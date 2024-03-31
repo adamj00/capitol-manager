@@ -56,22 +56,24 @@
                 <input type="hidden" id="id" th:field="*{id}">
                 <div class="mb-3">
                     <label for="name" class="form-label">Nazwa</label>
-                    <input type="text" id="name" th:field="*{name}" class="form-control" required>
+                    <div class="error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Błąd walidacji</div>
+                    <input type="text" id="name" th:field="*{name}" class="form-control short-input" required>
                 </div>
         
                 <div class="mb-3">
                     <label for="numberOfSeats" class="form-label">Liczba miejsc</label>
-                    <input type="number" id="numberOfSeats" th:field="*{numberOfSeats}" class="form-control" required>
+                    <input type="number" id="numberOfSeats" th:field="*{numberOfSeats}" class="form-control short-input" required>
                 </div>
         
                 <div class="mb-3">
                     <label for="address" class="form-label">Adres</label>
-                    <input type="text" id="address" th:field="*{address}" class="form-control" required>
+                    <input type="text" id="address" th:field="*{address}" class="form-control medium-input" required>
                 </div>
 
                 <div class="mb-3">
                     <label for="requiredPositions" class="form-label">Stanowiska</label>
-                    <table id="positionsTable" class="table">
+                    <div class="error" th:if="${#fields.hasErrors('requiredPositions')}" th:errors="*{requiredPositions}">Błąd walidacji</div>
+                    <table id="positionsTable" class="table-responsive">
                         <thead>
                             <tr>
                                 <th scope="col">Stanowisko</th>
@@ -92,7 +94,7 @@
                                     </select>
                                 </td>
                                 <td>
-                                    <input type="number" th:field="*{requiredPositions[__${iterStat.index}__].quantity}" class="form-control" min="0" required />
+                                    <input type="number" th:field="*{requiredPositions[__${iterStat.index}__].quantity}" class="form-control short-input" min="0" required />
                                 </td>
                                 <td>
                                     <button type="button" class="btn btn-danger btn-sm" onclick="removePosition(this)">Usuń</button>

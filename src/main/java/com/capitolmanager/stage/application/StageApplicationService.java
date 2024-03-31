@@ -150,4 +150,10 @@ public class StageApplicationService {
 
 		stageRepository.delete(stage);
 	}
+
+	public boolean existStageWithName(Long id, String name) {
+
+		return stageQueries.getAll().stream()
+			.anyMatch(stage -> stage.getName().equals(name) && !stage.getId().equals(id));
+	}
 }
