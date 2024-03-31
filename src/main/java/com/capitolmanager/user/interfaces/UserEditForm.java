@@ -14,6 +14,12 @@ package com.capitolmanager.user.interfaces;
 
 public class UserEditForm {
 
+	public static final String F_EMAIL = "email";
+	public static final String F_FIRST_NAME = "firstName";
+	public static final String F_LAST_NAME = "lastName";
+	public static final String F_PHONE_NUMBER = "phoneNumber";
+
+
 	private Long id;
 	private String email;
 	private String firstName;
