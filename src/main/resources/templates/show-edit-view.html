@@ -1,0 +1,52 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+
+    <div layout:fragment="content">
+
+        <script>
+            function confirmDelete() {
+                const showId = document.getElementById('id').value;
+                if (confirm('Czy na pewno chcesz usunąć ten spektakl?')) {
+                    window.location = '/deleteShow?id=' + showId;
+                }
+            }
+        </script>
+
+        <div class="container mt-5">
+            <h2>Edycja spektaklu</h2>
+            <div class="mb-3">
+                <a href="/show-list" class="btn btn-success">Powrót</a>
+                <button th:if="${show.id != null}" onclick="confirmDelete()" class="btn btn-danger">
+                    <i class="bi bi-trash">Usuń</i>
+                </button>
+            </div>
+            <form th:action="@{/show-edit}" th:object="${show}" method="post">
+                <div class="mb-3">
+                    <input type="hidden" class="form-control" id="id" th:field="*{id}">
+                </div>
+                <div class="mb-3">
+                    <label for="title" class="form-label">Tytuł</label>
+                    <input type="text" class="form-control" id="title" th:field="*{title}">
+                    <div class="error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}">Błąd walidacji</div>
+                </div>
+                <div class="mb-3">
+                    <label for="duration" class="form-label">Czas trwania (w minutach)</label>
+                    <input type="number" class="form-control" id="duration" th:field="*{duration}">
+                    <div class="error" th:if="${#fields.hasErrors('duration')}" th:errors="*{duration}">Błąd walidacji</div>
+                </div>
+                <div class="mb-3">
+                    <label for="stage" class="form-label">Scena</label>
+                    <select class="form-select" id="stage" th:field="*{stageSelectionDto.id}">
+                        <option value="" th:unless="${stages}">Wybierz scenę</option>
+                        <option th:each="stage : ${stages}" th:value="${stage.id}" th:text="${stage.name}" th:selected="${stage.id == show.stageSelectionDto.id}"></option>
+                    </select>
+                    <div class="error" th:if="${#fields.hasErrors('stageSelectionDto')}" th:errors="*{stageSelectionDto}">Błąd walidacji</div>
+                </div>
+                <div class="mb-3">
+                    <label for="additionalInformation" class="form-label">Informacje dodatkowe</label>
+                    <textarea class="form-control" id="additionalInformation" th:field="*{additionalInformation}" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Zapisz</button>
+            </form>
+        </div>
+    </div>
+</html>

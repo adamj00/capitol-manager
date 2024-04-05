@@ -1,5 +1,5 @@
 /*
- * Created on 24-03-2024 20:23 by ajarzabe
+ * Created on 26-03-2024 21:25 by ajarzabe
  *
  * Copyright (c) 2001-2024 Unity S.A.
  * ul. Strzegomska 2-4, 53-611 Wrocław, Poland
@@ -10,10 +10,17 @@
  * i w zgodzie z warunkami umowy licencyjnej zawartej z Unity S.A.
  */
 
-package com.capitolmanager.hibernate;
+package com.capitolmanager.position.application;
 
-public interface Repository<Entity extends AbstractEntity> {
+import java.util.List;
+import java.util.Optional;
 
-	void saveOrUpdate(Entity entity);
-	void delete(Entity entity);
+import com.capitolmanager.position.domain.Position;
+
+
+public interface PositionQueries {
+
+	List<Position> getAll();
+
+	Optional<Position> findById(Long id);
 }

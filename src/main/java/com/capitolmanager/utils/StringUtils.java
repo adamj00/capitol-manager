@@ -1,5 +1,5 @@
 /*
- * Created on 24-03-2024 20:23 by ajarzabe
+ * Created on 30-03-2024 23:59 by ajarzabe
  *
  * Copyright (c) 2001-2024 Unity S.A.
  * ul. Strzegomska 2-4, 53-611 Wrocław, Poland
@@ -10,10 +10,12 @@
  * i w zgodzie z warunkami umowy licencyjnej zawartej z Unity S.A.
  */
 
-package com.capitolmanager.hibernate;
+package com.capitolmanager.utils;
 
-public interface Repository<Entity extends AbstractEntity> {
+public class StringUtils {
 
-	void saveOrUpdate(Entity entity);
-	void delete(Entity entity);
+	public static boolean hasText(String string) {
+
+		return string != null && !string.isEmpty();
+	}
 }

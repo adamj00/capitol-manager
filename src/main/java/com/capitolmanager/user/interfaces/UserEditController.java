@@ -20,7 +20,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.Assert;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,15 +44,25 @@ public class UserEditController {
 
 	private final UserApplicationService userApplicationService;
 	private final UserFormFactory userFormFactory;
+	private final UserValidator userValidator;
+
 
 	@Autowired
-	UserEditController(UserApplicationService userApplicationService, UserFormFactory userFormFactory) {
+	UserEditController(UserApplicationService userApplicationService, UserFormFactory userFormFactory, UserValidator userValidator) {
 
 		Assert.notNull(userApplicationService, "userApplicationService must not be null");
 		Assert.notNull(userFormFactory, "userFormFactory must not be null");
+		Assert.notNull(userValidator, "userValidator must not be null");
 
 		this.userApplicationService = userApplicationService;
 		this.userFormFactory = userFormFactory;
+		this.userValidator = userValidator;
+	}
+
+	@InitBinder
+	private void customizeBinding(WebDataBinder binder) {
+
+		binder.setValidator(userValidator);
 	}
 
 	@GetMapping
@@ -67,7 +80,12 @@ public class UserEditController {
 	}
 
 	@PostMapping
-	String saveOrUpdateUser(@ModelAttribute(M_USER_FORM) UserEditForm userForm, Model model) {
+	String saveOrUpdateUser(@Validated @ModelAttribute(M_USER_FORM) UserEditForm userForm, BindingResult bindingResult, Model model) {
+
+		if (bindingResult.hasErrors()) {
+
+			return USER_EDIT_VIEW;
+		}
 
 		if (userForm.getId() == null) {
 			userApplicationService.saveUser(userForm);

@@ -1,5 +1,5 @@
 /*
- * Created on 24-03-2024 15:25 by ajarzabe
+ * Created on 28-03-2024 12:42 by ajarzabe
  *
  * Copyright (c) 2001-2024 Unity S.A.
  * ul. Strzegomska 2-4, 53-611 Wrocław, Poland
@@ -10,12 +10,17 @@
  * i w zgodzie z warunkami umowy licencyjnej zawartej z Unity S.A.
  */
 
-package com.capitolmanager.user.application;
+package com.capitolmanager.stage.application;
 
-import com.capitolmanager.user.domain.User;
+import java.util.List;
+import java.util.Optional;
+
+import com.capitolmanager.stage.domain.Stage;
 
 
-public interface UserRepository {
+public interface StageQueries {
 
-	void saveUser(User user);
+	List<Stage> getAll();
+
+	Optional<Stage> findById(Long id);
 }
