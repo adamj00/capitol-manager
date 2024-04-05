@@ -99,4 +99,11 @@ public class ShowApplicationService {
 		return showQueries.getAll().stream()
 			.anyMatch(show -> show.getStage().getId().equals(stageId));
 	}
+
+	public boolean existShowWithTitle(Long id, String title) {
+
+		return getAllShows().stream()
+			.anyMatch(showListDto -> showListDto.getTitle().equals(title)
+			&& !showListDto.getId().equals(id));
+	}
 }

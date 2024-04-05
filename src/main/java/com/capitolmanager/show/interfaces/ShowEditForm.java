@@ -17,6 +17,10 @@ import com.capitolmanager.stage.application.StageSelectionDto;
 
 public class ShowEditForm {
 
+	public static final String F_TITLE = "title";
+	public static final String F_DURATION = "duration";
+	public static final String F_STAGE = "stageSelectionDto";
+
 	private Long id;
 	private String title;
 	private int duration;

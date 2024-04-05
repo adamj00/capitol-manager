@@ -21,13 +21,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.Assert;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.capitolmanager.show.application.ShowApplicationService;
+import com.capitolmanager.show.application.ShowValidator;
 import com.capitolmanager.stage.application.StageApplicationService;
 import com.capitolmanager.stage.application.StageSelectionDto;
 
@@ -44,18 +49,31 @@ public class ShowEditController {
 	private final ShowApplicationService showApplicationService;
 	private final StageApplicationService stageApplicationService;
 	private final ShowEditFormFactory showEditFormFactory;
+	private final ShowValidator showValidator;
 
 
 	@Autowired
-	ShowEditController(ShowApplicationService showApplicationService, StageApplicationService stageApplicationService, ShowEditFormFactory showEditFormFactory) {
+	ShowEditController(ShowApplicationService showApplicationService,
+		StageApplicationService stageApplicationService,
+		ShowEditFormFactory showEditFormFactory,
+		ShowValidator showValidator) {
 
 		Assert.notNull(showApplicationService, "showApplicationService must not be null");
 		Assert.notNull(stageApplicationService, "stageApplicationService must not be null");
 		Assert.notNull(showEditFormFactory, "showEditFormFactory must not be null");
+		Assert.notNull(showValidator, "showValidator must not be null");
 
 		this.showApplicationService = showApplicationService;
 		this.stageApplicationService = stageApplicationService;
 		this.showEditFormFactory = showEditFormFactory;
+		this.showValidator = showValidator;
+	}
+
+
+	@InitBinder
+	private void customizeBinding(WebDataBinder binder) {
+
+		binder.setValidator(showValidator);
 	}
 
 	@ModelAttribute(M_STAGES)
@@ -79,7 +97,12 @@ public class ShowEditController {
 	}
 
 	@PostMapping
-	String saveShow(@ModelAttribute ShowEditForm show, Model model) {
+	String saveShow(@Validated @ModelAttribute(M_SHOW) ShowEditForm show, BindingResult bindingResult, Model model) {
+
+		if (bindingResult.hasErrors()) {
+
+			return VIEW_NAME;
+		}
 
 		if (show.getId() == null) {
 

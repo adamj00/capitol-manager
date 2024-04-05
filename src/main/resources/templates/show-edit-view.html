@@ -26,10 +26,12 @@
                 <div class="mb-3">
                     <label for="title" class="form-label">Tytuł</label>
                     <input type="text" class="form-control" id="title" th:field="*{title}">
+                    <div class="error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}">Błąd walidacji</div>
                 </div>
                 <div class="mb-3">
                     <label for="duration" class="form-label">Czas trwania (w minutach)</label>
                     <input type="number" class="form-control" id="duration" th:field="*{duration}">
+                    <div class="error" th:if="${#fields.hasErrors('duration')}" th:errors="*{duration}">Błąd walidacji</div>
                 </div>
                 <div class="mb-3">
                     <label for="stage" class="form-label">Scena</label>
@@ -37,6 +39,7 @@
                         <option value="" th:unless="${stages}">Wybierz scenę</option>
                         <option th:each="stage : ${stages}" th:value="${stage.id}" th:text="${stage.name}" th:selected="${stage.id == show.stageSelectionDto.id}"></option>
                     </select>
+                    <div class="error" th:if="${#fields.hasErrors('stageSelectionDto')}" th:errors="*{stageSelectionDto}">Błąd walidacji</div>
                 </div>
                 <div class="mb-3">
                     <label for="additionalInformation" class="form-label">Informacje dodatkowe</label>
