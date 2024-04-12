@@ -1,5 +1,5 @@
 /*
- * Created on 24-03-2024 13:02 by ajarzabe
+ * Created on 12-04-2024 19:19 by ajarzabe
  *
  * Copyright (c) 2001-2024 Unity S.A.
  * ul. Strzegomska 2-4, 53-611 Wrocław, Poland
@@ -10,19 +10,9 @@
  * i w zgodzie z warunkami umowy licencyjnej zawartej z Unity S.A.
  */
 
-package com.capitolmanager.user.application;
+package com.capitolmanager.user.domain;
 
-import java.util.List;
-import java.util.Optional;
-
-import com.capitolmanager.user.domain.User;
-
-
-public interface UserQueries {
-
-	List<User> getAll();
-
-	Optional<User> findById(Long id);
-
-	Optional<User> findByEmail(String email);
+public enum UserRole {
+	EMPLOYEE, MANAGER;
 }
+

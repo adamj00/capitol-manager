@@ -12,6 +12,8 @@
 
 package com.capitolmanager.user.infrastructure;
 
+import java.util.Optional;
+
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,4 +35,11 @@ public class HibernateUserQueries extends AbstractHibernateQueries<User> impleme
 		Assert.notNull(sessionFactory, "sessionFactory must not be null");
 	}
 
+	@Override
+	public Optional<User> findByEmail(String email) {
+
+		return getAll().stream()
+			.filter(user -> user.getEmail().equals((email)))
+			.findFirst();
+	}
 }
