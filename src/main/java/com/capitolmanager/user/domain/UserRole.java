@@ -13,6 +13,18 @@
 package com.capitolmanager.user.domain;
 
 public enum UserRole {
-	EMPLOYEE, MANAGER;
+	EMPLOYEE("Bileter"), MANAGER("Koordynator");
+
+	private String label;
+
+	UserRole(String label) {
+
+		this.label = label;
+	}
+
+	public String getLabel() {
+
+		return label;
+	}
 }
 

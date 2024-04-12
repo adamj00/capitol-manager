@@ -57,7 +57,7 @@ public class User extends AbstractEntity {
 
 	}
 	
-	public void update(String email, String firstName, String lastName, String phoneNumber) {
+	public void update(String email, String firstName, String lastName, String phoneNumber, UserRole role) {
 
 		Assert.notNull(email, "email must not be null");
 		
@@ -65,6 +65,7 @@ public class User extends AbstractEntity {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.phoneNumber = phoneNumber;
+		this.role = role;
 	}
 
 	public String getEmail() {

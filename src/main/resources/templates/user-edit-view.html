@@ -50,7 +50,7 @@
                     <label for="role" class="form-label">Rola</label>
                     <select class="form-select" id="role" th:field="*{role}">
                         <option value="" th:unless="${roles}">Wybierz rolę</option>
-                        <option th:each="stage : ${roles}" th:value="${role}" th:text="${role}" th:selected="${role == user.role}"></option>
+                        <option th:each="role : ${roles}" th:value="${role}" th:text="${role.label}"></option>
                     </select>
                     <div class="error" th:if="${#fields.hasErrors('role')}" th:errors="*{role}">Błąd walidacji</div>
                 </div>

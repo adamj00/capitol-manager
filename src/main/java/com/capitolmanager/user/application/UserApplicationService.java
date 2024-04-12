@@ -84,7 +84,8 @@ public class UserApplicationService {
 		user.update(userEditForm.getEmail(),
 			userEditForm.getFirstName(),
 			userEditForm.getLastName(),
-			userEditForm.getPhoneNumber());
+			userEditForm.getPhoneNumber(),
+			userEditForm.getRole());
 
 		userRepository.saveOrUpdate(user);
 	}

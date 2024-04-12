@@ -2,6 +2,7 @@
 <html lang="pl" xmlns:th="http://www.thymeleaf.org"
 xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 
+
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -33,7 +34,7 @@ xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
-      <a class="navbar-brand" href="#">Bileterzy</a>
+      <a class="navbar-brand" href="/">Bileterzy</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -42,7 +43,7 @@ xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           
           <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="#">Strona główna</a>
+            <a class="nav-link active" aria-current="page" href="/">Strona główna</a>
           </li>
 
 
@@ -52,7 +53,7 @@ xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
             </a>
             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
               <li><a class="dropdown-item" href="/user-list">Pracownicy</a></li>
-              <li><a class="dropdown-item" href="/positions">Stanowiska</a></li>
+              <li sec:authorize="hasRole('MANAGER')"><a class="dropdown-item" href="/positions">Stanowiska</a></li>
               <li><a class="dropdown-item" href="/stage-list">Sceny</a></li>
               <li><a class="dropdown-item" href="/show-list">Spektakle</a></li>
               <li><hr class="dropdown-divider"></li>

@@ -30,6 +30,8 @@ import com.capitolmanager.user.application.CustomUserDetailsService;
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
+	private static final String MANAGER = "MANAGER";
+
 	private final CustomUserDetailsService customUserDetailsService;
 
 	@Autowired
@@ -48,16 +50,23 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+
 		auth.userDetailsService(customUserDetailsService)
 			.passwordEncoder(passwordEncoder());
 	}
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
+
 		http
 			.csrf().disable()
 			.authorizeRequests()
-			.antMatchers("/user-edit**").hasRole("MANAGER")
+
+			.antMatchers("/user-edit**").hasRole(MANAGER)
+			.antMatchers("/positions**").hasRole(MANAGER)
+			.antMatchers("/stage-edit**").hasRole(MANAGER)
+			.antMatchers("/show-edit**").hasRole(MANAGER)
+
 			.anyRequest().authenticated()
 			.and()
 			.formLogin().permitAll()
@@ -67,6 +76,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
+
 		return new BCryptPasswordEncoder();
 	}
 }

@@ -6,7 +6,7 @@
 
             <h1>Sceny</h1>
 
-            <div class="mb-3">
+            <div sec:authorize="hasRole('MANAGER')" class="mb-3">
                 <a href="/stage-edit" class="btn btn-success">Utwórz</a>
             </div>
         
@@ -17,7 +17,7 @@
                         <th>Nazwa</th>
                         <th>Liczba miejsc</th>
                         <th>Adres</th>
-                        <th>Akcja</th>
+                        <th sec:authorize="hasRole('MANAGER')">Akcja</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -26,7 +26,7 @@
                         <td th:text="${stage.name}">Nazwa</td>
                         <td th:text="${stage.numberOfSeats}">Liczba miejsc</td>
                         <td th:text="${stage.address}">Liczba miejsc</td>
-                        <td><a th:href="@{/stage-edit(id=${stage.id})}" class="btn btn-primary btn-sm">Edytuj</a></td>
+                        <td sec:authorize="hasRole('MANAGER')"><a th:href="@{/stage-edit(id=${stage.id})}" class="btn btn-primary btn-sm">Edytuj</a></td>
                     </tr>
                 </tbody>
             </table>
