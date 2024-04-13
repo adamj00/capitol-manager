@@ -18,10 +18,14 @@ import java.util.stream.Collectors;
 
 import javax.persistence.EntityNotFoundException;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import com.capitolmanager.changepassword.interfaces.PasswordChangeForm;
 import com.capitolmanager.hibernate.Repository;
 import com.capitolmanager.user.domain.User;
 import com.capitolmanager.user.domain.UserRole;
@@ -99,5 +103,19 @@ public class UserApplicationService {
 	public List<UserRole> getAllRoles() {
 
 		return Arrays.asList(UserRole.values());
+	}
+
+	public void changePassword(PasswordChangeForm form) {
+
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		User user = userQueries.findByEmail(authentication.getName())
+			.orElseThrow(() -> new EntityNotFoundException("User " + authentication.getName() + " not found"));
+
+		if (!passwordEncoder.matches(form.getOldPassword(), user.getPassword())) {
+			throw new IllegalStateException("Passwords do not match");
+		}
+
+		user.setPassword(passwordEncoder.encode(form.getNewPassword()));
+		userRepository.saveOrUpdate(user);
 	}
 }
