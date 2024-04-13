@@ -3,7 +3,7 @@
     <div layout:fragment="content">
         <h1>Spektakle</h1>
 
-        <div class="mb-3">
+        <div sec:authorize="hasRole('MANAGER')" class="mb-3">
             <a href="/show-edit" class="btn btn-success">Utwórz</a>
         </div>
 
@@ -17,7 +17,7 @@
                                 <th scope="col">Scena</th>
                                 <th scope="col">Czas trwania</th>
                                 <th scope="col">Dodatkowe informacje</th>
-                                <th scope="col">Akcje</th>
+                                <th sec:authorize="hasRole('MANAGER')" scope="col">Akcje</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -26,7 +26,7 @@
                                 <td><span th:text="${show.stage}"></span></td>
                                 <td><span th:text="${show.duration}"></span></td>
                                 <td><span th:text="${show.additionalInformation}"></span></td>
-                                <td><a th:href="@{/show-edit(id=${show.id})}" class="btn btn-primary btn-sm">Edytuj</a></td>
+                                <td sec:authorize="hasRole('MANAGER')"><a th:href="@{/show-edit(id=${show.id})}" class="btn btn-primary btn-sm">Edytuj</a></td>
                             </tr>
                         </tbody>
                     </table>

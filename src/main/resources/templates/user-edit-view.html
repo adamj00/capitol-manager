@@ -45,6 +45,15 @@
                     <input type="tel" class="form-control" id="phoneNumber" placeholder="Wprowadź numer telefonu" th:field="*{phoneNumber}">
                     <div class="error" th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}">Błąd walidacji</div>
                 </div>
+
+                <div class="mb-3">
+                    <label for="role" class="form-label">Rola</label>
+                    <select class="form-select" id="role" th:field="*{role}">
+                        <option value="" th:unless="${roles}">Wybierz rolę</option>
+                        <option th:each="role : ${roles}" th:value="${role}" th:text="${role.label}"></option>
+                    </select>
+                    <div class="error" th:if="${#fields.hasErrors('role')}" th:errors="*{role}">Błąd walidacji</div>
+                </div>
                 
                 <button type="submit" class="btn btn-primary btn-lg mt-3">Zapisz</button>
             </form>

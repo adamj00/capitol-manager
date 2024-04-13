@@ -3,7 +3,7 @@
     <div layout:fragment="content">
         <h1>Lista pracowników</h1>
 
-        <div class="mb-3">
+        <div sec:authorize="hasRole('MANAGER')" class="mb-3">
             <a href="/user-edit" class="btn btn-success">Utwórz</a>
             <a href="#" class="btn btn-info">Generuj raport statystyk</a>
         </div>
@@ -17,7 +17,7 @@
                                 <th scope="col">Imię i nazwisko</th>
                                 <th scope="col">Adres email</th>
                                 <th scope="col">Numer telefonu</th>
-                                <th scope="col">Akcja</th>
+                                <th sec:authorize="hasRole('MANAGER')" scope="col">Akcja</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -25,7 +25,7 @@
                                 <td><span th:text="${user.firstName} + ' ' + ${user.lastName}">Imię i nazwisko</span></td>
                                 <td><span th:text="${user.email}">Adres email</span></td>
                                 <td><span th:text="${user.phoneNumber}">Numer telefonu</span></td>
-                                <td><a th:href="@{/user-edit(id=${user.id})}" class="btn btn-primary btn-sm">Edytuj</a></td>
+                                <td sec:authorize="hasRole('MANAGER')"><a th:href="@{/user-edit(id=${user.id})}" class="btn btn-primary btn-sm">Edytuj</a></td>
                             </tr>
                         </tbody>
                     </table>

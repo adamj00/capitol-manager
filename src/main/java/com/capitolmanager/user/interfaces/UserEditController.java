@@ -15,6 +15,8 @@ package com.capitolmanager.user.interfaces;
 import static com.capitolmanager.user.interfaces.UserEditController.USER_EDIT_PATH;
 import static com.capitolmanager.user.interfaces.UserListController.USER_LIST_PATH;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.capitolmanager.user.application.UserApplicationService;
+import com.capitolmanager.user.domain.UserRole;
 
 
 @Controller
@@ -41,6 +44,7 @@ public class UserEditController {
 	private static final String P_ID = "id";
 	private static final String M_USER_FORM = "user";
 	private static final String REDIRECT = "redirect:";
+	private static final String M_ROLES = "roles";
 
 	private final UserApplicationService userApplicationService;
 	private final UserFormFactory userFormFactory;
@@ -95,5 +99,11 @@ public class UserEditController {
 		}
 
 		return REDIRECT + USER_LIST_PATH;
+	}
+
+	@ModelAttribute(M_ROLES)
+	List<UserRole> allRoles() {
+
+		return userApplicationService.getAllRoles();
 	}
 }
