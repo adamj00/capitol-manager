@@ -1,0 +1,230 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+
+    <div layout:fragment="content">
+
+        <style>
+            .day-column {
+                background-color: #f8f9fa;
+                border-radius: 5px;
+                padding: 10px;
+                margin-bottom: 10px;
+            }
+    
+            .event-card {
+                margin-top: 10px;
+            }
+    
+            .no-events {
+                text-align: center;
+                padding: 20px;
+            }
+    
+            /* Dla małych ekranów każdy dzień w nowym rzędzie */
+            @media (max-width: 768px) {
+                .day-column {
+                    margin-bottom: 20px;
+                }
+            }
+
+            .event-card {
+                position: relative;
+                overflow: hidden; /* Zapobiega wyświetlaniu się przycisków poza kartą */
+            }
+
+            .card-buttons {
+                position: absolute;
+                top: 10px;
+                right: -60px; /* Ukrywamy przyciski poza prawą krawędzią karty */
+                transition: right 0.3s ease-in-out; /* Dodajemy efekt przejścia */
+            }
+
+            .event-card:hover .card-buttons {
+                right: 10px; /* Przesuwamy przyciski do wewnątrz karty przy najechaniu */
+            }
+
+            .card-buttons a {
+                display: block;
+                margin-bottom: 0.5em; /* Dodajemy odstęp między przyciskami */
+            }
+
+            .card-buttons a.edit-link {
+                color: #007bff; /* Kolor ikony edycji */
+            }
+
+            .card-buttons a.delete-link {
+                color: #dc3545; /* Kolor ikony usuwania */
+            }
+
+            .card-buttons i {
+                font-size: 1.2em;
+            }
+
+            .add-event-button {
+                display: none; /* Ukrywamy przycisk domyślnie */
+                margin-top: 10px;
+            }
+
+            .day-column:hover .add-event-button {
+                display: block; /* Pokazujemy przycisk, gdy najechane jest na kolumnę */
+            }
+        </style>
+
+        <!-- Nagłówek z zakresem dat i przyciskami nawigacyjnymi -->
+        <header class="d-flex justify-content-between align-items-center p-3">
+            <a th:href="@{/events(weekStart=${prevWeekStart})}" class="btn btn-outline-secondary">&lt; Poprzedni tydzień</a>
+            <div>
+                <h2 th:text="${weekRange}">Week 01.01 - 07.01</h2>
+            </div>
+            <a th:href="@{/events(weekStart=${nextWeekStart})}" class="btn btn-outline-secondary">Następny tydzień &gt;</a>
+        </header>
+
+        <!-- Główna część widoku z kafelkami wydarzeń posortowanymi od poniedziałku do niedzieli -->
+        <div class="container-fluid mt-4">
+            <div class="row">
+                <th:block th:each="day, dayStat : ${weekDays}">
+                    <div th:classappend="${#lists.isEmpty(day.events) ? 'col-md-1' : 'col-md-2'}">
+                        <div class="day-column">
+                            <h5 th:text="${day.dayOfWeek}">Monday</h5>
+                            <div th:if="${#lists.isEmpty(day.events)}" class="no-events">
+                                <p>Brak wydarzeń</p>
+                            </div>
+                            <div th:each="event : ${day.events}" class="card event-card">
+                                <div class="card-body">
+                                    <h5 class="card-title" th:text="${event.show.title}">Spektakl</h5>
+                                    
+                                    <p class="card-text"><strong>Rozpoczęcie wydarzenia:</strong> <span th:text="${#temporals.format(event.eventStartTime, 'HH:mm')}">Rozpoczęcie wydarzenia</span></p>
+                                    <p class="card-text"><strong>Rozpoczęcie zmiany:</strong> <span th:text="${#temporals.format(event.shiftStartTime, 'HH:mm')}">Rozpoczęcie zmiany</span></p>
+                                </div>
+                                <div class="card-buttons">
+                                    <a href="#" class="edit-link" data-bs-toggle="modal" data-bs-target="#editEventModal" th:attr="data-event-id=${event.id}, data-event='${event}'">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="#" class="delete-link" th:onclick="'deleteEvent(' + ${event.id} + ');'">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="text-center add-event-button">
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editEventModal"
+                                        th:data-day="${day.dayOfWeek}" th:data-event-date="${day.date}">
+                                    <i class="fas fa-plus-circle"></i> Dodaj wydarzenie
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </th:block>
+            </div>
+        </div>
+
+        <!-- Modal do edycji i tworzenia wydarzeń -->
+        <div class="modal fade" id="editEventModal" tabindex="-1" aria-labelledby="editEventModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editEventModalLabel">Edytuj wydarzenie</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Formularz edycji/tworzenia wydarzenia -->
+                        <form id="eventForm" th:action="@{/events}" th:object="${eventForm}" method="post">
+                            <input type="hidden" th:field="*{id}">
+                            <div class="mb-3">
+                                <label for="show" class="form-label">Spektakl</label>
+                                <select id="show" class="form-select" th:field="*{show}" required>
+                                    <option th:each="show : ${shows}" th:value="${show.id}" th:text="${show.title}">Tytuł spektaklu</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="eventStartTime" class="form-label">Rozpoczęcie wydarzenia</label>
+                                <input type="datetime-local" id="eventStartTime" class="form-control" th:field="*{eventStartTime}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="shiftStartTime" class="form-label">Start zmiany</label>
+                                <input type="datetime-local" id="shiftStartTime" class="form-control" th:field="*{shiftStartTime}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="notes" class="form-label">Uwagi</label>
+                                <textarea id="notes" class="form-control" th:field="*{notes}"></textarea>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
+                                <button type="submit" class="btn btn-primary">Zapisz</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+<!-- Odpowiednie skrypty JavaScript -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js"></script>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    function deleteEvent(eventId) {
+        if (confirm('Czy na pewno chcesz usunąć dane wydarzenie?')) {
+        
+            location.href = "/events/delete?id=" + eventId;
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var editEventModal = document.getElementById('editEventModal');
+        editEventModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget; // Przycisk, który wywołał modal
+            var eventDate = button.getAttribute('data-event-date'); // Pobierz datę z atrybutu przycisku
+            var eventStartTimeInput = document.getElementById('eventStartTime');
+            var shiftStartTimeInput = document.getElementById('shiftStartTime');
+
+            if (eventDate) {
+                eventStartTimeInput.value = eventDate + 'T00:00'; // Możesz dostosować czas, jeśli jest potrzebny
+                shiftStartTimeInput.value = eventDate + 'T00:00'; // Możesz dostosować czas, jeśli jest potrzebny
+            }
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+    var editEventModal = document.getElementById('editEventModal');
+    editEventModal.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget; // Przycisk, który wywołał modal
+        var eventId = button.getAttribute('data-event-id'); // Pobierz ID eventu z atrybutu przycisku
+        
+        if (eventId) {
+            fetch('/events/' + eventId) // Używamy funkcji fetch do wykonania zapytania GET
+                .then(response => response.json())
+                .then(eventForm => {
+                    // Wypełniamy formularz danymi
+                    document.getElementById('id').value = eventForm.id;
+                    document.getElementById('eventStartTime').value = eventForm.eventStartTime.replace(' ', 'T');
+                    document.getElementById('shiftStartTime').value = eventForm.shiftStartTime.replace(' ', 'T');
+                    document.getElementById('notes').value = eventForm.notes;
+                    
+                    // Ustawiamy odpowiedni spektakl jako wybrany
+                    var showSelect = document.getElementById('show');
+                    var showOptions = showSelect.options;
+                    for (var i = 0; i < showOptions.length; i++) {
+                        if (showOptions[i].value === eventForm.show.toString()) {
+                            showOptions[i].selected = true;
+                            break;
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Błąd podczas pobierania danych eventu:', error);
+                });
+        } else {
+            // Jeśli eventId nie istnieje, to znaczy, że tworzymy nowy event
+            var eventDate = button.getAttribute('data-event-date');
+            if (eventDate) {
+                document.getElementById('eventStartTime').value = eventDate + 'T00:00';
+                document.getElementById('shiftStartTime').value = eventDate + 'T00:00';
+            }
+        }
+    });
+});
+    /*]]>*/
+</script>
+
+    </div>
+</html>

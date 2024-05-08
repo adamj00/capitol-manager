@@ -12,6 +12,8 @@
 	<title>System zarządzania obsługą widowni Teatru Muzycznego Capitol</title>
 </head>
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+
 <style>
         .form-label {
             font-weight: bold;
@@ -56,6 +58,7 @@
               <li sec:authorize="hasRole('MANAGER')"><a class="dropdown-item" href="/positions">Stanowiska</a></li>
               <li><a class="dropdown-item" href="/stage-list">Sceny</a></li>
               <li><a class="dropdown-item" href="/show-list">Spektakle</a></li>
+              <li><a class="dropdown-item" href="/events">Wydarzenia</a></li>
               <li><hr class="dropdown-divider"></li>
               <li><a class="dropdown-item" href="#">Something else here</a></li>
             </ul>

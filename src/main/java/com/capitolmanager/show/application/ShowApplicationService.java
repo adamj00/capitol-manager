@@ -57,6 +57,15 @@ public class ShowApplicationService {
 			.toList();
 	}
 
+	public List<ShowEventDto> getAllShowsEventDto() {
+
+		return showQueries.getAll().stream()
+			.map(show -> new ShowEventDto(show.getId(),
+				show.getTitle()
+				))
+			.toList();
+	}
+
 	public void saveShow(ShowEditForm form) {
 
 		Assert.notNull(form, "form must not be null");
@@ -106,4 +115,5 @@ public class ShowApplicationService {
 			.anyMatch(showListDto -> showListDto.getTitle().equals(title)
 			&& !showListDto.getId().equals(id));
 	}
+
 }
