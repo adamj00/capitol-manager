@@ -1,0 +1,140 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+
+        <div layout:fragment="content">
+            <div class="container mt-3">
+                <h2 style="text-align: center;">Grupy wydarzeń</h2>
+             
+                <div class="row row-cols-1 row-cols-md-3 g-4" style="margin-top: 40px">
+                    <div th:each="eventGroup : ${eventGroups}" class="col">
+                        <div class="card h-100 position-relative">
+                            <!-- Przycisk usuwania -->
+                            <button class="btn btn-danger position-absolute top-0 end-0 m-2" type="button" th:attr="aria-label='Usuń ' + ${eventGroup.name}, onclick='confirmDelete(' + ${eventGroup.id} + ')'" >
+                                <i class="bi bi-trash"></i>
+                            </button>
+                            <!-- Zawartość karty -->
+                            <div class="card-body">
+                                <h5 class="card-title" th:text="${eventGroup.name}" style="cursor:pointer;" data-bs-toggle="modal" data-bs-target="#editGroupNameModal">Nazwa grupy</h5>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" th:id="'availabilitySwitch-' + ${eventGroup.id}" th:checked="${eventGroup.availabilityActive}">
+                                    <label class="form-check-label" for="availabilitySwitch">Dyspozycyjność aktywna</label>
+                                </div>
+                                <br>
+                                <a th:href="@{/events(eventGroup=${eventGroup.id})}" class="btn btn-primary">
+                                    <i class="bi bi-pencil-square"></i> Edytuj wydarzenia
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col d-flex align-items-center justify-content-start">
+                        <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#addGroupModal" style="width: 60px; height: 60px;">
+                            <i class="bi bi-plus-lg"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+    
+            <!-- Modal for adding new event group -->
+             <!-- Modal for adding new event group -->
+            <div class="modal fade" id="addGroupModal" tabindex="-1" aria-labelledby="addGroupModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addGroupModalLabel">Nowa grupa wydarzeń</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="newEventGroupForm" th:action="@{/eventGroups/new}" method="post">
+                                <div class="mb-3">
+                                    <label for="eventGroupName" class="form-label">Nazwa grupy wydarzeń</label>
+                                    <input type="text" class="form-control" id="eventGroupName" name="name" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Stwórz grupę</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
+            <!-- Modal for editing group name -->
+            <div class="modal fade" id="editGroupNameModal" tabindex="-1" aria-labelledby="editGroupNameModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="editGroupNameModalLabel">Edytuj nazwę grupy wydarzeń</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="editEventGroupNameForm" th:action="@{/eventGroups/changeName}" method="post">
+                                <div class="mb-3">
+                                    <label for="editEventGroupName" class="form-label">Nowa nazwa grupy wydarzeń</label>
+                                    <input type="text" class="form-control" id="editEventGroupName" name="name" required>
+                                    <input type="hidden" id="editEventGroupId" name="id" value="">
+                                </div>
+                                <button type="submit" class="btn btn-primary">Zapisz zmiany</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
+            <script>
+    
+                // Skrypt dla formularza edycji nazwy grupy wydarzeń
+                var editEventGroupNameForm = document.getElementById('editEventGroupNameForm');
+                document.querySelectorAll('.card-title').forEach(function(title) {
+                    title.addEventListener('click', function() {
+                        var currentName = this.textContent;
+                        // Poniższa linijka może być źródłem błędu, jeśli nie znajduje poprawnego elementu z ID grupy
+                        var currentId = this.closest('.card').querySelector('input[type="checkbox"]').id.split('-')[1];
+                        document.getElementById('editEventGroupName').value = currentName;
+                        // Upewnij się, że currentId jest poprawną wartością Long
+                        document.getElementById('editEventGroupId').value = currentId;
+                    });
+                });
+        
+                document.getElementById('newEventGroupForm').addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    var formData = new FormData(this);
+                    fetch(this.getAttribute('action'), {
+                        method: 'POST',
+                        body: formData
+                    }).then(response => {
+                        if(response.ok) {
+                            return response.text();
+                        }
+                        throw new Error('Network response was not ok.');
+                    }).then(html => {
+                        window.location.href = '/eventGroups';
+                    }).catch(error => {
+                        console.error('There has been a problem with your fetch operation:', error);
+                    });
+                });
+
+                document.getElementById('editEventGroupNameForm').addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    var formData = new FormData(this);
+                    fetch(this.getAttribute('action'), {
+                        method: 'POST',
+                        body: formData
+                    }).then(response => {
+                        if(response.ok) {
+                            return response.text();
+                        }
+                        throw new Error('Network response was not ok.');
+                    }).then(html => {
+                        window.location.reload(); // Reload the page to see the updated group name
+                    }).catch(error => {
+                        console.error('There has been a problem with your fetch operation:', error);
+                    });
+                });
+
+                function confirmDelete(groupId) {
+                    if (confirm('Czy na pewno chcesz usunąć grupę wydarzeń? Spowoduje to bezpowrotne usunięcie wszystkich wydarzeń z tej grupy.')) {
+                        window.location = '/eventGroups/delete?id=' + groupId;
+                    }
+                }
+            
+            </script>
+        </div>
+</html>

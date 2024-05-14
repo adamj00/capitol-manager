@@ -1,0 +1,147 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+
+    <div layout:fragment="content">
+        
+        <style>
+            .availability-yes {
+                background-color: rgba(40, 167, 69, 0.5); /* Green with transparency */
+            }
+
+            .availability-no {
+                background-color: rgba(220, 53, 69, 0.5); /* Red with transparency */
+            }
+
+            .availability-none {
+                background-color: #f8f9fa;
+            }
+
+            .calendar-day {
+                min-height: 150px;
+                border: 1px solid #dee2e6;
+                position: relative;
+            }
+            .calendar-day-past {
+                background-color: #e9ecef;
+            }
+            .day-number {
+                position: absolute;
+                top: 5px;
+                right: 5px;
+                font-size: 0.85em;
+                z-index: 2; /* Ensure day numbers are above the tiles */
+            }
+            .availability-tile {
+                border: 1px solid #dee2e6;
+                margin-bottom: .5rem;
+                padding: .5rem;
+                border-radius: .25rem;
+                position: relative; /* For stacking context */
+            }
+            .availability-title {
+                font-size: .9rem;
+                font-weight: bold;
+            }
+            .stage-name {
+                font-size: .75rem;
+                color: #6c757d;
+            }
+            .availability-time {
+                font-size: .95rem; /* Larger font size for better visibility */
+                color: #495057;
+                font-weight: bold; /* Make it bold for better visibility */
+            }
+            .show-duration {
+                font-size: .8rem;
+                color: #6c757d;
+            }
+            .availability-buttons {
+                margin-top: .5rem;
+            }
+        </style>
+
+        <div class="container mt-4">
+
+            <div class="row mb-3 align-items-center">
+                <div class="col-auto">
+                    <!-- Przycisk powrotu -->
+                    <a href="/availabilityList" class="btn btn-secondary mb-3">
+                        <i class="bi bi-arrow-left"></i> Powrót
+                    </a>
+                </div>
+                <div class="col text-center">
+                    <h2 th:text="'Dyspozycyjność: ' + ${title}">May 2024</h2>
+                </div>
+            </div>
+            <div class="row text-center fw-bold">
+                <div class="col">Pon</div>
+                <div class="col">Wt</div>
+                <div class="col">Śr</div>
+                <div class="col">Czw</div>
+                <div class="col">Pt</div>
+                <div class="col">Sob</div>
+                <div class="col">Ndz</div>
+            </div>
+    
+            <div th:each="week : ${weeks}" class="row border-top">
+                <div th:each="dayWithAvailabilities : ${week}" class="col p-2 calendar-day" th:classappend="${dayWithAvailabilities.date != null} ? '' : 'calendar-day-past'">
+                    <div class="day-number" th:text="${dayWithAvailabilities.date != null} ? ${dayWithAvailabilities.date.dayOfMonth} : ''"></div>
+                    <div th:if="${dayWithAvailabilities.date != null}"
+                        th:each="availability : ${dayWithAvailabilities.availabilities}"
+                        th:id="'availability_' + ${availability.id}"
+                        class="availability-tile"
+                        th:classappend="${(availability.available != null) ? (availability.available ? 'availability-yes' : 'availability-no') : 'availability-none'}">
+                        <div class="availability-title" th:text="${availability.showTitle}"></div>
+                        <div class="stage-name" th:text="${availability.stage}"></div> <!-- Stage name -->
+                        <div class="availability-time" th:text="${availability.showStartTime.format(formatter)}"></div>
+                        <div class="show-duration" th:text="'Czas trwania: ' + ${availability.showDurationString}"></div> <!-- Show duration -->
+                        <div class="availability-buttons">
+                            <label>
+                                <input type="radio" th:name="|availability_${availability.id}|" value="false" th:checked="${availability.available == false}" th:onclick="'handleAvailabilityChange(this);'" /> Nie
+                            </label>
+                            <label>
+                                <input type="radio" th:name="|availability_${availability.id}|" value="true" th:checked="${availability.available == true}" th:onclick="'handleAvailabilityChange(this);'" /> Tak
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // Funkcja do obsługi zmiany inputu radio i wysyłania zapytania POST
+            function handleAvailabilityChange(radioInput) {
+                var availabilityId = radioInput.name.split('_')[1];
+                console.log(availabilityId);
+                var value = radioInput.value;
+                var availabilityTile = document.getElementById('availability_' + availabilityId);
+        
+                // Zmiana koloru kafelka
+                availabilityTile.classList.remove('availability-yes', 'availability-no', 'availability-none');
+                if (value === 'true') {
+                    availabilityTile.classList.add('availability-yes');
+                } else {
+                    availabilityTile.classList.add('availability-no');
+                }
+        
+                // Przygotowanie danych do wysłania
+                var formData = new FormData();
+                formData.append('id', availabilityId);
+                formData.append('value', value);
+        
+                // Wysyłanie zapytania POST
+                fetch('/availability/change', {
+                    method: 'POST',
+                    body: formData
+                }).then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                }).then(data => {
+                    console.log('Success:', data);
+                }).catch(error => {
+                    console.error('Error:', error);
+                });
+            }
+        </script>
+    </div>
+</html>

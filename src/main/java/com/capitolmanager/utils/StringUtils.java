@@ -18,4 +18,25 @@ public class StringUtils {
 
 		return string != null && !string.isEmpty();
 	}
+
+	public static String getDurationString(int duration) {
+
+		int hours = duration / 60;
+
+		String result = "";
+
+		if (hours > 0) {
+
+			result += hours + "h ";
+		}
+
+		int minutes = duration % 60;
+
+		if (minutes > 0) {
+
+			result += minutes + "m";
+		}
+
+		return result;
+	}
 }

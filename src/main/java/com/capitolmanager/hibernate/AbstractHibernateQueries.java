@@ -31,7 +31,7 @@ import org.springframework.util.Assert;
 @Service
 public abstract class AbstractHibernateQueries <Entity extends AbstractEntity> {
 
-	private final SessionFactory sessionFactory;
+	protected final SessionFactory sessionFactory;
 	private final Class<Entity> entityClass;
 
 	protected AbstractHibernateQueries(SessionFactory sessionFactory, Class<Entity> entityClass) {

@@ -31,6 +31,7 @@ import com.capitolmanager.user.application.CustomUserDetailsService;
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	private static final String MANAGER = "MANAGER";
+	private static final String EMPLOYEE = "EMPLOYEE";
 
 	private final CustomUserDetailsService customUserDetailsService;
 
@@ -66,6 +67,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 			.antMatchers("/positions**").hasRole(MANAGER)
 			.antMatchers("/stage-edit**").hasRole(MANAGER)
 			.antMatchers("/show-edit**").hasRole(MANAGER)
+			.antMatchers("/events**").hasRole(MANAGER)
+			.antMatchers("/availability**").hasRole(EMPLOYEE)
 
 			.anyRequest().authenticated()
 			.and()
