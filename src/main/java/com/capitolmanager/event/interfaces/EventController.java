@@ -5,6 +5,7 @@ import static com.capitolmanager.utils.DateUtils.formatLocalDateToDDMM;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,8 +50,14 @@ public class EventController {
 	}
 
 	@GetMapping
-	public String getEventsForMonth(Model model,
-		@RequestParam(value = "weekStart", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate weekStart) {
+	public String getEvents(Model model,
+		@RequestParam(value = "weekStart", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate weekStart,
+		@RequestParam( required = false, value = "eventGroup") Long eventGroupId) {
+
+		if (eventGroupId == null) {
+
+			return "redirect:" + "/eventGroups";
+		}
 
 		if (weekStart == null) {
 
@@ -68,10 +75,16 @@ public class EventController {
 		model.addAttribute("nextWeekStart", weekStart.plusWeeks(1));
 		model.addAttribute("weekRange", getCurrentWeekRange(weekStart, weekEnd));
 
-		model.addAttribute("weekDays", eventService.getEventsByWeek(weekStart));
+		model.addAttribute("weekDays", eventService.getEventsByWeek(weekStart, eventGroupId));
 
 		model.addAttribute("shows", showApplicationService.getAllShowsEventDto());
-		model.addAttribute("eventForm", EventFormFactory.getEmptyForm());
+
+		model.addAttribute("weekStart", weekStart);
+		model.addAttribute("eventGroup", eventGroupId);
+
+		EventForm form = EventFormFactory.getEmptyForm();
+		form.setEventGroupId(eventGroupId);
+		model.addAttribute("eventForm", form);
 
 		return VIEW_NAME;
 	}
@@ -89,16 +102,21 @@ public class EventController {
 			eventService.updateEvent(eventForm);
 		}
 
-		return "redirect:" + "events";
+		return "redirect:" + "events?weekStart=" + eventForm.getEventStartTime().format(DateTimeFormatter.ISO_DATE)
+			+ "&eventGroup=" + eventForm.getEventGroupId();
 
 	}
 
+
+
 	@GetMapping("/delete")
-	String deleteEvent(@RequestParam Long id) {
+	String deleteEvent(@RequestParam Long id,
+		@RequestParam String weekStart,
+		@RequestParam Long eventGroup) {
 
 		eventService.deleteEvent(id);
 
-		return "redirect:" + "/events";
+		return "redirect:" + "/events?weekStart=" + weekStart + "&eventGroup=" + eventGroup;
 	}
 
 	@GetMapping("/{id}")

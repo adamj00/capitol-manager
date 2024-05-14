@@ -21,6 +21,7 @@ public class EventForm {
 
 	private Long id;
 	private Long show;
+	private Long eventGroupId;
 	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
 	private LocalDateTime eventStartTime;
 
@@ -30,10 +31,11 @@ public class EventForm {
 
 	public EventForm () {}
 
-	public EventForm(Long id, Long show, LocalDateTime eventStartTime, LocalDateTime shiftStartTime, String notes) {
+	public EventForm(Long id, Long show, Long eventGroupId, LocalDateTime eventStartTime, LocalDateTime shiftStartTime, String notes) {
 
 		this.id = id;
 		this.show = show;
+		this.eventGroupId = eventGroupId;
 		this.eventStartTime = eventStartTime;
 		this.shiftStartTime = shiftStartTime;
 		this.notes = notes;
@@ -87,5 +89,15 @@ public class EventForm {
 	public void setId(Long id) {
 
 		this.id = id;
+	}
+
+	public Long getEventGroupId() {
+
+		return eventGroupId;
+	}
+
+	public void setEventGroupId(Long eventGroupId) {
+
+		this.eventGroupId = eventGroupId;
 	}
 }

@@ -118,4 +118,13 @@ public class UserApplicationService {
 		user.setPassword(passwordEncoder.encode(form.getNewPassword()));
 		userRepository.saveOrUpdate(user);
 	}
+
+	public Long getLoggedUserId() {
+
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		User user = userQueries.findByEmail(authentication.getName())
+			.orElseThrow(() -> new EntityNotFoundException("User " + authentication.getName() + " not found"));
+
+		return user.getId();
+	}
 }

@@ -58,9 +58,16 @@
               <li sec:authorize="hasRole('MANAGER')"><a class="dropdown-item" href="/positions">Stanowiska</a></li>
               <li><a class="dropdown-item" href="/stage-list">Sceny</a></li>
               <li><a class="dropdown-item" href="/show-list">Spektakle</a></li>
-              <li><a class="dropdown-item" href="/events">Wydarzenia</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" href="#">Something else here</a></li>
+              <li sec:authorize="hasRole('MANAGER')"><a class="dropdown-item" href="/eventGroups">Wydarzenia</a></li>
+            </ul>
+          </li>
+
+          <li sec:authorize="hasRole('EMPLOYEE')" class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Bileter
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <li><a class="dropdown-item" href="/availabilityList">Dyspozycyjność</a></li>
             </ul>
           </li>
 
@@ -73,10 +80,6 @@
               <li><hr class="dropdown-divider"></li>
               <li><a class="dropdown-item" href="/logout">Wyloguj</a></li>
             </ul>
-          </li>
-
-          <li class="nav-item">
-            <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
           </li>
         </ul>
         <form class="d-flex">

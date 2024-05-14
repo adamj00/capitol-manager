@@ -33,6 +33,10 @@ public class Event extends AbstractEntity {
 	@JoinColumn(name = "show_id", nullable = false)
 	private Show show;
 
+	@ManyToOne
+	@JoinColumn(name = "event_group_id")
+	private EventGroup eventGroup;
+
 	@Column(name = "event_start_time", nullable = false)
 	private LocalDateTime eventStartTime;
 
@@ -46,17 +50,19 @@ public class Event extends AbstractEntity {
 
 	}
 
-	public Event(Show show, LocalDateTime eventStartTime, LocalDateTime shiftStartTime, String notes) {
+	public Event(Show show, EventGroup eventGroup, LocalDateTime eventStartTime, LocalDateTime shiftStartTime, String notes) {
 
 		this.show = show;
+		this.eventGroup = eventGroup;
 		this.eventStartTime = eventStartTime;
 		this.shiftStartTime = shiftStartTime;
 		this.notes = notes;
 	}
 
-	public void update(Show show, LocalDateTime eventStartTime, LocalDateTime shiftStartTime, String notes) {
+	public void update(Show show, EventGroup eventGroup, LocalDateTime eventStartTime, LocalDateTime shiftStartTime, String notes) {
 
 		this.show = show;
+		this.eventGroup = eventGroup;
 		this.eventStartTime = eventStartTime;
 		this.shiftStartTime = shiftStartTime;
 		this.notes = notes;
@@ -100,5 +106,15 @@ public class Event extends AbstractEntity {
 	public void setNotes(String notes) {
 
 		this.notes = notes;
+	}
+
+	public EventGroup getEventGroup() {
+
+		return eventGroup;
+	}
+
+	public void setEventGroup(EventGroup eventGroup) {
+
+		this.eventGroup = eventGroup;
 	}
 }
