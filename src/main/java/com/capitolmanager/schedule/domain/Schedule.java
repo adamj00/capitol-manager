@@ -10,16 +10,19 @@
  * i w zgodzie z warunkami umowy licencyjnej zawartej z Unity S.A.
  */
 
-package com.capitolmanager.event.domain;
+package com.capitolmanager.schedule.domain;
 
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.capitolmanager.event.domain.EventGroup;
 import com.capitolmanager.hibernate.AbstractEntity;
 
 
@@ -31,7 +34,7 @@ public class Schedule extends AbstractEntity {
 	@JoinColumn(name = "event_group_id")
 	private EventGroup eventGroup;
 
-	@OneToMany(mappedBy = "schedule")
+	@OneToMany(mappedBy = "schedule", fetch = FetchType.EAGER)
 	private Set<EventPositionAssignment> assignments;
 
 	public Schedule(EventGroup eventGroup, Set<EventPositionAssignment> assignments) {

@@ -10,15 +10,16 @@
  * i w zgodzie z warunkami umowy licencyjnej zawartej z Unity S.A.
  */
 
-package com.capitolmanager.event.domain;
+package com.capitolmanager.schedule.domain;
 
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.capitolmanager.event.domain.Event;
 import com.capitolmanager.hibernate.AbstractEntity;
-import com.capitolmanager.position.domain.Position;
+import com.capitolmanager.stage.domain.StagePosition;
 import com.capitolmanager.user.domain.User;
 
 
@@ -36,13 +37,13 @@ public class EventPositionAssignment extends AbstractEntity {
 
 	@ManyToOne
 	@JoinColumn(name = "position_id")
-	private Position position;
+	private StagePosition position;
 
 	@ManyToOne
 	@JoinColumn(name = "user_id")
 	private User user;
 
-	public EventPositionAssignment(Schedule schedule, Event event, Position position, User user) {
+	public EventPositionAssignment(Schedule schedule, Event event, StagePosition position, User user) {
 
 		this.schedule = schedule;
 		this.event = event;
@@ -74,12 +75,12 @@ public class EventPositionAssignment extends AbstractEntity {
 		this.event = event;
 	}
 
-	public Position getPosition() {
+	public StagePosition getPosition() {
 
 		return position;
 	}
 
-	public void setPosition(Position position) {
+	public void setPosition(StagePosition position) {
 
 		this.position = position;
 	}
