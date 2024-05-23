@@ -16,6 +16,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.persistence.EntityNotFoundException;
@@ -29,6 +30,9 @@ import com.capitolmanager.event.domain.Event;
 import com.capitolmanager.event.domain.EventGroup;
 import com.capitolmanager.event.interfaces.EventForm;
 import com.capitolmanager.hibernate.Repository;
+import com.capitolmanager.schedule.application.ScheduleQueries;
+import com.capitolmanager.schedule.domain.EventPositionAssignment;
+import com.capitolmanager.schedule.domain.Schedule;
 import com.capitolmanager.show.application.ShowEventDto;
 import com.capitolmanager.show.application.ShowQueries;
 import com.capitolmanager.utils.DateUtils;
@@ -53,6 +57,8 @@ public class EventApplicationService {
 	@Autowired private AvailabilityApplicationService availabilityApplicationService;
 	@Autowired private EventGroupQueries eventGroupQueries;
 	@Autowired private Repository<EventGroup> eventGroupRepository;
+	@Autowired private Repository<Schedule> scheduleRepository;
+	@Autowired private Repository<EventPositionAssignment> eventPositionAssignmentRepository;
 
 	public List<WeekDayWithEvents> getEventsByWeek(LocalDate weekStart, Long eventGroupId) {
 
@@ -140,14 +146,20 @@ public class EventApplicationService {
 		return eventGroupQueries.getAll().stream()
 			.map(eventGroup -> new EventGroupListDto(eventGroup.getId(),
 				eventGroup.getName(),
-				eventGroup.isAvailabilityActive()))
+				eventGroup.isAvailabilityActive(),
+				eventGroup.getSchedule().isActive()))
 			.toList();
 	}
 
 	public void saveNewGroup(String name) {
 
 		EventGroup eventGroup = new EventGroup(name, Collections.emptySet(), null, false);
+		eventGroupRepository.saveOrUpdate(eventGroup);
 
+		Schedule newSchedule = new Schedule(eventGroup, new HashSet<>());
+		scheduleRepository.saveOrUpdate(newSchedule);
+
+		eventGroup.setSchedule(newSchedule);
 		eventGroupRepository.saveOrUpdate(eventGroup);
 	}
 
@@ -166,11 +178,34 @@ public class EventApplicationService {
 		EventGroup eventGroup = eventGroupQueries.findById(id)
 			.orElseThrow(EntityNotFoundException::new);
 
-		for (Event event : eventGroup.getEvents()) {
+		deleteAssignmentsForEventGroup(eventGroup);
 
-			eventRepository.delete(event);
+		scheduleRepository.delete(eventGroup.getSchedule());
+
+//		for (Event event : eventGroup.getEvents()) {
+//
+//			availabilityApplicationService.deleteAvailabilitiesForEvent(event.getId());
+//
+//			eventRepository.delete(event);
+//		}
+//
+//		eventGroupRepository.delete(eventGroup);
+	}
+
+	public void changeAvailabilityActive(Long eventGroupId, boolean active) {
+
+		EventGroup eventGroup = eventGroupQueries.findById(eventGroupId)
+			.orElseThrow(EntityNotFoundException::new);
+
+		eventGroup.setAvailabilityActive(active);
+
+		eventGroupRepository.saveOrUpdate(eventGroup);
+	}
+
+	private void deleteAssignmentsForEventGroup(EventGroup eventGroup) {
+
+		for (var assignment : eventGroup.getSchedule().getAssignments()) {
+			eventPositionAssignmentRepository.delete(assignment);
 		}
-
-		eventGroupRepository.delete(eventGroup);
 	}
 }

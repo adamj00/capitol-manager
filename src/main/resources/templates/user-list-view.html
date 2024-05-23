@@ -1,34 +1,49 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
 
     <div layout:fragment="content">
-        <h1>Lista pracowników</h1>
 
-        <div sec:authorize="hasRole('MANAGER')" class="mb-3">
-            <a href="/user-edit" class="btn btn-success">Utwórz</a>
-            <a href="#" class="btn btn-info">Generuj raport statystyk</a>
-        </div>
+        <style>
+            .manager-row {
+                background-color: #dff0d8; /* przykładowy zielony kolor tła dla wyróżnienia */
+                font-weight: bold; /* pogrubienie tekstu */
+            }
+        </style>
 
-        <div class="card">
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th scope="col">Imię i nazwisko</th>
-                                <th scope="col">Adres email</th>
-                                <th scope="col">Numer telefonu</th>
-                                <th sec:authorize="hasRole('MANAGER')" scope="col">Akcja</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="user : ${users}">
-                                <td><span th:text="${user.firstName} + ' ' + ${user.lastName}">Imię i nazwisko</span></td>
-                                <td><span th:text="${user.email}">Adres email</span></td>
-                                <td><span th:text="${user.phoneNumber}">Numer telefonu</span></td>
-                                <td sec:authorize="hasRole('MANAGER')"><a th:href="@{/user-edit(id=${user.id})}" class="btn btn-primary btn-sm">Edytuj</a></td>
-                            </tr>
-                        </tbody>
-                    </table>
+        <div class="container mt-3">
+            <h2 style="text-align: center;">Pracownicy</h2>
+            <div sec:authorize="hasRole('MANAGER')" class="mb-3">
+                <a href="/user-edit" class="btn btn-success">
+                    <i class="bi bi-clipboard-plus"></i> Utwórz
+                </a>
+                <a href="#" class="btn btn-info">Generuj raport statystyk</a>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Imię i nazwisko</th>
+                                    <th sec:authorize="hasRole('MANAGER')" scope="col">Adres email</th>
+                                    <th scope="col">Numer telefonu</th>
+                                    <th sec:authorize="hasRole('MANAGER')" scope="col">Rola</th>
+                                    <th sec:authorize="hasRole('MANAGER')" scope="col">Akcja</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="user : ${users}" th:class="${user.role == 'Koordynator'} ? 'manager-row' : null">
+                                    <td><span th:text="${user.firstName} + ' ' + ${user.lastName}">Imię i nazwisko</span></td>
+                                    <td sec:authorize="hasRole('MANAGER')"><span th:text="${user.email}">Adres email</span></td>
+                                    <td><span th:text="${user.phoneNumber}">Numer telefonu</span></td>
+                                    <td sec:authorize="hasRole('MANAGER')"><span th:text="${user.role}">Rola</span></td>
+                                    <td sec:authorize="hasRole('MANAGER')"><a th:href="@{/user-edit(id=${user.id})}" class="btn btn-primary btn-sm">
+                                        <i class="bi bi-pencil"></i> Edytuj</a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>

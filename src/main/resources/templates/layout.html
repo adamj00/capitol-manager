@@ -36,7 +36,7 @@
 
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
-      <a class="navbar-brand" href="/">Bileterzy</a>
+      <a class="navbar-brand" href="/">Capitol Manager</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -59,6 +59,7 @@
               <li><a class="dropdown-item" href="/stage-list">Sceny</a></li>
               <li><a class="dropdown-item" href="/show-list">Spektakle</a></li>
               <li sec:authorize="hasRole('MANAGER')"><a class="dropdown-item" href="/eventGroups">Wydarzenia</a></li>
+
             </ul>
           </li>
 
@@ -67,7 +68,7 @@
               Bileter
             </a>
             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <li><a class="dropdown-item" href="/availabilityList">Dyspozycyjność</a></li>
+              <li><a class="dropdown-item" href="/scheduleList">Grafik</a></li>
             </ul>
           </li>
 

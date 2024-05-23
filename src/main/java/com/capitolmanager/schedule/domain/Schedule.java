@@ -12,9 +12,9 @@
 
 package com.capitolmanager.schedule.domain;
 
-import java.util.List;
 import java.util.Set;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -36,6 +36,9 @@ public class Schedule extends AbstractEntity {
 
 	@OneToMany(mappedBy = "schedule", fetch = FetchType.EAGER)
 	private Set<EventPositionAssignment> assignments;
+
+	@Column
+	private boolean active;
 
 	public Schedule(EventGroup eventGroup, Set<EventPositionAssignment> assignments) {
 
@@ -65,5 +68,15 @@ public class Schedule extends AbstractEntity {
 	public void setAssignments(Set<EventPositionAssignment> assignments) {
 
 		this.assignments = assignments;
+	}
+
+	public boolean isActive() {
+
+		return active;
+	}
+
+	public void setActive(boolean active) {
+
+		this.active = active;
 	}
 }

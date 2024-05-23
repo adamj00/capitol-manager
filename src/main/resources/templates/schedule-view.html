@@ -1,0 +1,100 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+
+    <div layout:fragment="content">
+        
+        <style>
+            
+            .assigned {
+                background-color: rgba(40, 167, 69, 0.5);
+            }
+
+            .not-assigned {
+                background-color: #f8f9fa;
+            }
+
+            .calendar-day {
+                min-height: 150px;
+                border: 1px solid #dee2e6;
+                position: relative;
+            }
+            .calendar-day-past {
+                background-color: #e9ecef;
+            }
+            .day-number {
+                position: absolute;
+                top: 5px;
+                right: 5px;
+                font-size: 0.85em;
+                z-index: 2; /* Ensure day numbers are above the tiles */
+            }
+            .event-tile {
+                border: 1px solid #dee2e6;
+                margin-bottom: .5rem;
+                padding: .5rem;
+                border-radius: .25rem;
+                position: relative; /* For stacking context */
+            }
+            .event-title {
+                font-size: .9rem;
+                font-weight: bold;
+            }
+            .stage-name {
+                font-size: .75rem;
+                color: #6c757d;
+            }
+            .event-time {
+                font-size: .95rem; /* Larger font size for better visibility */
+                color: #495057;
+                font-weight: bold; /* Make it bold for better visibility */
+            }
+            .show-duration {
+                font-size: .8rem;
+                color: #6c757d;
+            }
+            .availability-buttons {
+                margin-top: .5rem;
+            }
+        </style>
+
+        <div class="container mt-4">
+
+            <div class="row mb-3 align-items-center">
+                <div class="col-auto">
+                    <a href="/scheduleList" class="btn btn-secondary mb-3">
+						<i class="bi bi-arrow-left"></i> Powrót
+                    </a>
+                </div>
+                <div class="col text-center">
+                    <h2 th:text="${title}">May 2024</h2>
+                </div>
+            </div>
+            <div class="row text-center fw-bold">
+                <div class="col">Pon</div>
+                <div class="col">Wt</div>
+                <div class="col">Śr</div>
+                <div class="col">Czw</div>
+                <div class="col">Pt</div>
+                <div class="col">Sob</div>
+                <div class="col">Ndz</div>
+            </div>
+    
+            <div th:each="week : ${weeks}" class="row border-top">
+                <div th:each="dayWithEvents : ${week}" class="col p-2 calendar-day" th:classappend="${dayWithEvents.date != null} ? '' : 'calendar-day-past'">
+                    <div class="day-number" th:text="${dayWithEvents.date != null} ? ${dayWithEvents.date.dayOfMonth} : ''"></div>
+                    <div th:if="${dayWithEvents.date != null}"
+                        th:each="event : ${dayWithEvents.events}"
+                        th:id="'event' + ${event.id}"
+                        class="event-tile"
+                        th:classappend="${(event.assigned) ? 'assigned' : 'not-assigned'}">
+                        <div class="event-title" th:text="${event.title}"></div>
+                        <div class="stage-name" th:text="${event.stage}"></div> 
+                        <div class="event-time" th:text="${event.eventStartTime.format(formatter)}"></div>
+                        <div class="show-duration" th:text="'Czas trwania: ' + ${event.duration}"></div>
+                        <div th:if="${event.position != null}" class="event-time" th:text="'Stanowisko: ' + ${event.position}"></div>
+                        <div class="show-duration" th:text="'Koordynator: ' + ${event.manager}"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</html>

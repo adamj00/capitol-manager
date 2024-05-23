@@ -14,19 +14,17 @@ package com.capitolmanager.event.application;
 
 public class EventGroupListDto {
 
-	private Long id;
-	private String name;
-	private boolean availabilityActive;
+	private final Long id;
+	private final String name;
+	private final boolean availabilityActive;
+	private final boolean scheduleActive;
 
-	public EventGroupListDto(Long id, String name, boolean availabilityActive) {
+	public EventGroupListDto(Long id, String name, boolean availabilityActive, boolean scheduleActive) {
 
 		this.id = id;
 		this.name = name;
 		this.availabilityActive = availabilityActive;
-	}
-
-	public EventGroupListDto() {
-
+		this.scheduleActive = scheduleActive;
 	}
 
 	public Long getId() {
@@ -34,19 +32,9 @@ public class EventGroupListDto {
 		return id;
 	}
 
-	public void setId(Long id) {
-
-		this.id = id;
-	}
-
 	public String getName() {
 
 		return name;
-	}
-
-	public void setName(String name) {
-
-		this.name = name;
 	}
 
 	public boolean isAvailabilityActive() {
@@ -54,8 +42,8 @@ public class EventGroupListDto {
 		return availabilityActive;
 	}
 
-	public void setAvailabilityActive(boolean availabilityActive) {
+	public boolean isScheduleActive() {
 
-		this.availabilityActive = availabilityActive;
+		return scheduleActive;
 	}
 }

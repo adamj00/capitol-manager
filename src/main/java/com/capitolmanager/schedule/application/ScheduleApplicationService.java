@@ -17,8 +17,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -29,10 +27,11 @@ import com.capitolmanager.availability.application.AvailabilityQueries;
 import com.capitolmanager.event.application.EventGroupQueries;
 import com.capitolmanager.event.application.EventQueries;
 import com.capitolmanager.event.domain.Event;
-import com.capitolmanager.event.domain.EventGroup;
 import com.capitolmanager.hibernate.Repository;
+import com.capitolmanager.position.application.PositionQueries;
 import com.capitolmanager.schedule.domain.EventPositionAssignment;
 import com.capitolmanager.schedule.domain.Schedule;
+import com.capitolmanager.user.application.UserApplicationService;
 import com.capitolmanager.user.application.UserQueries;
 import com.capitolmanager.user.domain.User;
 import com.capitolmanager.user.domain.UserRole;
@@ -49,6 +48,8 @@ public class ScheduleApplicationService {
 	@Autowired private AvailabilityQueries availabilityQueries;
 	@Autowired private EventQueries eventQueries;
 	@Autowired private Repository<EventPositionAssignment> eventPositionAssignmentRepository;
+	@Autowired private PositionQueries positionQueries;
+	@Autowired private UserApplicationService userApplicationService;
 
 	public List<EmployeeScheduleDto> getEmployees(Long eventGroupId) {
 
@@ -130,6 +131,152 @@ public class ScheduleApplicationService {
 			.getName();
 	}
 
+	public List<PositionAssignmentEventDto> getEventsForAssignment(Long eventGroupId) {
+
+		var eventGroup = eventGroupQueries.findById(eventGroupId)
+			.orElseThrow(EntityNotFoundException::new);
+
+		var schedule = eventGroup.getSchedule();
+
+		return eventGroup.getEvents().stream()
+			.sorted(Comparator.comparing(Event::getEventStartTime))
+			.map(event -> new PositionAssignmentEventDto(event.getId(),
+				schedule.getId(),
+				event.getShow().getTitle(),
+				getPositionsForEvent(event),
+				DateUtils.formatLocalDateTime(event.getEventStartTime())))
+			.toList();
+	}
+
+	public List<PositionAssignmentEmployeeDto> getEmployeesForAssignment(Long eventGroupId) {
+
+		var eventGroup = eventGroupQueries.findById(eventGroupId)
+			.orElseThrow(EntityNotFoundException::new);
+
+		var schedule = eventGroup.getSchedule();
+
+		return userQueries.getAll().stream()
+			.filter(user -> userIsAssignedToAnyEvent(user.getId(), schedule))
+			.map(user -> new PositionAssignmentEmployeeDto(user.getId(),
+				user.toString(),
+				getAssignmentsForUser(user.getId(), schedule),
+				getAssignedEventsForEmployee(user.getId(), schedule)))
+			.sorted(Comparator.comparing(PositionAssignmentEmployeeDto::getName))
+			.toList();
+
+	}
+
+	public void assignPosition(Long scheduleId, Long eventId, Long userId, Long positionId) {
+
+		var schedule = scheduleQueries.findById(scheduleId)
+			.orElseThrow(EntityNotFoundException::new);
+
+		var event = eventQueries.findById(eventId)
+			.orElseThrow(EntityNotFoundException::new);
+
+		var position = positionQueries.findById(positionId)
+			.orElseThrow(EntityNotFoundException::new);
+
+		var user = userQueries.findById(userId)
+			.orElseThrow(EntityNotFoundException::new);
+
+		var assignmentOptional = schedule.getAssignments().stream()
+			.filter(positionAssignment -> positionAssignment.getEvent().getId().equals(eventId))
+			.filter(positionAssignment -> positionAssignment.getUser() != null
+				&& positionAssignment.getUser().getId().equals(userId))
+			.findAny();
+
+		EventPositionAssignment assignment = assignmentOptional.orElse(
+			new EventPositionAssignment(schedule, event, position, user)
+		);
+
+		assignment.setPosition(position);
+		eventPositionAssignmentRepository.saveOrUpdate(assignment);
+
+	}
+
+	public List<AssignmentDto> getAssignments(Long eventGroupId) {
+
+		var schedule = scheduleQueries.findByEventGroup(eventGroupId)
+			.orElseThrow(EntityNotFoundException::new);
+
+		return schedule.getAssignments().stream()
+			.filter(assignment -> assignment.getPosition() != null)
+			.map(assignment -> new AssignmentDto(assignment.getId(),
+				assignment.getUser().getId(),
+				assignment.getEvent().getId(),
+				assignment.getPosition().getId()
+			))
+			.toList();
+	}
+
+	public List<ScheduleListDto> getScheduleList() {
+
+		Long userId = userApplicationService.getLoggedUserId();
+
+		return scheduleQueries.getAll().stream()
+			.filter(Schedule::isActive)
+			.map(schedule -> mapScheduleToListDto(schedule, userId))
+			.toList();
+	}
+
+	public void changeScheduleActivity(Long eventGroupId, boolean value) {
+
+		Schedule schedule = scheduleQueries.findByEventGroup(eventGroupId)
+			.orElseThrow(EntityNotFoundException::new);
+
+		schedule.setActive(value);
+
+		scheduleRepository.saveOrUpdate(schedule);
+	}
+
+
+	private ScheduleListDto mapScheduleToListDto(Schedule schedule, Long userId) {
+
+		return new ScheduleListDto(schedule.getId(),
+			schedule.getEventGroup().getName(),
+			getNumberOfEventsAssignedToUserForSchedule(schedule, userId));
+	}
+
+	private int getNumberOfEventsAssignedToUserForSchedule(Schedule schedule, Long userId) {
+
+		return (int)schedule.getAssignments().stream()
+			.filter(assignment -> assignment.getUser() != null)
+			.filter(assignment -> assignment.getUser().getId().equals(userId))
+			.count();
+	}
+	private List<PositionDto> getPositionsForEvent(Event event) {
+
+		return event
+			.getShow().getStage().getRequiredPositions().stream()
+			.distinct()
+			.map(stagePosition -> new PositionDto(stagePosition.getPosition().getId(),
+				stagePosition.getPosition().getName(),
+				stagePosition.getPosition().getPositionType(),
+				stagePosition.getQuantity()))
+			.toList();
+	}
+
+	private boolean userIsAssignedToAnyEvent(Long userId, Schedule schedule) {
+
+		return schedule.getAssignments().stream()
+			.anyMatch(assignment -> assignment.getUser().getId().equals(userId)
+				&& assignment.getEvent() != null);
+
+	}
+
+	private List<AssignmentDto> getAssignmentsForUser(Long userId, Schedule schedule) {
+
+		return schedule.getAssignments().stream()
+			.filter(assignment -> assignment.getUser().getId().equals(userId))
+			.map(assignment -> new AssignmentDto(assignment.getId(),
+				userId,
+				assignment.getEvent().getId(),
+				assignment.getPosition() == null ? null : assignment.getPosition().getId()
+				))
+			.toList();
+	}
+
 	private Schedule getNewSchedule(Long eventGroupId) {
 
 		var eventGroup = eventGroupQueries.findById(eventGroupId)
@@ -142,21 +289,10 @@ public class ScheduleApplicationService {
 		return schedule;
 	}
 
-	private Set<EventPositionAssignment> initializeEmptyAssignment(Schedule schedule, EventGroup eventGroup) {
-
-		Set<EventPositionAssignment> assignment = eventGroup.getEvents().stream()
-			.flatMap(event -> event.getShow().getStage().getRequiredPositions().stream()
-				.map(position -> new EventPositionAssignment(schedule, event, position, null))
-			)
-			.collect(Collectors.toSet());
-
-		return assignment;
-	}
-
 	private List<Long> getAssignedEventsForEmployee(Long userId, Schedule schedule) {
 
 		return schedule.getAssignments().stream()
-			.filter(assignment -> assignment.getUser().getId() == userId)
+			.filter(assignment -> Objects.equals(assignment.getUser().getId(), userId))
 			.map(assignment -> assignment.getEvent().getId())
 			.toList();
 	}

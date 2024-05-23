@@ -41,4 +41,13 @@ public class DateUtils {
 
 		return weekDay + " " + dayString + " " + time;
 	}
+
+	public static String formatLocalDateTimeWithGodzina(LocalDateTime localDateTime) {
+
+		String dayString = formatLocalDateToDDMM(localDateTime.toLocalDate());
+		String weekDay = weekDays.get(localDateTime.getDayOfWeek().getValue() -1);
+		String time = localDateTime.toLocalTime().toString();
+
+		return weekDay + " " + dayString + " godzina " + time;
+	}
 }

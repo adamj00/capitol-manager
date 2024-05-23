@@ -127,4 +127,10 @@ public class User extends AbstractEntity {
 
 		this.role = role;
 	}
+
+	@Override
+	public String toString() {
+
+		return firstName + " " + lastName;
+	}
 }

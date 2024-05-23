@@ -13,18 +13,20 @@
 package com.capitolmanager.user.application;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityNotFoundException;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import com.capitolmanager.availability.application.AvailabilityInitializer;
 import com.capitolmanager.changepassword.interfaces.PasswordChangeForm;
 import com.capitolmanager.hibernate.Repository;
 import com.capitolmanager.user.domain.User;
@@ -41,12 +43,21 @@ public class UserApplicationService {
 	private final UserQueries userQueries;
 	private final Repository<User> userRepository;
 	private final PasswordEncoder passwordEncoder;
+	private final AvailabilityInitializer availabilityInitializer;
 
-	public UserApplicationService(UserQueries userQueries, Repository<User> userRepository, PasswordEncoder passwordEncoder) {
+
+	@Autowired
+	UserApplicationService(UserQueries userQueries, Repository<User> userRepository, PasswordEncoder passwordEncoder, AvailabilityInitializer availabilityInitializer) {
+
+		Assert.notNull(userQueries, "userQueries must not be null");
+		Assert.notNull(userRepository, "userRepository must not be null");
+		Assert.notNull(passwordEncoder, "passwordEncoder must not be null");
+		Assert.notNull(availabilityInitializer, "availabilityInitializer must not be null");
 
 		this.userQueries = userQueries;
 		this.userRepository = userRepository;
 		this.passwordEncoder = passwordEncoder;
+		this.availabilityInitializer = availabilityInitializer;
 	}
 
 	public List<UserListDto> getAllUsers() {
@@ -54,12 +65,17 @@ public class UserApplicationService {
 		var users = userQueries.getAll();
 
 		return users.stream()
+			.sorted(Comparator
+				.comparing(User::getRole)
+				.thenComparing(User::getLastName)
+				.thenComparing(User::getFirstName))
 			.map(user -> new UserListDto(user.getId(),
 				user.getEmail(),
 				user.getFirstName(),
 				user.getLastName(),
-				user.getPhoneNumber()))
-			.collect(Collectors.toList());
+				user.getPhoneNumber(),
+				user.getRole().getLabel()))
+			.toList();
 	}
 
 	public void saveUser(UserEditForm userEditForm) {
@@ -74,6 +90,11 @@ public class UserApplicationService {
 			passwordEncoder.encode(DEFAULT_PASSWORD));
 
 		userRepository.saveOrUpdate(user);
+
+		user = userQueries.findByEmail(user.getEmail())
+				.orElseThrow(EntityNotFoundException::new);
+
+		availabilityInitializer.initializeAvailabilityForUser(user);
 	}
 
 	public void updateUser(UserEditForm userEditForm) {
@@ -126,5 +147,10 @@ public class UserApplicationService {
 			.orElseThrow(() -> new EntityNotFoundException("User " + authentication.getName() + " not found"));
 
 		return user.getId();
+	}
+
+	public String getLoggedUserName() {
+
+		return userQueries.get(getLoggedUserId()).getFirstName();
 	}
 }

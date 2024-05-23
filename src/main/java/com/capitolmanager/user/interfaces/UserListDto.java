@@ -18,14 +18,16 @@ public class UserListDto {
 	private String firstName;
 	private String lastName;
 	private String phoneNumber;
+	private String role;
 
-	public UserListDto(Long id, String email, String firstName, String lastName, String phoneNumber) {
+	public UserListDto(Long id, String email, String firstName, String lastName, String phoneNumber, String role) {
 
 		this.id = id;
 		this.email = email;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.phoneNumber = phoneNumber;
+		this.role = role;
 	}
 
 	public Long getId() {
@@ -76,5 +78,15 @@ public class UserListDto {
 	public void setPhoneNumber(String phoneNumber) {
 
 		this.phoneNumber = phoneNumber;
+	}
+
+	public String getRole() {
+
+		return role;
+	}
+
+	public void setRole(String role) {
+
+		this.role = role;
 	}
 }

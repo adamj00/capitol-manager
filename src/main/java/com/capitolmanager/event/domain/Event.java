@@ -23,6 +23,7 @@ import javax.persistence.Table;
 
 import com.capitolmanager.hibernate.AbstractEntity;
 import com.capitolmanager.show.domain.Show;
+import com.capitolmanager.utils.DateUtils;
 
 
 @Entity
@@ -116,5 +117,11 @@ public class Event extends AbstractEntity {
 	public void setEventGroup(EventGroup eventGroup) {
 
 		this.eventGroup = eventGroup;
+	}
+
+	@Override
+	public String toString() {
+
+		return DateUtils.formatLocalDateTimeWithGodzina(eventStartTime) + " - " + show.getTitle();
 	}
 }

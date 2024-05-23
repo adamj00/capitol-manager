@@ -36,7 +36,7 @@ public class AvailabilityController {
 	@GetMapping
 	String getView(@RequestParam(required = false) Long eventGroup, Model model) {
 
-		if (eventGroup == null) {
+		if (eventGroup == null || !availabilityApplicationService.isAvailabilityActive(eventGroup)) {
 
 			return "redirect:/availabilityList";
 		}

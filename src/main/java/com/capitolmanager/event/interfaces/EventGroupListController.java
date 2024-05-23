@@ -13,14 +13,17 @@
 package com.capitolmanager.event.interfaces;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.capitolmanager.event.application.EventApplicationService;
+import com.capitolmanager.schedule.application.ScheduleApplicationService;
 
 
 @Controller
@@ -28,6 +31,7 @@ import com.capitolmanager.event.application.EventApplicationService;
 public class EventGroupListController {
 
 	@Autowired private EventApplicationService eventApplicationService;
+	@Autowired private ScheduleApplicationService scheduleApplicationService;
 
 	@GetMapping
 	String getView(Model model) {
@@ -59,5 +63,27 @@ public class EventGroupListController {
 		eventApplicationService.deleteEventGroup(id);
 
 		return "redirect:/eventGroups";
+	}
+
+	@PostMapping("/changeAvailabilityActive")
+	@ResponseBody
+	public ResponseEntity<?> changeAvailabilityActive(
+		@RequestParam("id") Long eventGroupId,
+		@RequestParam("value") boolean value) {
+
+		eventApplicationService.changeAvailabilityActive(eventGroupId, value);
+
+		return ResponseEntity.ok("");
+	}
+
+	@PostMapping("/changeScheduleActive")
+	@ResponseBody
+	public ResponseEntity<?> changeScheduleActive(
+		@RequestParam("id") Long eventGroupId,
+		@RequestParam("value") boolean value) {
+
+		scheduleApplicationService.changeScheduleActivity(eventGroupId, value);
+
+		return ResponseEntity.ok("");
 	}
 }

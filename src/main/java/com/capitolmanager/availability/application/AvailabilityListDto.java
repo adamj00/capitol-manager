@@ -18,13 +18,15 @@ public class AvailabilityListDto {
 	private String name;
 	private long availabilityRate;
 	private String availabilityFulfilment;
+	private boolean availabilityActive;
 
-	public AvailabilityListDto(Long id, String name, long availabilityRate, String availabilityFulfilment) {
+	public AvailabilityListDto(Long id, String name, long availabilityRate, String availabilityFulfilment, boolean availabilityActive) {
 
 		this.id = id;
 		this.name = name;
 		this.availabilityRate = availabilityRate;
 		this.availabilityFulfilment = availabilityFulfilment;
+		this.availabilityActive = availabilityActive;
 	}
 
 	public AvailabilityListDto() {
@@ -69,5 +71,15 @@ public class AvailabilityListDto {
 	public void setAvailabilityFulfilment(String availabilityFulfilment) {
 
 		this.availabilityFulfilment = availabilityFulfilment;
+	}
+
+	public boolean isAvailabilityActive() {
+
+		return availabilityActive;
+	}
+
+	public void setAvailabilityActive(boolean availabilityActive) {
+
+		this.availabilityActive = availabilityActive;
 	}
 }

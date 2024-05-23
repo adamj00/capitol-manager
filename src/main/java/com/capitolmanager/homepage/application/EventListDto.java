@@ -1,5 +1,5 @@
 /*
- * Created on 24-03-2024 13:02 by ajarzabe
+ * Created on 19-05-2024 16:34 by ajarzabe
  *
  * Copyright (c) 2001-2024 Unity S.A.
  * ul. Strzegomska 2-4, 53-611 Wrocław, Poland
@@ -10,21 +10,26 @@
  * i w zgodzie z warunkami umowy licencyjnej zawartej z Unity S.A.
  */
 
-package com.capitolmanager.user.application;
+package com.capitolmanager.homepage.application;
 
-import java.util.List;
-import java.util.Optional;
+public class EventListDto {
 
-import com.capitolmanager.user.domain.User;
+	private Long id;
+	private String label;
 
+	public EventListDto(Long id, String label) {
 
-public interface UserQueries {
+		this.id = id;
+		this.label = label;
+	}
 
-	List<User> getAll();
+	public Long getId() {
 
-	Optional<User> findById(Long id);
+		return id;
+	}
 
-	Optional<User> findByEmail(String email);
+	public String getLabel() {
 
-	User get(Long id);
+		return label;
+	}
 }

@@ -19,7 +19,7 @@ import javax.persistence.Table;
 
 import com.capitolmanager.event.domain.Event;
 import com.capitolmanager.hibernate.AbstractEntity;
-import com.capitolmanager.stage.domain.StagePosition;
+import com.capitolmanager.position.domain.Position;
 import com.capitolmanager.user.domain.User;
 
 
@@ -37,13 +37,13 @@ public class EventPositionAssignment extends AbstractEntity {
 
 	@ManyToOne
 	@JoinColumn(name = "position_id")
-	private StagePosition position;
+	private Position position;
 
 	@ManyToOne
 	@JoinColumn(name = "user_id")
 	private User user;
 
-	public EventPositionAssignment(Schedule schedule, Event event, StagePosition position, User user) {
+	public EventPositionAssignment(Schedule schedule, Event event, Position position, User user) {
 
 		this.schedule = schedule;
 		this.event = event;
@@ -75,12 +75,12 @@ public class EventPositionAssignment extends AbstractEntity {
 		this.event = event;
 	}
 
-	public StagePosition getPosition() {
+	public Position getPosition() {
 
 		return position;
 	}
 
-	public void setPosition(StagePosition position) {
+	public void setPosition(Position position) {
 
 		this.position = position;
 	}
