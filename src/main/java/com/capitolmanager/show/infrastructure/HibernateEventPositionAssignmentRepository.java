@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 
 import com.capitolmanager.hibernate.AbstractHibernateRepository;
 import com.capitolmanager.hibernate.Repository;
-import com.capitolmanager.schedule.domain.EventPositionAssignment;
+import com.capitolmanager.event.domain.EventPositionAssignment;
 
 
 @Service

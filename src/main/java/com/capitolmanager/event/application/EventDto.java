@@ -19,61 +19,15 @@ import com.capitolmanager.show.application.ShowEventDto;
 
 public class EventDto {
 
-	private long id;
-	private ShowEventDto show;
-	private LocalDateTime eventStartTime;
-	private LocalDateTime shiftStartTime;
-	private String notes;
+	private final long id;
+	private final ShowEventDto show;
+	private final LocalDateTime eventStartTime;
 
-	public EventDto () {}
-
-	public EventDto(long id, ShowEventDto show, LocalDateTime eventStartTime, LocalDateTime shiftStartTime, String notes) {
+	public EventDto(long id, ShowEventDto show, LocalDateTime eventStartTime) {
 
 		this.id = id;
 		this.show = show;
 		this.eventStartTime = eventStartTime;
-		this.shiftStartTime = shiftStartTime;
-		this.notes = notes;
-	}
-
-	public ShowEventDto getShow() {
-
-		return show;
-	}
-
-	public void setShow(ShowEventDto show) {
-
-		this.show = show;
-	}
-
-	public LocalDateTime getEventStartTime() {
-
-		return eventStartTime;
-	}
-
-	public void setEventStartTime(LocalDateTime eventStartTime) {
-
-		this.eventStartTime = eventStartTime;
-	}
-
-	public LocalDateTime getShiftStartTime() {
-
-		return shiftStartTime;
-	}
-
-	public void setShiftStartTime(LocalDateTime shiftStartTime) {
-
-		this.shiftStartTime = shiftStartTime;
-	}
-
-	public String getNotes() {
-
-		return notes;
-	}
-
-	public void setNotes(String notes) {
-
-		this.notes = notes;
 	}
 
 	public long getId() {
@@ -81,8 +35,13 @@ public class EventDto {
 		return id;
 	}
 
-	public void setId(long id) {
+	public ShowEventDto getShow() {
 
-		this.id = id;
+		return show;
+	}
+
+	public LocalDateTime getEventStartTime() {
+
+		return eventStartTime;
 	}
 }

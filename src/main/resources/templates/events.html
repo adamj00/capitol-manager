@@ -99,7 +99,6 @@
                                     <h5 class="card-title" th:text="${event.show.title}">Spektakl</h5>
                                     
                                     <p class="card-text"><strong>Rozpoczęcie wydarzenia:</strong> <span th:text="${#temporals.format(event.eventStartTime, 'HH:mm')}">Rozpoczęcie wydarzenia</span></p>
-                                    <!-- <p class="card-text"><strong>Rozpoczęcie zmiany:</strong> <span th:text="${#temporals.format(event.shiftStartTime, 'HH:mm')}">Rozpoczęcie zmiany</span></p> -->
                                 </div>
                                 <div class="card-buttons">
                                     <a href="#" class="edit-link" data-bs-toggle="modal" data-bs-target="#editEventModal" th:attr="data-event-id=${event.id}, data-event='${event}'">
@@ -146,14 +145,7 @@
                                 <label for="eventStartTime" class="form-label">Rozpoczęcie wydarzenia</label>
                                 <input type="datetime-local" id="eventStartTime" class="form-control" th:field="*{eventStartTime}" required>
                             </div>
-                            <div class="mb-3">
-                                <!-- <label for="shiftStartTime" class="form-label">Start zmiany</label> -->
-                                <input type="hidden" id="shiftStartTime" class="form-control" th:field="*{shiftStartTime}">
-                            </div>
-                            <div class="mb-3">
-                                <label for="notes" class="form-label">Uwagi</label>
-                                <textarea id="notes" class="form-control" th:field="*{notes}"></textarea>
-                            </div>
+        
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
                                 <button type="submit" class="btn btn-primary">
@@ -190,11 +182,9 @@
             var button = event.relatedTarget; // Przycisk, który wywołał modal
             var eventDate = button.getAttribute('data-event-date'); // Pobierz datę z atrybutu przycisku
             var eventStartTimeInput = document.getElementById('eventStartTime');
-            var shiftStartTimeInput = document.getElementById('shiftStartTime');
 
             if (eventDate) {
-                eventStartTimeInput.value = eventDate + 'T18:00'; // Możesz dostosować czas, jeśli jest potrzebny
-                shiftStartTimeInput.value = eventDate + 'T00:00'; // Możesz dostosować czas, jeśli jest potrzebny
+                eventStartTimeInput.value = eventDate + 'T18:00'; 
             }
         });
     });
@@ -212,8 +202,6 @@
                     // Wypełniamy formularz danymi
                     document.getElementById('id').value = eventForm.id;
                     document.getElementById('eventStartTime').value = eventForm.eventStartTime.replace(' ', 'T');
-                    document.getElementById('shiftStartTime').value = eventForm.shiftStartTime.replace(' ', 'T');
-                    document.getElementById('notes').value = eventForm.notes;
                     document.getElementById('eventGroupId').value = eventForm.eventGroupId;
                     
                     // Ustawiamy odpowiedni spektakl jako wybrany
@@ -234,7 +222,6 @@
             var eventDate = button.getAttribute('data-event-date');
             if (eventDate) {
                 document.getElementById('eventStartTime').value = eventDate + 'T18:00';
-                document.getElementById('shiftStartTime').value = eventDate + 'T00:00';
             }
         }
     });

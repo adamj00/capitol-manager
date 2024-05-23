@@ -1,14 +1,3 @@
-/*
- * Created on 22-05-2024 19:35 by ajarzabe
- *
- * Copyright (c) 2001-2024 Unity S.A.
- * ul. Strzegomska 2-4, 53-611 Wrocław, Poland
- * Wszelkie prawa zastrzeżone
- *
- * Niniejsze oprogramowanie jest własnością Unity S.A.
- * Wykorzystanie niniejszego oprogramowania jest możliwe tylko na podstawie
- * i w zgodzie z warunkami umowy licencyjnej zawartej z Unity S.A.
- */
 
 package com.capitolmanager.schedule.application;
 
@@ -20,16 +9,15 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import javax.persistence.EntityNotFoundException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import com.capitolmanager.event.application.EventGroupQueries;
 import com.capitolmanager.event.domain.Event;
+import com.capitolmanager.event.domain.EventGroup;
+import com.capitolmanager.event.domain.EventPositionAssignment;
 import com.capitolmanager.position.domain.Position;
-import com.capitolmanager.schedule.domain.EventPositionAssignment;
-import com.capitolmanager.schedule.domain.Schedule;
 import com.capitolmanager.user.application.UserApplicationService;
 import com.capitolmanager.utils.StringUtils;
 
@@ -37,29 +25,27 @@ import com.capitolmanager.utils.StringUtils;
 @Service
 public class ScheduleViewService {
 
-	private final ScheduleQueries scheduleQueries;
 	private final UserApplicationService userApplicationService;
+	private final EventGroupQueries eventGroupQueries;
 
 	@Autowired
-	ScheduleViewService(ScheduleQueries scheduleQueries, UserApplicationService userApplicationService) {
+	ScheduleViewService(UserApplicationService userApplicationService, EventGroupQueries eventGroupQueries) {
 
-		Assert.notNull(scheduleQueries, "scheduleQueries must not be null");
 		Assert.notNull(userApplicationService, "userApplicationService must not be null");
+		Assert.notNull(eventGroupQueries, "eventGroupQueries must not be null");
 
-		this.scheduleQueries = scheduleQueries;
 		this.userApplicationService = userApplicationService;
+		this.eventGroupQueries = eventGroupQueries;
 	}
 
-	public List<List<DayWithEvents>> getEventsForScheduleViewByWeeks(Long scheduleId, boolean showOnlyUsers) {
+	public List<List<DayWithEvents>> getEventsForScheduleViewByWeeks(Long eventGroupId, boolean showOnlyUsers) {
 
-		Schedule schedule = scheduleQueries.findById(scheduleId)
-			.orElseThrow(EntityNotFoundException::new);
-
+		EventGroup eventGroup = eventGroupQueries.get(eventGroupId);
 		Long userId = userApplicationService.getLoggedUserId();
 
-		List<EventScheduleViewDto> events = schedule.getEventGroup().getEvents().stream()
-			.filter(event -> !showOnlyUsers || isUserAssignedToEvent(schedule, event, userId))
-			.map(event -> mapEventToDto(schedule, event, userId))
+		List<EventScheduleViewDto> events = eventGroup.getEvents().stream()
+			.filter(event -> !showOnlyUsers || isUserAssignedToEvent(event, userId))
+			.map(event -> mapEventToDto(event, userId))
 			.sorted(Comparator.comparing(EventScheduleViewDto::getEventStartTime))
 			.toList();
 
@@ -75,7 +61,7 @@ public class ScheduleViewService {
 				DayWithEvents dayWithEvents = new DayWithEvents();
 				if (!current.isAfter(lastOfMonth)) {
 					if (current.isBefore(firstOfMonth)) {
-						dayWithEvents.setDate(null);
+						dayWithEvents.setDate(current);
 					}
 					else {
 						dayWithEvents.setDate(current);
@@ -83,7 +69,7 @@ public class ScheduleViewService {
 					}
 				}
 				else {
-					dayWithEvents.setDate(null);
+					dayWithEvents.setDate(current);
 				}
 				week.add(dayWithEvents);
 				current = current.plusDays(1);
@@ -94,16 +80,15 @@ public class ScheduleViewService {
 		return weeks;
 	}
 
-	public String getTitle(Long scheduleId) {
+	public String getTitle(Long eventGroupId) {
 
-		return scheduleQueries.findById(scheduleId)
-			.orElseThrow(EntityNotFoundException::new)
-			.getEventGroup().getName();
+		return eventGroupQueries.get(eventGroupId)
+			.getName();
 	}
 
-	private EventScheduleViewDto mapEventToDto(Schedule schedule, Event event, Long userId) {
+	private EventScheduleViewDto mapEventToDto(Event event, Long userId) {
 
-		boolean isUserAssignedToEvent = isUserAssignedToEvent(schedule, event, userId);
+		boolean isUserAssignedToEvent = isUserAssignedToEvent(event, userId);
 
 		return new EventScheduleViewDto(event.getId(),
 			event.getShow().getTitle(),
@@ -112,14 +97,13 @@ public class ScheduleViewService {
 			event.getEventStartTime(),
 			StringUtils.getDurationString(event.getShow().getDuration()),
 			isUserAssignedToEvent,
-			isUserAssignedToEvent ? getPositionForUser(schedule, event, userId) : null);
+			isUserAssignedToEvent ? getPositionForUser(event, userId) : null);
 	}
 
-	private boolean isUserAssignedToEvent(Schedule schedule, Event event, Long userId) {
+	private boolean isUserAssignedToEvent(Event event, Long userId) {
 
-		return schedule.getAssignments().stream()
-			.filter(assignment -> assignment.getUser().getId().equals(userId))
-			.anyMatch(assignment -> assignment.getEvent().equals(event));
+		return event.getAssignments().stream()
+			.anyMatch(assignment -> assignment.getUser().getId().equals(userId));
 	}
 
 	private List<EventScheduleViewDto> getEventsForDay(List<EventScheduleViewDto> events, LocalDate date) {
@@ -130,11 +114,10 @@ public class ScheduleViewService {
 			.toList();
 	}
 
-	private String getPositionForUser(Schedule schedule, Event event, Long userId) {
+	private String getPositionForUser(Event event, Long userId) {
 
-		Optional<Position> position = schedule.getAssignments().stream()
+		Optional<Position> position = event.getAssignments().stream()
 			.filter(assignment -> assignment.getUser().getId().equals(userId))
-			.filter(assignment -> assignment.getEvent().equals(event))
 			.map(EventPositionAssignment::getPosition)
 			.filter(Objects::nonNull)
 			.findFirst();

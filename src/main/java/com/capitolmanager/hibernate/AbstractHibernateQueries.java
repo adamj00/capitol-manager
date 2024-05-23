@@ -17,6 +17,7 @@ import static com.capitolmanager.hibernate.AbstractEntity.D_ID;
 import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -78,5 +79,11 @@ public abstract class AbstractHibernateQueries <Entity extends AbstractEntity> {
 
 			return Optional.ofNullable(entity);
 		}
+	}
+
+	public Entity get(Long id) {
+
+		return findById(id)
+			.orElseThrow(EntityNotFoundException::new);
 	}
 }

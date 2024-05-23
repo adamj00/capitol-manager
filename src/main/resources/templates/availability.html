@@ -4,11 +4,11 @@
         
         <style>
             .availability-yes {
-                background-color: rgba(40, 167, 69, 0.5); /* Green with transparency */
+                background-color: rgba(40, 167, 69, 0.5);
             }
 
             .availability-no {
-                background-color: rgba(220, 53, 69, 0.5); /* Red with transparency */
+                background-color: rgba(220, 53, 69, 0.5); 
             }
 
             .availability-none {
@@ -19,6 +19,10 @@
                 min-height: 150px;
                 border: 1px solid #dee2e6;
                 position: relative;
+                transition: background-color 0.3s ease;
+            }
+            .calendar-day:hover {
+                background-color: #f8f9fa;
             }
             .calendar-day-past {
                 background-color: #e9ecef;
@@ -28,34 +32,65 @@
                 top: 5px;
                 right: 5px;
                 font-size: 0.85em;
-                z-index: 2; /* Ensure day numbers are above the tiles */
+                z-index: 2;
+                background-color: white;
+                padding: 2px 5px;
+                border-radius: 50%;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             }
             .availability-tile {
                 border: 1px solid #dee2e6;
                 margin-bottom: .5rem;
                 padding: .5rem;
                 border-radius: .25rem;
-                position: relative; /* For stacking context */
+                position: relative;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                transition: transform 0.2s ease, box-shadow 0.2s ease;
+            }
+            .availability-tile:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             }
             .availability-title {
-                font-size: .9rem;
-                font-weight: bold;
+                font-size: 1rem;
+                font-weight: 600;
+                color: #32325d;
             }
             .stage-name {
-                font-size: .75rem;
+                font-size: 0.85rem;
                 color: #6c757d;
             }
             .availability-time {
-                font-size: .95rem; /* Larger font size for better visibility */
+                font-size: 1rem;
                 color: #495057;
-                font-weight: bold; /* Make it bold for better visibility */
+                font-weight: 600;
             }
             .show-duration {
-                font-size: .8rem;
+                font-size: 0.85rem;
                 color: #6c757d;
             }
             .availability-buttons {
                 margin-top: .5rem;
+            }
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 0 15px;
+            }
+            .btn-secondary {
+                background-color: #6c757d;
+                border: none;
+                padding: 0.75rem 1.25rem;
+                border-radius: 0.3rem;
+                color: white;
+                text-decoration: none;
+                transition: background-color 0.3s ease;
+            }
+            .btn-secondary:hover {
+                background-color: #5a6268;
+            }
+            .btn-secondary i {
+                margin-right: 0.5rem;
             }
         </style>
 
@@ -63,8 +98,8 @@
 
             <div class="row mb-3 align-items-center">
                 <div class="col-auto">
-                    <!-- Przycisk powrotu -->
-                    <a href="/availabilityList" class="btn btn-secondary mb-3">
+
+                    <a href="/scheduleList" class="btn btn-secondary mb-3">
 						<i class="bi bi-arrow-left"></i> Powrót
                     </a>
                 </div>
@@ -108,14 +143,13 @@
         </div>
 
         <script>
-            // Funkcja do obsługi zmiany inputu radio i wysyłania zapytania POST
+     
             function handleAvailabilityChange(radioInput) {
                 var availabilityId = radioInput.name.split('_')[1];
                 console.log(availabilityId);
                 var value = radioInput.value;
                 var availabilityTile = document.getElementById('availability_' + availabilityId);
         
-                // Zmiana koloru kafelka
                 availabilityTile.classList.remove('availability-yes', 'availability-no', 'availability-none');
                 if (value === 'true') {
                     availabilityTile.classList.add('availability-yes');
@@ -123,12 +157,11 @@
                     availabilityTile.classList.add('availability-no');
                 }
         
-                // Przygotowanie danych do wysłania
                 var formData = new FormData();
                 formData.append('id', availabilityId);
                 formData.append('value', value);
         
-                // Wysyłanie zapytania POST
+
                 fetch('/availability/change', {
                     method: 'POST',
                     body: formData

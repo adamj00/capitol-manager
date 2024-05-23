@@ -12,8 +12,6 @@
 
 package com.capitolmanager.schedule.interfaces;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -24,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.capitolmanager.schedule.application.PositionDto;
 import com.capitolmanager.schedule.application.ScheduleApplicationService;
 
 
@@ -32,9 +29,8 @@ import com.capitolmanager.schedule.application.ScheduleApplicationService;
 @RequestMapping("/positionAssigning")
 public class PositionAssigningController {
 
-
+	private static final String VIEW_NAME = "position-assignment-view";
 	@Autowired private ScheduleApplicationService scheduleApplicationService;
-
 
 	@GetMapping
 	String getView(Model model, @RequestParam("eventGroup") Long eventGroupId) {
@@ -49,17 +45,16 @@ public class PositionAssigningController {
 		model.addAttribute("assignedPositions", scheduleApplicationService.getAssignments(eventGroupId));
 		model.addAttribute("title", scheduleApplicationService.getEventGroupName(eventGroupId));
 
-		return "position-assignment-view";
+		return VIEW_NAME;
 	}
 
 	@PostMapping("/assignPosition")
 	@ResponseBody
-	ResponseEntity<?> assignPosition(@RequestParam Long scheduleId,
-		@RequestParam Long eventId,
+	ResponseEntity<String> assignPosition(@RequestParam Long eventId,
 		@RequestParam Long userId,
 		@RequestParam Long positionId) {
 
-		scheduleApplicationService.assignPosition(scheduleId, eventId, userId, positionId);
+		scheduleApplicationService.assignPosition(eventId, userId, positionId);
 
 		return ResponseEntity.ok("");
 	}

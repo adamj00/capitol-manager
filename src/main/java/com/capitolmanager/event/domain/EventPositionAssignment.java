@@ -10,7 +10,7 @@
  * i w zgodzie z warunkami umowy licencyjnej zawartej z Unity S.A.
  */
 
-package com.capitolmanager.schedule.domain;
+package com.capitolmanager.event.domain;
 
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -18,6 +18,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.capitolmanager.event.domain.Event;
+import com.capitolmanager.event.domain.EventGroup;
 import com.capitolmanager.hibernate.AbstractEntity;
 import com.capitolmanager.position.domain.Position;
 import com.capitolmanager.user.domain.User;
@@ -26,10 +27,6 @@ import com.capitolmanager.user.domain.User;
 @Entity
 @Table(name = "event_position_assignments")
 public class EventPositionAssignment extends AbstractEntity {
-
-	@ManyToOne
-	@JoinColumn(name = "schedule_id")
-	private Schedule schedule;
 
 	@ManyToOne
 	@JoinColumn(name = "event_id")
@@ -43,9 +40,8 @@ public class EventPositionAssignment extends AbstractEntity {
 	@JoinColumn(name = "user_id")
 	private User user;
 
-	public EventPositionAssignment(Schedule schedule, Event event, Position position, User user) {
+	public EventPositionAssignment(Event event, Position position, User user) {
 
-		this.schedule = schedule;
 		this.event = event;
 		this.position = position;
 		this.user = user;
@@ -53,16 +49,6 @@ public class EventPositionAssignment extends AbstractEntity {
 
 	public EventPositionAssignment() {
 
-	}
-
-	public Schedule getSchedule() {
-
-		return schedule;
-	}
-
-	public void setSchedule(Schedule schedule) {
-
-		this.schedule = schedule;
 	}
 
 	public Event getEvent() {

@@ -7,17 +7,15 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
-import javax.persistence.EntityNotFoundException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import com.capitolmanager.event.application.EventGroupQueries;
 import com.capitolmanager.event.application.EventQueries;
 import com.capitolmanager.event.domain.Event;
-import com.capitolmanager.schedule.application.ScheduleQueries;
-import com.capitolmanager.schedule.domain.EventPositionAssignment;
-import com.capitolmanager.schedule.domain.Schedule;
+import com.capitolmanager.event.domain.EventGroup;
+import com.capitolmanager.event.domain.EventPositionAssignment;
 import com.capitolmanager.user.application.UserApplicationService;
 import com.capitolmanager.utils.DateUtils;
 import com.capitolmanager.utils.StringUtils;
@@ -26,30 +24,31 @@ import com.capitolmanager.utils.StringUtils;
 @Service
 public class HomepageService {
 
-	private final ScheduleQueries scheduleQueries;
 	private final UserApplicationService userApplicationService;
 	private final EventQueries eventQueries;
+	private final EventGroupQueries eventGroupQueries;
 
 
 	@Autowired
-	HomepageService(ScheduleQueries scheduleQueries, UserApplicationService userApplicationService, EventQueries eventQueries) {
+	HomepageService(UserApplicationService userApplicationService, EventQueries eventQueries, EventGroupQueries eventGroupQueries) {
 
-		Assert.notNull(scheduleQueries, "scheduleQueries must not be null");
 		Assert.notNull(userApplicationService, "userApplicationService must not be null");
 		Assert.notNull(eventQueries, "eventQueries must not be null");
+		Assert.notNull(eventGroupQueries, "eventGroupQueries must not be null");
 
-		this.scheduleQueries = scheduleQueries;
 		this.userApplicationService = userApplicationService;
 		this.eventQueries = eventQueries;
+		this.eventGroupQueries = eventGroupQueries;
 	}
 
 	public List<EventListDto> getCloseEventsForLoggedUser() {
 
 		Long userId = userApplicationService.getLoggedUserId();
 
-		return scheduleQueries.getAll().stream()
-			.filter(Schedule::isActive)
-			.flatMap(schedule -> schedule.getAssignments().stream())
+		return eventGroupQueries.getAll().stream()
+			.filter(EventGroup::isActive)
+			.flatMap(eventGroup -> eventGroup.getEvents().stream())
+			.flatMap(event -> event.getAssignments().stream())
 			.filter(assignment -> assignment.getUser().getId().equals(userId))
 			.map(EventPositionAssignment::getEvent)
 			.filter(event -> isFromCurrentWeek(event.getEventStartTime().toLocalDate()))
@@ -78,7 +77,7 @@ public class HomepageService {
 			event.getShow().getTitle(),
 			DateUtils.formatLocalDateTimeWithGodzina(event.getEventStartTime()),
 			StringUtils.getDurationString(event.getShow().getDuration()),
-			getPositionNameForUserAndEvent(userId, event.getId()),
+			getPositionNameForUserAndEvent(userId, event),
 			event.getShow().getStage().getName(),
 			event.toString()
 		);
@@ -93,15 +92,10 @@ public class HomepageService {
 		return (localDate.isAfter(today) || localDate.isEqual(today)) && !localDate.isBefore(startOfWeek) && !localDate.isAfter(endOfWeek);
 	}
 
-	private String getPositionNameForUserAndEvent(Long userId, Long eventId) {
+	private String getPositionNameForUserAndEvent(Long userId, Event event) {
 
-		Schedule schedule = eventQueries.findById(eventId)
-			.orElseThrow(EntityNotFoundException::new)
-			.getEventGroup().getSchedule();
-
-		return schedule.getAssignments().stream()
+		return event.getAssignments().stream()
 			.filter(assignment -> assignment.getUser().getId().equals(userId))
-			.filter(assignment -> assignment.getEvent().getId().equals(eventId))
 			.filter(assignment -> assignment.getPosition() != null)
 			.map(assignment -> assignment.getPosition().getName())
 			.findFirst()

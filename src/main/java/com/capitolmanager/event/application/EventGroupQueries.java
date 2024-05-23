@@ -23,4 +23,6 @@ public interface EventGroupQueries {
 	Optional<EventGroup> findById(Long id);
 
 	List<EventGroup> getAll();
+
+	EventGroup get(Long id);
 }

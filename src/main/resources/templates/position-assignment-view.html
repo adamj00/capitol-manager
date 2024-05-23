@@ -92,7 +92,7 @@
                                 th:class="${#lists.contains(employee.assignedEvents, event.id) ? 'active-cell' : 'inactive-cell'}">
                                 <div class="select-container">
                                     <select class="position-select"
-                                            th:data-user-id="${employee.id}" th:data-event-id="${event.id}" th:data-schedule-id="${event.scheduleId}"
+                                            th:data-user-id="${employee.id}" th:data-event-id="${event.id}"
                                             th:id="'event' + ${eventStat.index} + '_employee' + ${empStat.index}"
                                             th:name="'event' + ${eventStat.index}"
                                             th:if="${#lists.contains(employee.assignedEvents, event.id)}">
@@ -118,12 +118,11 @@
             document.addEventListener('DOMContentLoaded', function () {
         
                 // Funkcja do wysyłania żądania POST i aktualizacji list rozwijanych
-                function assignPosition(userId, eventId, scheduleId, positionId, selectElement) {
+                function assignPosition(userId, eventId, positionId, selectElement) {
                     // Przygotuj dane do wysłania w żądaniu
                     const formData = new FormData();
                     formData.append('userId', userId);
                     formData.append('eventId', eventId);
-                    formData.append('scheduleId', scheduleId);
                     formData.append('positionId', positionId);
         
                     // Wyślij żądanie POST
@@ -146,11 +145,10 @@
                         // Pobierz ID użytkownika, wydarzenia, harmonogramu i stanowiska z atrybutów danych
                         var userId = this.getAttribute('data-user-id');
                         var eventId = this.getAttribute('data-event-id');
-                        var scheduleId = this.getAttribute('data-schedule-id');
                         var positionId = this.value;
         
                         // Wykonaj funkcję przypisania stanowiska i odśwież listy rozwijane
-                        assignPosition(userId, eventId, scheduleId, positionId, this);
+                        assignPosition(userId, eventId, positionId, this);
                     });
                 });
 

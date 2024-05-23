@@ -12,25 +12,26 @@
 
 package com.capitolmanager.schedule.application;
 
+import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.persistence.EntityNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import com.capitolmanager.availability.application.AvailabilityQueries;
 import com.capitolmanager.event.application.EventGroupQueries;
 import com.capitolmanager.event.application.EventQueries;
 import com.capitolmanager.event.domain.Event;
+import com.capitolmanager.event.domain.EventGroup;
+import com.capitolmanager.event.domain.EventPositionAssignment;
 import com.capitolmanager.hibernate.Repository;
 import com.capitolmanager.position.application.PositionQueries;
-import com.capitolmanager.schedule.domain.EventPositionAssignment;
-import com.capitolmanager.schedule.domain.Schedule;
 import com.capitolmanager.user.application.UserApplicationService;
 import com.capitolmanager.user.application.UserQueries;
 import com.capitolmanager.user.domain.User;
@@ -41,29 +42,57 @@ import com.capitolmanager.utils.DateUtils;
 @Service
 public class ScheduleApplicationService {
 
-	@Autowired private Repository<Schedule> scheduleRepository;
-	@Autowired private ScheduleQueries scheduleQueries;
-	@Autowired private EventGroupQueries eventGroupQueries;
-	@Autowired private UserQueries userQueries;
-	@Autowired private AvailabilityQueries availabilityQueries;
-	@Autowired private EventQueries eventQueries;
-	@Autowired private Repository<EventPositionAssignment> eventPositionAssignmentRepository;
-	@Autowired private PositionQueries positionQueries;
-	@Autowired private UserApplicationService userApplicationService;
+	private final EventGroupQueries eventGroupQueries;
+	private final UserQueries userQueries;
+	private final AvailabilityQueries availabilityQueries;
+	private final EventQueries eventQueries;
+	private final Repository<EventPositionAssignment> eventPositionAssignmentRepository;
+	private final PositionQueries positionQueries;
+	private final UserApplicationService userApplicationService;
+	private final Repository<Event> eventRepository;
+	private final Repository<EventGroup> eventGroupRepository;
+
+
+	@Autowired
+	ScheduleApplicationService(EventGroupQueries eventGroupQueries,
+		UserQueries userQueries,
+		AvailabilityQueries availabilityQueries,
+		EventQueries eventQueries,
+		Repository<EventPositionAssignment> eventPositionAssignmentRepository,
+		PositionQueries positionQueries,
+		UserApplicationService userApplicationService,
+		Repository<Event> eventRepository,
+		Repository<EventGroup> eventGroupRepository) {
+
+		Assert.notNull(eventGroupQueries, "eventGroupQueries must not be null");
+		Assert.notNull(userQueries, "userQueries must not be null");
+		Assert.notNull(availabilityQueries, "availabilityQueries must not be null");
+		Assert.notNull(eventQueries, "eventQueries must not be null");
+		Assert.notNull(eventPositionAssignmentRepository, "eventPositionAssignmentRepository must not be null");
+		Assert.notNull(positionQueries, "positionQueries must not be null");
+		Assert.notNull(userApplicationService, "userApplicationService must not be null");
+		Assert.notNull(eventRepository, "eventRepository must not be null");
+		Assert.notNull(eventGroupRepository, "eventGroupRepository must not be null");
+
+		this.eventGroupQueries = eventGroupQueries;
+		this.userQueries = userQueries;
+		this.availabilityQueries = availabilityQueries;
+		this.eventQueries = eventQueries;
+		this.eventPositionAssignmentRepository = eventPositionAssignmentRepository;
+		this.positionQueries = positionQueries;
+		this.userApplicationService = userApplicationService;
+		this.eventRepository = eventRepository;
+		this.eventGroupRepository = eventGroupRepository;
+	}
 
 	public List<EmployeeScheduleDto> getEmployees(Long eventGroupId) {
 
-		Schedule schedule = scheduleQueries.findByEventGroup(eventGroupId)
-			.orElse(getNewSchedule(eventGroupId));
-
-		if (schedule.getId() == null) {
-			scheduleRepository.saveOrUpdate(schedule);
-		}
+		EventGroup eventGroup = eventGroupQueries.get(eventGroupId);
 
 		return userQueries.getAll().stream()
 			.filter(user -> user.getRole() == UserRole.EMPLOYEE)
 			.map(user -> new EmployeeScheduleDto(user.getId(), user.getFirstName() + " " + user.getLastName(),
-				getAssignedEventsForEmployee(user.getId(), schedule),
+				getAssignedEventsForEmployee(user.getId(), eventGroup),
 				getAvailability(eventGroupId, user.getId())
 			))
 			.sorted(Comparator.comparing(EmployeeScheduleDto::getName))
@@ -72,54 +101,44 @@ public class ScheduleApplicationService {
 
 	public List<EventScheduleDto> getEvents(Long eventGroupId) {
 
-		Schedule schedule = scheduleQueries.findByEventGroup(eventGroupId)
-			.orElseThrow(EntityNotFoundException::new);
+		EventGroup eventGroup = eventGroupQueries.get(eventGroupId);
 
-		return eventGroupQueries.findById(schedule.getEventGroup().getId())
-			.orElseThrow(EntityNotFoundException::new)
-			.getEvents().stream()
+		return eventGroup.getEvents().stream()
 			.sorted(Comparator.comparing(Event::getEventStartTime))
-			.map(event -> new EventScheduleDto(event.getId(), schedule.getId(), event.getShow().getTitle(),
-				getAssignedEmployeesCount(schedule, event.getId()),
+			.map(event -> new EventScheduleDto(event.getId(), event.getShow().getTitle(),
+				getAssignedEmployeesCount(event),
 				getRequiredEmployeesCount(event),
 				DateUtils.formatLocalDateTime(event.getEventStartTime())))
 			.toList();
 	}
 
-	public void updateSchedule(Long userId, Long eventId, Long scheduleId, boolean value) {
+	public void updateSchedule(Long userId, Long eventId, boolean value) {
 
-		Schedule schedule = scheduleQueries.findById(scheduleId)
-			.orElseThrow(EntityNotFoundException::new);
+		Event event = eventQueries.get(eventId);
 
-		Optional<EventPositionAssignment> userAssignment = schedule.getAssignments().stream()
+		Optional<EventPositionAssignment> userAssignment = event.getAssignments().stream()
 			.filter(assignment -> assignment.getUser().getId().equals(userId))
-			.filter(assignment -> assignment.getEvent().getId().equals(eventId))
 			.findAny();
 
 		if (value && userAssignment.isEmpty()) {
 
-			Event event = eventQueries.findById(eventId)
-				.orElseThrow(EntityNotFoundException::new);
-
 			User user = userQueries.findById(userId)
 				.orElseThrow(EntityNotFoundException::new);
 
-			var eventPositionAssignment = new EventPositionAssignment(schedule, event, null, user);
-			schedule.getAssignments().add(eventPositionAssignment);
+			var eventPositionAssignment = new EventPositionAssignment(event, null, user);
+			event.getAssignments().add(eventPositionAssignment);
 
 			eventPositionAssignmentRepository.saveOrUpdate(eventPositionAssignment);
-
-			scheduleRepository.saveOrUpdate(schedule);
+			eventRepository.saveOrUpdate(event);
 		}
 
 		else if (!value && userAssignment.isPresent()) {
 
 			var eventPositionAssignment = userAssignment.get();
 
-			schedule.getAssignments().remove(userAssignment.get());
+			event.getAssignments().remove(userAssignment.get());
 
-			scheduleRepository.saveOrUpdate(schedule);
-
+			eventRepository.saveOrUpdate(event);
 			eventPositionAssignmentRepository.delete(eventPositionAssignment);
 		}
 	}
@@ -133,15 +152,11 @@ public class ScheduleApplicationService {
 
 	public List<PositionAssignmentEventDto> getEventsForAssignment(Long eventGroupId) {
 
-		var eventGroup = eventGroupQueries.findById(eventGroupId)
-			.orElseThrow(EntityNotFoundException::new);
-
-		var schedule = eventGroup.getSchedule();
+		EventGroup eventGroup = eventGroupQueries.get(eventGroupId);
 
 		return eventGroup.getEvents().stream()
 			.sorted(Comparator.comparing(Event::getEventStartTime))
 			.map(event -> new PositionAssignmentEventDto(event.getId(),
-				schedule.getId(),
 				event.getShow().getTitle(),
 				getPositionsForEvent(event),
 				DateUtils.formatLocalDateTime(event.getEventStartTime())))
@@ -150,44 +165,36 @@ public class ScheduleApplicationService {
 
 	public List<PositionAssignmentEmployeeDto> getEmployeesForAssignment(Long eventGroupId) {
 
-		var eventGroup = eventGroupQueries.findById(eventGroupId)
-			.orElseThrow(EntityNotFoundException::new);
-
-		var schedule = eventGroup.getSchedule();
+		EventGroup eventGroup = eventGroupQueries.get(eventGroupId);
 
 		return userQueries.getAll().stream()
-			.filter(user -> userIsAssignedToAnyEvent(user.getId(), schedule))
+			.filter(user -> userIsAssignedToAnyEvent(user.getId(), eventGroup))
 			.map(user -> new PositionAssignmentEmployeeDto(user.getId(),
 				user.toString(),
-				getAssignmentsForUser(user.getId(), schedule),
-				getAssignedEventsForEmployee(user.getId(), schedule)))
+				getAssignmentsForUser(user.getId(), eventGroup),
+				getAssignedEventsForEmployee(user.getId(), eventGroup)))
 			.sorted(Comparator.comparing(PositionAssignmentEmployeeDto::getName))
 			.toList();
 
 	}
 
-	public void assignPosition(Long scheduleId, Long eventId, Long userId, Long positionId) {
+	public void assignPosition(Long eventId, Long userId, Long positionId) {
 
-		var schedule = scheduleQueries.findById(scheduleId)
-			.orElseThrow(EntityNotFoundException::new);
 
-		var event = eventQueries.findById(eventId)
-			.orElseThrow(EntityNotFoundException::new);
+		Event event = eventQueries.get(eventId);
 
 		var position = positionQueries.findById(positionId)
 			.orElseThrow(EntityNotFoundException::new);
 
-		var user = userQueries.findById(userId)
-			.orElseThrow(EntityNotFoundException::new);
+		User user = userQueries.get(userId);
 
-		var assignmentOptional = schedule.getAssignments().stream()
-			.filter(positionAssignment -> positionAssignment.getEvent().getId().equals(eventId))
+		var assignmentOptional = event.getAssignments().stream()
 			.filter(positionAssignment -> positionAssignment.getUser() != null
 				&& positionAssignment.getUser().getId().equals(userId))
 			.findAny();
 
 		EventPositionAssignment assignment = assignmentOptional.orElse(
-			new EventPositionAssignment(schedule, event, position, user)
+			new EventPositionAssignment(event, position, user)
 		);
 
 		assignment.setPosition(position);
@@ -197,16 +204,17 @@ public class ScheduleApplicationService {
 
 	public List<AssignmentDto> getAssignments(Long eventGroupId) {
 
-		var schedule = scheduleQueries.findByEventGroup(eventGroupId)
-			.orElseThrow(EntityNotFoundException::new);
+		EventGroup eventGroup = eventGroupQueries.get(eventGroupId);
 
-		return schedule.getAssignments().stream()
-			.filter(assignment -> assignment.getPosition() != null)
-			.map(assignment -> new AssignmentDto(assignment.getId(),
-				assignment.getUser().getId(),
-				assignment.getEvent().getId(),
-				assignment.getPosition().getId()
-			))
+		return eventGroup.getEvents().stream()
+			.flatMap(event -> event.getAssignments().stream()
+				.filter(assignment -> assignment.getPosition() != null)
+				.map(assignment -> new AssignmentDto(
+					assignment.getId(),
+					assignment.getUser().getId(),
+					assignment.getEvent().getId(),
+					assignment.getPosition().getId()
+				)))
 			.toList();
 	}
 
@@ -214,35 +222,35 @@ public class ScheduleApplicationService {
 
 		Long userId = userApplicationService.getLoggedUserId();
 
-		return scheduleQueries.getAll().stream()
-			.filter(Schedule::isActive)
-			.map(schedule -> mapScheduleToListDto(schedule, userId))
+		return eventGroupQueries.getAll().stream()
+			.filter(EventGroup::isActive)
+			.map(eventGroup -> mapEventGroupToListDto(eventGroup, userId))
 			.toList();
 	}
 
 	public void changeScheduleActivity(Long eventGroupId, boolean value) {
 
-		Schedule schedule = scheduleQueries.findByEventGroup(eventGroupId)
-			.orElseThrow(EntityNotFoundException::new);
+		EventGroup eventGroup = eventGroupQueries.get(eventGroupId);
 
-		schedule.setActive(value);
+		eventGroup.setActive(value);
 
-		scheduleRepository.saveOrUpdate(schedule);
+		eventGroupRepository.saveOrUpdate(eventGroup);
 	}
 
 
-	private ScheduleListDto mapScheduleToListDto(Schedule schedule, Long userId) {
+	private ScheduleListDto mapEventGroupToListDto(EventGroup eventGroup, Long userId) {
 
-		return new ScheduleListDto(schedule.getId(),
-			schedule.getEventGroup().getName(),
-			getNumberOfEventsAssignedToUserForSchedule(schedule, userId));
+		return new ScheduleListDto(eventGroup.getId(),
+			eventGroup.getName(),
+			getNumberOfEventsAssignedToUserForEventGroup(eventGroup, userId));
 	}
 
-	private int getNumberOfEventsAssignedToUserForSchedule(Schedule schedule, Long userId) {
+	private int getNumberOfEventsAssignedToUserForEventGroup(EventGroup eventGroup, Long userId) {
 
-		return (int)schedule.getAssignments().stream()
-			.filter(assignment -> assignment.getUser() != null)
-			.filter(assignment -> assignment.getUser().getId().equals(userId))
+		return (int)eventGroup.getEvents().stream()
+			.filter(event -> event.getAssignments().stream()
+				.anyMatch(assignment -> assignment.getUser() != null &&
+					assignment.getUser().getId().equals(userId)))
 			.count();
 	}
 	private List<PositionDto> getPositionsForEvent(Event event) {
@@ -257,50 +265,48 @@ public class ScheduleApplicationService {
 			.toList();
 	}
 
-	private boolean userIsAssignedToAnyEvent(Long userId, Schedule schedule) {
+	private boolean userIsAssignedToAnyEvent(Long userId, EventGroup eventGroup) {
 
-		return schedule.getAssignments().stream()
-			.anyMatch(assignment -> assignment.getUser().getId().equals(userId)
-				&& assignment.getEvent() != null);
+		return eventGroup.getEvents().stream()
+			.anyMatch(event -> event.getAssignments().stream()
+				.anyMatch(assignment -> assignment.getUser().getId().equals(userId)));
 
 	}
 
-	private List<AssignmentDto> getAssignmentsForUser(Long userId, Schedule schedule) {
-
-		return schedule.getAssignments().stream()
-			.filter(assignment -> assignment.getUser().getId().equals(userId))
-			.map(assignment -> new AssignmentDto(assignment.getId(),
-				userId,
-				assignment.getEvent().getId(),
-				assignment.getPosition() == null ? null : assignment.getPosition().getId()
-				))
+	private List<AssignmentDto> getAssignmentsForUser(Long userId, EventGroup eventGroup) {
+		return eventGroup.getEvents().stream()
+			.flatMap(event -> event.getAssignments().stream()
+				.filter(assignment -> assignment.getUser().getId().equals(userId))
+				.map(assignment -> new AssignmentDto(
+					assignment.getId(),
+					userId,
+					assignment.getEvent().getId(),
+					assignment.getPosition() == null ? null : assignment.getPosition().getId()
+				)))
 			.toList();
 	}
 
-	private Schedule getNewSchedule(Long eventGroupId) {
+	private List<Long> getAssignedEventsForEmployee(Long userId, EventGroup eventGroup) {
 
-		var eventGroup = eventGroupQueries.findById(eventGroupId)
-			.orElseThrow(EntityNotFoundException::new);
+		Set<Event> events = eventGroup.getEvents();
 
-		Schedule schedule = new Schedule(eventGroup, null);
+		List<Long> assignedEvents = new ArrayList<>();
 
-		schedule.setAssignments(new HashSet<>());
+		for (Event event : events) {
 
-		return schedule;
+			if (event.getAssignments().stream()
+				.anyMatch(assignment -> assignment.getUser().getId().equals(userId))) {
+
+				assignedEvents.add(event.getId());
+			}
+		}
+
+		return assignedEvents;
 	}
 
-	private List<Long> getAssignedEventsForEmployee(Long userId, Schedule schedule) {
+	private int getAssignedEmployeesCount(Event event) {
 
-		return schedule.getAssignments().stream()
-			.filter(assignment -> Objects.equals(assignment.getUser().getId(), userId))
-			.map(assignment -> assignment.getEvent().getId())
-			.toList();
-	}
-
-	private int getAssignedEmployeesCount(Schedule schedule, Long eventId) {
-
-		return (int) schedule.getAssignments().stream()
-			.filter(assignment -> Objects.equals(assignment.getEvent().getId(), eventId))
+		return (int) event.getAssignments().stream()
 			.filter(assignment -> assignment.getUser() != null)
 			.map(assignment -> assignment.getUser().getId())
 			.distinct()

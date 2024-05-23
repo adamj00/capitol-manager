@@ -48,8 +48,6 @@ public class EventFormFactory {
 		return new EventForm(event.getId(),
 			event.getShow().getId(),
 			event.getEventGroup().getId(),
-			event.getEventStartTime(),
-			event.getShiftStartTime(),
-			event.getNotes());
+			event.getEventStartTime());
 	}
 }

@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,8 +30,17 @@ import com.capitolmanager.schedule.application.ScheduleApplicationService;
 @RequestMapping("/scheduleEdit")
 public class ScheduleEditController {
 
+	private static final String VIEW_NAME = "schedule-edit-view";
+	private final ScheduleApplicationService scheduleApplicationService;
 
-	@Autowired private ScheduleApplicationService scheduleApplicationService;
+
+	@Autowired
+	ScheduleEditController(ScheduleApplicationService scheduleApplicationService) {
+
+		Assert.notNull(scheduleApplicationService, "scheduleApplicationService must not be null");
+
+		this.scheduleApplicationService = scheduleApplicationService;
+	}
 
 	@GetMapping
 	String getView(Model model, @RequestParam(required = false) Long eventGroup) {
@@ -44,18 +54,17 @@ public class ScheduleEditController {
 		model.addAttribute("events", scheduleApplicationService.getEvents(eventGroup));
 		model.addAttribute("title", scheduleApplicationService.getEventGroupName(eventGroup));
 
-		return "schedule-edit-view";
+		return VIEW_NAME;
 	}
 
 	@PostMapping("/change")
 	@ResponseBody
-	public ResponseEntity<?> changeSchedule(
+	public ResponseEntity<String> changeSchedule(
 		@RequestParam("user") Long userId,
 		@RequestParam("event") Long eventId,
-		@RequestParam("schedule") Long scheduleId,
 		@RequestParam("value") boolean value) {
 
-		scheduleApplicationService.updateSchedule(userId, eventId, scheduleId, value);
+		scheduleApplicationService.updateSchedule(userId, eventId, value);
 
 		return ResponseEntity.ok("");
 	}

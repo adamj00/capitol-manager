@@ -48,27 +48,36 @@
             <a class="nav-link active" aria-current="page" href="/">Strona główna</a>
           </li>
 
+          <li sec:authorize="hasRole('EMPLOYEE')" class="nav-item">
+            <a class="nav-link active" aria-current="page" href="/scheduleList">Grafik</a>
+          </li>
 
-          <li class="nav-item dropdown">
+          <li sec:authorize="hasRole('MANAGER')" class="nav-item">
+            <a class="nav-link active" aria-current="page" href="/eventGroups">Grafik</a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="/user-list">Pracownicy</a>
+          </li>
+
+          <li sec:authorize="hasRole('MANAGER')" class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Administracja
+              Konfiguracja
             </a>
             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <li><a class="dropdown-item" href="/user-list">Pracownicy</a></li>
               <li sec:authorize="hasRole('MANAGER')"><a class="dropdown-item" href="/positions">Stanowiska</a></li>
               <li><a class="dropdown-item" href="/stage-list">Sceny</a></li>
               <li><a class="dropdown-item" href="/show-list">Spektakle</a></li>
-              <li sec:authorize="hasRole('MANAGER')"><a class="dropdown-item" href="/eventGroups">Wydarzenia</a></li>
-
             </ul>
           </li>
 
           <li sec:authorize="hasRole('EMPLOYEE')" class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Bileter
+              Informacje
             </a>
             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <li><a class="dropdown-item" href="/scheduleList">Grafik</a></li>
+              <li><a class="dropdown-item" href="/stage-list">Sceny</a></li>
+              <li><a class="dropdown-item" href="/show-list">Spektakle</a></li>
             </ul>
           </li>
 
@@ -83,10 +92,7 @@
             </ul>
           </li>
         </ul>
-        <form class="d-flex">
-          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-          <button class="btn btn-outline-success" type="submit">Search</button>
-        </form>
+       
       </div>
     </div>
   </nav>

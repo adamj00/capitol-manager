@@ -81,7 +81,7 @@ public class AvailabilityApplicationService {
 				DayWithAvailabilities dayWithAvailabilities = new DayWithAvailabilities();
 				if (!current.isAfter(lastOfMonth)) {
 					if (current.isBefore(firstOfMonth)) {
-						dayWithAvailabilities.setDate(null);
+						dayWithAvailabilities.setDate(current);
 					}
 					else {
 						dayWithAvailabilities.setDate(current);
@@ -89,7 +89,7 @@ public class AvailabilityApplicationService {
 					}
 				}
 				else {
-					dayWithAvailabilities.setDate(null);
+					dayWithAvailabilities.setDate(current);
 				}
 				week.add(dayWithAvailabilities);
 				current = current.plusDays(1);

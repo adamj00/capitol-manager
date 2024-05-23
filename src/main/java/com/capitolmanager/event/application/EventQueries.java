@@ -24,4 +24,6 @@ public interface EventQueries {
 
 	Optional<Event> findById(Long id);
 
+	Event get(Long id);
+
 }

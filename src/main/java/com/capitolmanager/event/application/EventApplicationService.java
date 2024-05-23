@@ -28,11 +28,9 @@ import org.springframework.util.Assert;
 import com.capitolmanager.availability.application.AvailabilityApplicationService;
 import com.capitolmanager.event.domain.Event;
 import com.capitolmanager.event.domain.EventGroup;
+import com.capitolmanager.event.domain.EventPositionAssignment;
 import com.capitolmanager.event.interfaces.EventForm;
 import com.capitolmanager.hibernate.Repository;
-import com.capitolmanager.schedule.application.ScheduleQueries;
-import com.capitolmanager.schedule.domain.EventPositionAssignment;
-import com.capitolmanager.schedule.domain.Schedule;
 import com.capitolmanager.show.application.ShowEventDto;
 import com.capitolmanager.show.application.ShowQueries;
 import com.capitolmanager.utils.DateUtils;
@@ -41,7 +39,7 @@ import com.capitolmanager.utils.DateUtils;
 @Service
 public class EventApplicationService {
 
-	public static final List<String> WEEK_DAYS = Arrays.asList(
+	protected static final List<String> WEEK_DAYS = Arrays.asList(
 		"pon",
 		"wt",
 		"śr",
@@ -51,14 +49,40 @@ public class EventApplicationService {
 		"ndz"
 	);
 
-	@Autowired private ShowQueries showQueries;
-	@Autowired private Repository<Event> eventRepository;
-	@Autowired private EventQueries eventQueries;
-	@Autowired private AvailabilityApplicationService availabilityApplicationService;
-	@Autowired private EventGroupQueries eventGroupQueries;
-	@Autowired private Repository<EventGroup> eventGroupRepository;
-	@Autowired private Repository<Schedule> scheduleRepository;
-	@Autowired private Repository<EventPositionAssignment> eventPositionAssignmentRepository;
+	private final ShowQueries showQueries;
+	private final Repository<Event> eventRepository;
+	private final EventQueries eventQueries;
+	private final AvailabilityApplicationService availabilityApplicationService;
+	private final EventGroupQueries eventGroupQueries;
+	private final Repository<EventGroup> eventGroupRepository;
+	private final Repository<EventPositionAssignment> eventPositionAssignmentRepository;
+
+
+	@Autowired
+	EventApplicationService(ShowQueries showQueries,
+		Repository<Event> eventRepository,
+		EventQueries eventQueries,
+		AvailabilityApplicationService availabilityApplicationService,
+		EventGroupQueries eventGroupQueries,
+		Repository<EventGroup> eventGroupRepository,
+		Repository<EventPositionAssignment> eventPositionAssignmentRepository) {
+
+		Assert.notNull(showQueries, "showQueries must not be null");
+		Assert.notNull(eventRepository, "eventRepository must not be null");
+		Assert.notNull(eventQueries, "eventQueries must not be null");
+		Assert.notNull(availabilityApplicationService, "availabilityApplicationService must not be null");
+		Assert.notNull(eventGroupQueries, "eventGroupQueries must not be null");
+		Assert.notNull(eventGroupRepository, "eventGroupRepository must not be null");
+		Assert.notNull(eventPositionAssignmentRepository, "eventPositionAssignmentRepository must not be null");
+
+		this.showQueries = showQueries;
+		this.eventRepository = eventRepository;
+		this.eventQueries = eventQueries;
+		this.availabilityApplicationService = availabilityApplicationService;
+		this.eventGroupQueries = eventGroupQueries;
+		this.eventGroupRepository = eventGroupRepository;
+		this.eventPositionAssignmentRepository = eventPositionAssignmentRepository;
+	}
 
 	public List<WeekDayWithEvents> getEventsByWeek(LocalDate weekStart, Long eventGroupId) {
 
@@ -87,9 +111,7 @@ public class EventApplicationService {
 			.map(event -> new EventDto(
 				event.getId(),
 				new ShowEventDto(event.getShow().getId(), event.getShow().getTitle()),
-				event.getEventStartTime(),
-				event.getShiftStartTime(),
-				event.getNotes()
+				event.getEventStartTime()
 			))
 			.toList();
 	}
@@ -103,8 +125,7 @@ public class EventApplicationService {
 			eventGroupQueries.findById(eventForm.getEventGroupId())
 				.orElseThrow(EntityNotFoundException::new),
 			eventForm.getEventStartTime(),
-			eventForm.getShiftStartTime(),
-			eventForm.getNotes());
+			new HashSet<>());
 
 		eventRepository.saveOrUpdate(event);
 
@@ -122,9 +143,7 @@ public class EventApplicationService {
 				.orElseThrow(EntityNotFoundException::new),
 			eventGroupQueries.findById(eventForm.getEventGroupId())
 				.orElseThrow(EntityNotFoundException::new),
-			eventForm.getEventStartTime(),
-			eventForm.getShiftStartTime(),
-			eventForm.getNotes());
+			eventForm.getEventStartTime());
 
 		eventRepository.saveOrUpdate(event);
 	}
@@ -135,9 +154,12 @@ public class EventApplicationService {
 
 		availabilityApplicationService.deleteAvailabilitiesForEvent(id);
 
-		Event event = eventQueries.findById(id)
-			.orElseThrow(EntityNotFoundException::new);
+		Event event = eventQueries.get(id);
+		for (EventPositionAssignment eventPositionAssignment : event.getAssignments()) {
+			eventPositionAssignmentRepository.delete(eventPositionAssignment);
+		}
 
+		event = eventQueries.get(id);
 		eventRepository.delete(event);
 	}
 
@@ -147,19 +169,13 @@ public class EventApplicationService {
 			.map(eventGroup -> new EventGroupListDto(eventGroup.getId(),
 				eventGroup.getName(),
 				eventGroup.isAvailabilityActive(),
-				eventGroup.getSchedule().isActive()))
+				eventGroup.isActive()))
 			.toList();
 	}
 
 	public void saveNewGroup(String name) {
 
-		EventGroup eventGroup = new EventGroup(name, Collections.emptySet(), null, false);
-		eventGroupRepository.saveOrUpdate(eventGroup);
-
-		Schedule newSchedule = new Schedule(eventGroup, new HashSet<>());
-		scheduleRepository.saveOrUpdate(newSchedule);
-
-		eventGroup.setSchedule(newSchedule);
+		EventGroup eventGroup = new EventGroup(name, Collections.emptySet(), false, false);
 		eventGroupRepository.saveOrUpdate(eventGroup);
 	}
 
@@ -175,21 +191,16 @@ public class EventApplicationService {
 
 	public void deleteEventGroup(Long id) {
 
-		EventGroup eventGroup = eventGroupQueries.findById(id)
-			.orElseThrow(EntityNotFoundException::new);
+		EventGroup eventGroup = eventGroupQueries.get(id);
 
-		deleteAssignmentsForEventGroup(eventGroup);
+		for (Event event : eventGroup.getEvents()) {
 
-		scheduleRepository.delete(eventGroup.getSchedule());
+			deleteEvent(event.getId());
+		}
 
-//		for (Event event : eventGroup.getEvents()) {
-//
-//			availabilityApplicationService.deleteAvailabilitiesForEvent(event.getId());
-//
-//			eventRepository.delete(event);
-//		}
-//
-//		eventGroupRepository.delete(eventGroup);
+		eventGroup = eventGroupQueries.get(id);
+
+		eventGroupRepository.delete(eventGroup);
 	}
 
 	public void changeAvailabilityActive(Long eventGroupId, boolean active) {
@@ -200,12 +211,5 @@ public class EventApplicationService {
 		eventGroup.setAvailabilityActive(active);
 
 		eventGroupRepository.saveOrUpdate(eventGroup);
-	}
-
-	private void deleteAssignmentsForEventGroup(EventGroup eventGroup) {
-
-		for (var assignment : eventGroup.getSchedule().getAssignments()) {
-			eventPositionAssignmentRepository.delete(assignment);
-		}
 	}
 }

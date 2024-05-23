@@ -17,16 +17,14 @@ import java.util.List;
 
 public class PositionAssignmentEventDto {
 
-	private Long id;
-	private Long scheduleId;
-	private String title;
-	private List<PositionDto> positions;
-	private String eventStartTime;
+	private final Long id;
+	private final String title;
+	private final List<PositionDto> positions;
+	private final String eventStartTime;
 
-	public PositionAssignmentEventDto(Long id, Long scheduleId, String title, List<PositionDto> positions, String eventStartTime) {
+	public PositionAssignmentEventDto(Long id, String title, List<PositionDto> positions, String eventStartTime) {
 
 		this.id = id;
-		this.scheduleId = scheduleId;
 		this.title = title;
 		this.positions = positions;
 		this.eventStartTime = eventStartTime;
@@ -37,29 +35,9 @@ public class PositionAssignmentEventDto {
 		return id;
 	}
 
-	public void setId(Long id) {
-
-		this.id = id;
-	}
-
-	public Long getScheduleId() {
-
-		return scheduleId;
-	}
-
-	public void setScheduleId(Long scheduleId) {
-
-		this.scheduleId = scheduleId;
-	}
-
 	public String getTitle() {
 
 		return title;
-	}
-
-	public void setTitle(String title) {
-
-		this.title = title;
 	}
 
 	public List<PositionDto> getPositions() {
@@ -67,18 +45,8 @@ public class PositionAssignmentEventDto {
 		return positions;
 	}
 
-	public void setPositions(List<PositionDto> positions) {
-
-		this.positions = positions;
-	}
-
 	public String getEventStartTime() {
 
 		return eventStartTime;
-	}
-
-	public void setEventStartTime(String eventStartTime) {
-
-		this.eventStartTime = eventStartTime;
 	}
 }

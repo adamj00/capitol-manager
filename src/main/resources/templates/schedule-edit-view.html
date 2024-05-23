@@ -89,7 +89,7 @@
                             <td th:each="event, eventStat : ${events}"
                                 th:class="${#lists.contains(employee.availableForEvents, event.id) ? 'active-cell' : 'inactive-cell'}">
                                 <div class="checkbox-container">
-                                    <input type="checkbox" th:data-user-id="${employee.id}" th:data-event-id="${event.id}" th:data-schedule-id="${event.scheduleId}"
+                                    <input type="checkbox" th:data-user-id="${employee.id}" th:data-event-id="${event.id}"
                                         th:id="'event' + ${eventStat.index} + '_employee' + ${empStat.index}"
                                         th:name="'event' + ${eventStat.index}" th:value="${employee.id}" 
                                         th:checked="${#lists.contains(employee.assignedEvents, event.id)}"
@@ -117,12 +117,11 @@
                         eventTile.style.backgroundColor = 'rgba(255, 0, 0, 0.25)';
                     }
                 }
-                function sendPostRequest(userId, eventId, scheduleId, value) {
+                function sendPostRequest(userId, eventId, value) {
                     // Prepare data to be sent in the request
                     const formData = new FormData();
                     formData.append('user', userId);
                     formData.append('event', eventId);
-                    formData.append('schedule', scheduleId);
                     formData.append('value', value);
 
                     // Send the POST request using Fetch API
@@ -187,10 +186,9 @@
                          // Get user ID, event ID, and schedule ID from data attributes
                         var userId = this.getAttribute('data-user-id');
                         var eventId = this.getAttribute('data-event-id');
-                        var scheduleId = this.getAttribute('data-schedule-id');
 
                         // Call the function to send the POST request
-                        sendPostRequest(userId, eventId, scheduleId, this.checked);
+                        sendPostRequest(userId, eventId, this.checked);
                     });
                 });
         
