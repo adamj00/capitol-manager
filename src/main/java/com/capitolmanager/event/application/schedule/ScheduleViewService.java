@@ -108,7 +108,7 @@ public class ScheduleViewService {
 			.anyMatch(assignment -> assignment.getUser().getId().equals(userId));
 	}
 
-	private List<EventScheduleViewDto> getEventsForDay(List<EventScheduleViewDto> events, LocalDate date) {
+	List<EventScheduleViewDto> getEventsForDay(List<EventScheduleViewDto> events, LocalDate date) {
 
 		return events.stream()
 			.filter(eventScheduleViewDto -> eventScheduleViewDto.getEventStartTime()
@@ -116,7 +116,7 @@ public class ScheduleViewService {
 			.toList();
 	}
 
-	private String getPositionForUser(Event event, Long userId) {
+	String getPositionForUser(Event event, Long userId) {
 
 		Optional<Position> position = event.getAssignments().stream()
 			.filter(assignment -> assignment.getUser().getId().equals(userId))

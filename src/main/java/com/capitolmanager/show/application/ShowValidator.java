@@ -29,9 +29,9 @@ import com.capitolmanager.show.interfaces.ShowEditForm;
 @Service
 public class ShowValidator implements Validator {
 
-	private static final String E_MUST_NOT_BE_EMPTY = "must.not.be.empty";
-	private static final String E_SHOW_TITLE_MUST_BE_UNIQUE = "show.title.must.be.unique";
-	private static final String E_DURATION_MUST_BE_POSITIVE = "show.duration.must.be.positive";
+	public static final String E_MUST_NOT_BE_EMPTY = "must.not.be.empty";
+	public static final String E_SHOW_TITLE_MUST_BE_UNIQUE = "show.title.must.be.unique";
+	public static final String E_DURATION_MUST_BE_POSITIVE = "show.duration.must.be.positive";
 
 	private final ShowApplicationService showApplicationService;
 

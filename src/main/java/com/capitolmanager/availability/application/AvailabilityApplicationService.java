@@ -22,6 +22,7 @@ import javax.persistence.EntityNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import com.capitolmanager.availability.domain.Availability;
 import com.capitolmanager.event.application.EventGroupQueries;
@@ -39,12 +40,31 @@ import com.capitolmanager.utils.StringUtils;
 @Service
 public class AvailabilityApplicationService {
 
-	@Autowired private UserQueries userQueries;
-	@Autowired private UserApplicationService userApplicationService;
-	@Autowired private Repository<Availability> availabilityRepository;
-	@Autowired private AvailabilityQueries availabilityQueries;
-	@Autowired private EventGroupQueries eventGroupQueries;
-	@Autowired private EventQueries eventQueries;
+	private final UserQueries userQueries;
+	private final UserApplicationService userApplicationService;
+	private final Repository<Availability> availabilityRepository;
+	private final AvailabilityQueries availabilityQueries;
+	private final EventGroupQueries eventGroupQueries;
+
+	@Autowired
+	AvailabilityApplicationService(UserQueries userQueries,
+		UserApplicationService userApplicationService,
+		Repository<Availability> availabilityRepository,
+		AvailabilityQueries availabilityQueries,
+		EventGroupQueries eventGroupQueries) {
+
+		Assert.notNull(userQueries, "userQueries must not be null");
+		Assert.notNull(userApplicationService, "userApplicationService must not be null");
+		Assert.notNull(availabilityRepository, "availabilityRepository must not be null");
+		Assert.notNull(availabilityQueries, "availabilityQueries must not be null");
+		Assert.notNull(eventGroupQueries, "eventGroupQueries must not be null");
+
+		this.userQueries = userQueries;
+		this.userApplicationService = userApplicationService;
+		this.availabilityRepository = availabilityRepository;
+		this.availabilityQueries = availabilityQueries;
+		this.eventGroupQueries = eventGroupQueries;
+	}
 
 	public void initializeAvailabilities(Event event) {
 
@@ -179,7 +199,7 @@ public class AvailabilityApplicationService {
 			.isAvailabilityActive();
 	}
 
-	private List<AvailabilityDto> getAvailabilitiesForDay(LocalDate day, List<Availability> availabilities) {
+	List<AvailabilityDto> getAvailabilitiesForDay(LocalDate day, List<Availability> availabilities) {
 
 		return availabilities.stream()
 			.filter(availability -> availability.getEvent().getEventStartTime().isEqual(day.atTime(availability.getEvent().getEventStartTime().toLocalTime())))
