@@ -10,7 +10,7 @@
  * i w zgodzie z warunkami umowy licencyjnej zawartej z Unity S.A.
  */
 
-package com.capitolmanager.schedule.interfaces;
+package com.capitolmanager.event.interfaces.manager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.capitolmanager.schedule.application.ScheduleApplicationService;
+import com.capitolmanager.event.application.schedule.ScheduleApplicationService;
 
 
 @Controller

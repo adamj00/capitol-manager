@@ -63,7 +63,7 @@ public class PositionController {
 	}
 
 	@GetMapping("positions")
-	String getView(Model model, @RequestParam(required = false, defaultValue = "false", name = "createNew") Boolean createNew) {
+	String getView(Model model, @RequestParam(required = false, defaultValue = "false", name = "createNew") boolean createNew) {
 
 		var positionsForm = positionApplicationService.getAllPositionsForm();
 		if (createNew) {

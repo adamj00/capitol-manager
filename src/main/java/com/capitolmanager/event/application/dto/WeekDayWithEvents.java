@@ -10,7 +10,7 @@
  * i w zgodzie z warunkami umowy licencyjnej zawartej z Unity S.A.
  */
 
-package com.capitolmanager.event.application;
+package com.capitolmanager.event.application.dto;
 
 import java.time.LocalDate;
 import java.util.List;

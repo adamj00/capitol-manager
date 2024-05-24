@@ -17,8 +17,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import com.capitolmanager.event.domain.Event;
-import com.capitolmanager.event.domain.EventGroup;
 import com.capitolmanager.hibernate.AbstractEntity;
 import com.capitolmanager.position.domain.Position;
 import com.capitolmanager.user.domain.User;

@@ -10,7 +10,7 @@
  * i w zgodzie z warunkami umowy licencyjnej zawartej z Unity S.A.
  */
 
-package com.capitolmanager.schedule.interfaces;
+package com.capitolmanager.event.interfaces.employee;
 
 import java.time.format.DateTimeFormatter;
 
@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.capitolmanager.schedule.application.ScheduleViewService;
+import com.capitolmanager.event.application.schedule.ScheduleViewService;
 
 
 @Controller

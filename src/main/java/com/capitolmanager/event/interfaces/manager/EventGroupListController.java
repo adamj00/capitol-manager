@@ -10,7 +10,7 @@
  * i w zgodzie z warunkami umowy licencyjnej zawartej z Unity S.A.
  */
 
-package com.capitolmanager.event.interfaces;
+package com.capitolmanager.event.interfaces.manager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -23,13 +23,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.capitolmanager.event.application.EventApplicationService;
-import com.capitolmanager.schedule.application.ScheduleApplicationService;
+import com.capitolmanager.event.application.schedule.ScheduleApplicationService;
 
 
 @Controller
 @RequestMapping("/eventGroups")
 public class EventGroupListController {
 
+	private static final String EVENT_GROUPS_URL = "/eventGroups";
+	private static final String REDIRECT = "redirect:";
 	@Autowired private EventApplicationService eventApplicationService;
 	@Autowired private ScheduleApplicationService scheduleApplicationService;
 
@@ -46,7 +48,7 @@ public class EventGroupListController {
 
 		eventApplicationService.saveNewGroup(name);
 
-		return "redirect:/eventGroups";
+		return REDIRECT + EVENT_GROUPS_URL;
 	}
 
 	@PostMapping("/changeName")
@@ -54,7 +56,7 @@ public class EventGroupListController {
 
 		eventApplicationService.changeEventGroupName(name, id);
 
-		return "redirect:/eventGroups";
+		return REDIRECT + EVENT_GROUPS_URL;
 	}
 
 	@GetMapping("/delete")
@@ -62,12 +64,12 @@ public class EventGroupListController {
 
 		eventApplicationService.deleteEventGroup(id);
 
-		return "redirect:/eventGroups";
+		return REDIRECT + EVENT_GROUPS_URL;
 	}
 
 	@PostMapping("/changeAvailabilityActive")
 	@ResponseBody
-	public ResponseEntity<?> changeAvailabilityActive(
+	public ResponseEntity<String> changeAvailabilityActive(
 		@RequestParam("id") Long eventGroupId,
 		@RequestParam("value") boolean value) {
 
@@ -78,7 +80,7 @@ public class EventGroupListController {
 
 	@PostMapping("/changeScheduleActive")
 	@ResponseBody
-	public ResponseEntity<?> changeScheduleActive(
+	public ResponseEntity<String> changeScheduleActive(
 		@RequestParam("id") Long eventGroupId,
 		@RequestParam("value") boolean value) {
 

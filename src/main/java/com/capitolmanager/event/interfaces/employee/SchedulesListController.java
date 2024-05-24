@@ -10,7 +10,7 @@
  * i w zgodzie z warunkami umowy licencyjnej zawartej z Unity S.A.
  */
 
-package com.capitolmanager.schedule.interfaces;
+package com.capitolmanager.event.interfaces.employee;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.capitolmanager.availability.application.AvailabilityApplicationService;
-import com.capitolmanager.schedule.application.ScheduleApplicationService;
+import com.capitolmanager.event.application.schedule.ScheduleApplicationService;
 
 
 @Controller

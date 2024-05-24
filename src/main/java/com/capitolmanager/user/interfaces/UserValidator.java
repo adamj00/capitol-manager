@@ -27,8 +27,8 @@ import org.springframework.validation.Validator;
 @Service
 public class UserValidator implements Validator {
 
-	private static final String E_MUST_NOT_BE_EMPTY = "must.not.be.empty";
-	private static final String E_INVALID_PHONE_NUMBER = "invalid.phone.number";
+	public static final String E_MUST_NOT_BE_EMPTY = "must.not.be.empty";
+	public static final String E_INVALID_PHONE_NUMBER = "invalid.phone.number";
 
 	@Override
 	public boolean supports(Class<?> clazz) {

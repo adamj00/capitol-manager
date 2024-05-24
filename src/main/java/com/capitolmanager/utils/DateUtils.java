@@ -20,6 +20,10 @@ import java.util.List;
 
 public class DateUtils {
 
+	private DateUtils() {
+		throw new IllegalStateException("Utility class");
+	}
+
 	static List<String> weekDays = List.of("poniedziałek",
 		"wtorek",
 		"środa",

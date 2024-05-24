@@ -10,7 +10,7 @@
  * i w zgodzie z warunkami umowy licencyjnej zawartej z Unity S.A.
  */
 
-package com.capitolmanager.event.interfaces;
+package com.capitolmanager.event.interfaces.manager;
 
 import java.time.LocalDateTime;
 

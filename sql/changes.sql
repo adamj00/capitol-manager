@@ -15,3 +15,5 @@ CREATE TABLE event_position_assignments (
     position_id BIGINT REFERENCES positions(id),
     user_id BIGINT REFERENCES users(id)
 );
+
+drop table schedules;

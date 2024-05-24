@@ -15,7 +15,6 @@ package com.capitolmanager.user.application;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -113,14 +112,6 @@ public class UserApplicationService {
 		userRepository.saveOrUpdate(user);
 	}
 
-	public void deleteUser(Long id) {
-
-		User user = userQueries.findById(id)
-			.orElseThrow(() -> new EntityNotFoundException("User " + id + " not found"));
-
-		userRepository.delete(user);
-	}
-
 	public List<UserRole> getAllRoles() {
 
 		return Arrays.asList(UserRole.values());
@@ -130,7 +121,7 @@ public class UserApplicationService {
 
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		User user = userQueries.findByEmail(authentication.getName())
-			.orElseThrow(() -> new EntityNotFoundException("User " + authentication.getName() + " not found"));
+			.orElseThrow(EntityNotFoundException::new);
 
 		if (!passwordEncoder.matches(form.getOldPassword(), user.getPassword())) {
 			throw new IllegalStateException("Passwords do not match");

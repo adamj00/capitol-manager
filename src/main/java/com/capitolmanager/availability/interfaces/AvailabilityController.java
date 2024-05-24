@@ -49,7 +49,7 @@ public class AvailabilityController {
 	}
 	@PostMapping("/change")
 	@ResponseBody
-	public ResponseEntity<?> changeAvailability(
+	public ResponseEntity<String> changeAvailability(
 		@RequestParam("id") Long availabilityId,
 		@RequestParam("value") boolean value) {
 

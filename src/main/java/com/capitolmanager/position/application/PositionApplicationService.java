@@ -48,7 +48,7 @@ public class PositionApplicationService {
 			.map(position -> new PositionDto(position.getId(),
 				position.getName(),
 				position.getPositionType()))
-			.collect(Collectors.toList());
+			.toList();
 	}
 
 	public PositionsForm getAllPositionsForm() {
@@ -88,12 +88,5 @@ public class PositionApplicationService {
 			.orElseThrow(IllegalStateException::new);
 
 		positionRepository.delete(position);
-	}
-
-	public List<PositionStageEditDto> getAllPositionsForStageEdit() {
-
-		return positionQueries.getAll().stream()
-			.map(position -> new PositionStageEditDto(position.getId(), position.getName()))
-			.toList();
 	}
 }

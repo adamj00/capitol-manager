@@ -26,10 +26,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import com.capitolmanager.availability.application.AvailabilityApplicationService;
+import com.capitolmanager.event.application.dto.EventDto;
+import com.capitolmanager.event.application.dto.EventGroupListDto;
+import com.capitolmanager.event.application.dto.WeekDayWithEvents;
 import com.capitolmanager.event.domain.Event;
 import com.capitolmanager.event.domain.EventGroup;
 import com.capitolmanager.event.domain.EventPositionAssignment;
-import com.capitolmanager.event.interfaces.EventForm;
+import com.capitolmanager.event.interfaces.manager.EventForm;
 import com.capitolmanager.hibernate.Repository;
 import com.capitolmanager.show.application.ShowEventDto;
 import com.capitolmanager.show.application.ShowQueries;

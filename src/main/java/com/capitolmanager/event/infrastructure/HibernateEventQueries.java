@@ -12,13 +12,6 @@
 
 package com.capitolmanager.event.infrastructure;
 
-import java.util.Collections;
-import java.util.List;
-
-import javax.persistence.Query;
-import javax.persistence.criteria.CriteriaBuilder;
-
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Service;
 

@@ -10,7 +10,7 @@
  * i w zgodzie z warunkami umowy licencyjnej zawartej z Unity S.A.
  */
 
-package com.capitolmanager.schedule.application;
+package com.capitolmanager.event.application.schedule;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -27,6 +27,13 @@ import org.springframework.util.Assert;
 import com.capitolmanager.availability.application.AvailabilityQueries;
 import com.capitolmanager.event.application.EventGroupQueries;
 import com.capitolmanager.event.application.EventQueries;
+import com.capitolmanager.event.application.schedule.dto.AssignmentDto;
+import com.capitolmanager.event.application.schedule.dto.EmployeeScheduleDto;
+import com.capitolmanager.event.application.schedule.dto.EventScheduleDto;
+import com.capitolmanager.event.application.schedule.dto.PositionAssignmentEmployeeDto;
+import com.capitolmanager.event.application.schedule.dto.PositionAssignmentEventDto;
+import com.capitolmanager.event.application.schedule.dto.PositionDto;
+import com.capitolmanager.event.application.schedule.dto.ScheduleListDto;
 import com.capitolmanager.event.domain.Event;
 import com.capitolmanager.event.domain.EventGroup;
 import com.capitolmanager.event.domain.EventPositionAssignment;

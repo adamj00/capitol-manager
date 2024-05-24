@@ -10,7 +10,7 @@
  * i w zgodzie z warunkami umowy licencyjnej zawartej z Unity S.A.
  */
 
-package com.capitolmanager.schedule.application;
+package com.capitolmanager.event.application.schedule.dto;
 
 import java.util.List;
 

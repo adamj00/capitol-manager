@@ -15,9 +15,9 @@ package com.capitolmanager.show.infrastructure;
 import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Service;
 
+import com.capitolmanager.event.domain.EventPositionAssignment;
 import com.capitolmanager.hibernate.AbstractHibernateRepository;
 import com.capitolmanager.hibernate.Repository;
-import com.capitolmanager.event.domain.EventPositionAssignment;
 
 
 @Service

@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import com.capitolmanager.event.domain.Event;
-import com.capitolmanager.event.interfaces.EventForm;
+import com.capitolmanager.event.interfaces.manager.EventForm;
 
 
 @Service
