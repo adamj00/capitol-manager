@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import com.capitolmanager.availability.domain.Availability;
 import com.capitolmanager.event.application.EventGroupQueries;
+import com.capitolmanager.event.application.EventQueries;
 import com.capitolmanager.event.domain.Event;
 import com.capitolmanager.event.domain.EventGroup;
 import com.capitolmanager.hibernate.Repository;
@@ -43,6 +44,7 @@ public class AvailabilityApplicationService {
 	@Autowired private Repository<Availability> availabilityRepository;
 	@Autowired private AvailabilityQueries availabilityQueries;
 	@Autowired private EventGroupQueries eventGroupQueries;
+	@Autowired private EventQueries eventQueries;
 
 	public void initializeAvailabilities(Event event) {
 
@@ -79,7 +81,7 @@ public class AvailabilityApplicationService {
 				DayWithAvailabilities dayWithAvailabilities = new DayWithAvailabilities();
 				if (!current.isAfter(lastOfMonth)) {
 					if (current.isBefore(firstOfMonth)) {
-						dayWithAvailabilities.setDate(null);
+						dayWithAvailabilities.setDate(current);
 					}
 					else {
 						dayWithAvailabilities.setDate(current);
@@ -87,7 +89,7 @@ public class AvailabilityApplicationService {
 					}
 				}
 				else {
-					dayWithAvailabilities.setDate(null);
+					dayWithAvailabilities.setDate(current);
 				}
 				week.add(dayWithAvailabilities);
 				current = current.plusDays(1);
@@ -132,10 +134,12 @@ public class AvailabilityApplicationService {
 		List<EventGroup> eventGroups = eventGroupQueries.getAll();
 
 		return eventGroups.stream()
+			.filter(EventGroup::isAvailabilityActive)
 			.map(eventGroup -> new AvailabilityListDto(eventGroup.getId(),
 				eventGroup.getName(),
 				getAvailabilityRate(eventGroup.getId()),
-				getAvailabilityFulfilmentString(eventGroup.getId())))
+				getAvailabilityFulfilmentString(eventGroup.getId()),
+				eventGroup.isAvailabilityActive()))
 			.toList();
 	}
 
@@ -156,11 +160,23 @@ public class AvailabilityApplicationService {
 		var availabilities = getAvailabilitiesForLoggedUser(eventGroupId);
 
 		long all = availabilities.size();
+
+		if (all == 0) {
+
+			return 100;
+		}
 		long done = availabilities.stream()
 			.filter(availability -> availability.getAvailable() != null && availability.getAvailable())
 			.count();
 
 		return (done * 100) / all;
+	}
+
+	public boolean isAvailabilityActive(Long eventGroupId) {
+
+		return eventGroupQueries.findById(eventGroupId)
+			.orElseThrow(EntityNotFoundException::new)
+			.isAvailabilityActive();
 	}
 
 	private List<AvailabilityDto> getAvailabilitiesForDay(LocalDate day, List<Availability> availabilities) {

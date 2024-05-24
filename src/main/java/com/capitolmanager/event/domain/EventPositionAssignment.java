@@ -27,10 +27,6 @@ import com.capitolmanager.user.domain.User;
 public class EventPositionAssignment extends AbstractEntity {
 
 	@ManyToOne
-	@JoinColumn(name = "schedule_id")
-	private Schedule schedule;
-
-	@ManyToOne
 	@JoinColumn(name = "event_id")
 	private Event event;
 
@@ -42,9 +38,8 @@ public class EventPositionAssignment extends AbstractEntity {
 	@JoinColumn(name = "user_id")
 	private User user;
 
-	public EventPositionAssignment(Schedule schedule, Event event, Position position, User user) {
+	public EventPositionAssignment(Event event, Position position, User user) {
 
-		this.schedule = schedule;
 		this.event = event;
 		this.position = position;
 		this.user = user;
@@ -52,16 +47,6 @@ public class EventPositionAssignment extends AbstractEntity {
 
 	public EventPositionAssignment() {
 
-	}
-
-	public Schedule getSchedule() {
-
-		return schedule;
-	}
-
-	public void setSchedule(Schedule schedule) {
-
-		this.schedule = schedule;
 	}
 
 	public Event getEvent() {

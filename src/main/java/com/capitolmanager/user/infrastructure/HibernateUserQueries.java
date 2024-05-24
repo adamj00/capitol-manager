@@ -14,6 +14,8 @@ package com.capitolmanager.user.infrastructure;
 
 import java.util.Optional;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,5 +43,12 @@ public class HibernateUserQueries extends AbstractHibernateQueries<User> impleme
 		return getAll().stream()
 			.filter(user -> user.getEmail().equals((email)))
 			.findFirst();
+	}
+
+	@Override
+	public User get(Long id) {
+
+		return findById(id)
+			.orElseThrow(() -> new EntityNotFoundException("User " + id + " not found"));
 	}
 }

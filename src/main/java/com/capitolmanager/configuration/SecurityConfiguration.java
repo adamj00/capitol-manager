@@ -68,7 +68,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 			.antMatchers("/stage-edit**").hasRole(MANAGER)
 			.antMatchers("/show-edit**").hasRole(MANAGER)
 			.antMatchers("/events**").hasRole(MANAGER)
+			.antMatchers("/scheduleEdit**").hasRole(MANAGER)
 			.antMatchers("/availability**").hasRole(EMPLOYEE)
+			.antMatchers("/scheduleList**").hasRole(EMPLOYEE)
+			.antMatchers("/schedule").hasRole(EMPLOYEE)
 
 			.anyRequest().authenticated()
 			.and()

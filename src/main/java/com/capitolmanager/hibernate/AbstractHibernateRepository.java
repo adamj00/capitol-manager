@@ -17,7 +17,7 @@ import org.hibernate.SessionFactory;
 import org.springframework.util.Assert;
 
 
-public abstract class AbstractHibernateRepository<Entity extends AbstractEntity> {
+public abstract class AbstractHibernateRepository<ENTITY extends AbstractEntity> {
 
 	private final SessionFactory sessionFactory;
 
@@ -28,7 +28,7 @@ public abstract class AbstractHibernateRepository<Entity extends AbstractEntity>
 		this.sessionFactory = sessionFactory;
 	}
 
-	public void saveOrUpdate(Entity entity) {
+	public void saveOrUpdate(ENTITY entity) {
 
 		Session session = sessionFactory.openSession();
 
@@ -41,11 +41,11 @@ public abstract class AbstractHibernateRepository<Entity extends AbstractEntity>
 		session.close();
 	}
 
-	public void delete(Entity entity) {
+	public void delete(ENTITY entity) {
 
 		Session session = sessionFactory.openSession();
 		session.beginTransaction();
-		entity = (Entity) session.merge(entity);
+		entity = (ENTITY) session.merge(entity);
 		session.delete(entity);
 		session.getTransaction().commit();
 		session.close();

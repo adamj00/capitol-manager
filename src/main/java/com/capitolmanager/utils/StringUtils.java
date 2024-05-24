@@ -14,6 +14,10 @@ package com.capitolmanager.utils;
 
 public class StringUtils {
 
+	private StringUtils() {
+		throw new IllegalStateException("Utility class");
+	}
+
 	public static boolean hasText(String string) {
 
 		return string != null && !string.isEmpty();

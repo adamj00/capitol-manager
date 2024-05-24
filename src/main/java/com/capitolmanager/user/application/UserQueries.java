@@ -25,4 +25,6 @@ public interface UserQueries {
 	Optional<User> findById(Long id);
 
 	Optional<User> findByEmail(String email);
+
+	User get(Long id);
 }

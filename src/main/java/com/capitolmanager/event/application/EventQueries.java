@@ -23,4 +23,7 @@ public interface EventQueries {
 	List<Event> getAll();
 
 	Optional<Event> findById(Long id);
+
+	Event get(Long id);
+
 }

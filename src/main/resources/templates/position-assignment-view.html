@@ -1,0 +1,193 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+
+    <div layout:fragment="content">
+
+        <style>
+            .scrollable-table-container {
+                overflow-x: auto; /* Enable horizontal scrolling */
+                min-width: 1500px;
+            }
+        
+            .name-column {
+                width: auto;
+                min-width: 180px;
+                white-space: nowrap;
+            }
+            .event-title {
+                white-space: nowrap;
+            }
+
+            .active-cell {
+                background-color: #FFFFFF; /* Białe tło dla aktywnych komórek */
+            }
+            .inactive-cell {
+                background-color: #7a7575; /* Szare tło dla nieaktywnych komórek */
+            }
+
+            .select-container {
+                display: flex; /* Używamy Flexboxa do wyśrodkowania */
+                justify-content: center; /* Wyśrodkowanie poziome */
+                align-items: center; /* Wyśrodkowanie pionowe */
+                height: 100%; /* Wysokość kontenera równa komórce tabeli */
+            }
+
+            .select-container select {
+                width: auto; /* Szerokość listy rozwijanej */
+                padding: 5px; /* Dodatkowe wypełnienie dla lepszego wyglądu */
+                border: 1px solid #ced4da; /* Subtelna obramówka */
+                border-radius: 0.25rem; /* Zaokrąglenie rogów */
+                font-size: 1rem; /* Wielkość czcionki */
+                cursor: pointer; /* Kursor wskazujący na możliwość kliknięcia */
+                text-align-last: center; /* Wyśrodkowanie tekstu w liście rozwijanej */
+            }
+        </style>
+
+        
+
+        <div class="container mt-3">
+
+            <div class="row mb-3 align-items-center">
+                <div class="col-auto">
+                    <!-- Przycisk powrotu -->
+                    <a href="/eventGroups" class="btn btn-secondary mb-3">
+                        <i class="bi bi-arrow-left"></i> Powrót
+                    </a>
+                </div>
+                <div class="col text-center">
+                    <h2 th:text="'Przypisywanie stanowisk: ' + ${title}">May 2024</h2>
+                </div>
+            </div>
+            <div class="scrollable-table-container">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <!-- Pusta komórka dla kolumny z imieniem i nazwiskiem -->
+                            <th class="name-column"></th>
+                            <!-- Pętla po wydarzeniach dla dat rozpoczęcia -->
+                            <th th:each="event, eventStat : ${events}">
+                                <div style="text-align: center;" th:text="${event.eventStartTime}">Data i godzina rozpoczęcia</div>
+                            </th>
+                        </tr>
+                        <tr>
+                            <!-- Komórka dla kolumny z imieniem i nazwiskiem -->
+                            <th class="name-column">Imię i nazwisko</th>
+                            <!-- Pętla po wydarzeniach dla nazw -->
+                            <th class="event-title" th:each="event, eventStat : ${events}">
+                                <div class="card" th:id="'event-tile-' + ${eventStat.index}">
+                                    <div class="card-body">
+                                        <h5 class="card-title" th:text="${event.title}">Nazwa wydarzenia</h5>
+                                        
+                                        <!-- Tu powinna byc informacja o brakujących stanowiskach -->
+                                    </div>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Pętla po pracownikach -->
+                        <tr th:each="employee, empStat : ${employees}">
+                            <td th:text="${employee.name}">Jan Kowalski</td>
+                            <!-- Pętla po wydarzeniach -->
+                            <td th:each="event, eventStat : ${events}"
+                                th:class="${#lists.contains(employee.assignedEvents, event.id) ? 'active-cell' : 'inactive-cell'}">
+                                <div class="select-container">
+                                    <select class="position-select"
+                                            th:data-user-id="${employee.id}" th:data-event-id="${event.id}"
+                                            th:id="'event' + ${eventStat.index} + '_employee' + ${empStat.index}"
+                                            th:name="'event' + ${eventStat.index}"
+                                            th:if="${#lists.contains(employee.assignedEvents, event.id)}">
+                                        <option value="">Wybierz stanowisko</option>
+                                        <!-- Pętla po pozycjach w wydarzeniu -->
+                                        <th:block th:each="position : ${event.positions}">
+                                           
+                                                <option th:value="${position.id}" th:text="${position.name}">
+                                                </option>
+                                        </th:block>
+                                    </select>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+        
+            document.addEventListener('DOMContentLoaded', function () {
+        
+                // Funkcja do wysyłania żądania POST i aktualizacji list rozwijanych
+                function assignPosition(userId, eventId, positionId, selectElement) {
+                    // Przygotuj dane do wysłania w żądaniu
+                    const formData = new FormData();
+                    formData.append('userId', userId);
+                    formData.append('eventId', eventId);
+                    formData.append('positionId', positionId);
+        
+                    // Wyślij żądanie POST
+                    fetch('/positionAssigning/assignPosition', {
+                        method: 'POST',
+                        body: formData
+                    }).then(response => {
+                        if (response.ok) {
+                            console.log("Zaktualizowano listę");
+                        } else {
+                            throw new Error('Błąd serwera');
+                        }
+                    });
+                }
+        
+        
+                // Nasłuchiwanie zmiany w każdym elemencie select
+                document.querySelectorAll('.position-select').forEach(function(select) {
+                    select.addEventListener('change', function() {
+                        // Pobierz ID użytkownika, wydarzenia, harmonogramu i stanowiska z atrybutów danych
+                        var userId = this.getAttribute('data-user-id');
+                        var eventId = this.getAttribute('data-event-id');
+                        var positionId = this.value;
+        
+                        // Wykonaj funkcję przypisania stanowiska i odśwież listy rozwijane
+                        assignPosition(userId, eventId, positionId, this);
+                    });
+                });
+
+                var assignedPositions = /*[[${assignedPositions}]]*/ 'default';
+
+                console.log(assignedPositions);
+
+
+                //assignedPositions = JSON.parse(assignedPositions);
+
+                // Function to find an assigned position for a given employee and event
+                function findAssignedPosition(employeeId, eventId) {
+                    return assignedPositions.find(function(assignment) {
+                        return assignment.employeeId === employeeId && assignment.eventId === eventId;
+                    });
+                }
+
+                // Function to update the selected attribute of the options
+                function updateSelectedOptions() {
+                    document.querySelectorAll('.position-select').forEach(function(select) {
+                        var userId = select.getAttribute('data-user-id');
+                        var eventId = select.getAttribute('data-event-id');
+                        var assignedPosition = findAssignedPosition(Number(userId), Number(eventId));
+
+                        select.querySelectorAll('option').forEach(function(option) {
+                            if (assignedPosition && option.value == assignedPosition.positionId) {
+                                option.selected = true;
+                            } else {
+                                option.selected = false;
+                            }
+                        });
+                    });
+                }
+
+                // Call the function to update the selected options
+                updateSelectedOptions();
+            });
+        
+            /*]]>*/
+        </script>
+    </div>
+</html>

@@ -12,9 +12,12 @@
         </script>
 
         <div class="container mt-5">
-            <h2>Edycja spektaklu</h2>
+            <h2 th:if="${show.id != null}" style="text-align: center;" th:text="'Edycja spektaklu: ' + ${show.title}"></h2>
+            <h2 th:if="${show.id == null}" style="text-align: center;">Tworzenie nowego spektaklu</h2>
             <div class="mb-3">
-                <a href="/show-list" class="btn btn-success">Powrót</a>
+                <a href="/show-list" class="btn btn-secondary">
+					<i class="bi bi-arrow-left"></i> Powrót
+				</a>
                 <button th:if="${show.id != null}" onclick="confirmDelete()" class="btn btn-danger">
                     <i class="bi bi-trash">Usuń</i>
                 </button>
@@ -45,7 +48,9 @@
                     <label for="additionalInformation" class="form-label">Informacje dodatkowe</label>
                     <textarea class="form-control" id="additionalInformation" th:field="*{additionalInformation}" rows="3"></textarea>
                 </div>
-                <button type="submit" class="btn btn-primary">Zapisz</button>
+                <button type="submit" class="btn btn-primary">
+					<i class="bi bi-clipboard-plus"></i> Zapisz
+				</button>
             </form>
         </div>
     </div>

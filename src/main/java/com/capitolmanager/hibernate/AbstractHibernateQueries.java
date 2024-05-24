@@ -17,6 +17,7 @@ import static com.capitolmanager.hibernate.AbstractEntity.D_ID;
 import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -29,12 +30,12 @@ import org.springframework.util.Assert;
 
 
 @Service
-public abstract class AbstractHibernateQueries <Entity extends AbstractEntity> {
+public abstract class AbstractHibernateQueries <ENTITY extends AbstractEntity> {
 
 	protected final SessionFactory sessionFactory;
-	private final Class<Entity> entityClass;
+	private final Class<ENTITY> entityClass;
 
-	protected AbstractHibernateQueries(SessionFactory sessionFactory, Class<Entity> entityClass) {
+	protected AbstractHibernateQueries(SessionFactory sessionFactory, Class<ENTITY> entityClass) {
 
 		Assert.notNull(sessionFactory, "sessionFactory must not be null");
 		Assert.notNull(entityClass, "entityClass must not be null");
@@ -43,40 +44,46 @@ public abstract class AbstractHibernateQueries <Entity extends AbstractEntity> {
 		this.entityClass = entityClass;
 	}
 
-	public List<Entity> getAll() {
+	public List<ENTITY> getAll() {
 
 		try (Session session = sessionFactory.openSession()) {
 
 			CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-			CriteriaQuery<Entity> criteriaQuery = criteriaBuilder.createQuery(entityClass);
-			Root<Entity> root = criteriaQuery.from(entityClass);
+			CriteriaQuery<ENTITY> criteriaQuery = criteriaBuilder.createQuery(entityClass);
+			Root<ENTITY> root = criteriaQuery.from(entityClass);
 			criteriaQuery.select(root)
 				.orderBy(criteriaBuilder.asc(root.get(D_ID)));
 
-			Query<Entity> query = session.createQuery(criteriaQuery);
+			Query<ENTITY> query = session.createQuery(criteriaQuery);
 
 			return query.getResultList();
 		}
 	}
 
-	public Optional<Entity> findById(Long id) {
+	public Optional<ENTITY> findById(Long id) {
 
 		Assert.notNull(id, "id must not be null");
 
 		try (Session session = sessionFactory.openSession()) {
 
 			CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-			CriteriaQuery<Entity> criteriaQuery = criteriaBuilder.createQuery(entityClass);
-			Root<Entity> root = criteriaQuery.from(entityClass);
+			CriteriaQuery<ENTITY> criteriaQuery = criteriaBuilder.createQuery(entityClass);
+			Root<ENTITY> root = criteriaQuery.from(entityClass);
 
 			criteriaQuery.select(root)
 				.where(criteriaBuilder.equal(root.get(D_ID), id));
 
-			Query<Entity> query = session.createQuery(criteriaQuery);
+			Query<ENTITY> query = session.createQuery(criteriaQuery);
 
-			Entity entity = query.uniqueResult();
+			ENTITY entity = query.uniqueResult();
 
 			return Optional.ofNullable(entity);
 		}
+	}
+
+	public ENTITY get(Long id) {
+
+		return findById(id)
+			.orElseThrow(EntityNotFoundException::new);
 	}
 }

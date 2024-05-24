@@ -21,6 +21,7 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	implementation group: 'nz.net.ultraq.thymeleaf', name: 'thymeleaf-layout-dialect', version: '3.3.0'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	testImplementation 'junit:junit:4.13.1'
 	runtimeOnly 'com.h2database:h2'
 	runtimeOnly 'org.postgresql:postgresql'
 	implementation 'org.apache.tomcat.embed:tomcat-embed-jasper'
@@ -29,6 +30,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.security:spring-security-taglibs'
 	implementation group: 'org.thymeleaf.extras', name: 'thymeleaf-extras-springsecurity5', version: '3.0.4.RELEASE'
+
+	testImplementation group: 'junit', name: 'junit', version: '4.13.2'
 
 }
 

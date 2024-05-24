@@ -22,28 +22,28 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.capitolmanager.user.application.UserApplicationService;
+import com.capitolmanager.user.application.UserDeleter;
 
 
 @Controller
 @RequestMapping("/deleteUser")
 public class UserDeleteController {
 
-	private final UserApplicationService userApplicationService;
+	private final UserDeleter userDeleter;
 
 
 	@Autowired
-	UserDeleteController(UserApplicationService userApplicationService) {
+	UserDeleteController(UserDeleter userDeleter) {
 
-		Assert.notNull(userApplicationService, "userApplicationService must not be null");
+		Assert.notNull(userDeleter, "userDeleter must not be null");
 
-		this.userApplicationService = userApplicationService;
+		this.userDeleter = userDeleter;
 	}
-
 
 	@GetMapping
 	String deleteUser(@RequestParam Long id) {
 
-		userApplicationService.deleteUser(id);
+		userDeleter.deleteUser(id);
 
 		return "redirect:" + USER_LIST_PATH;
 	}

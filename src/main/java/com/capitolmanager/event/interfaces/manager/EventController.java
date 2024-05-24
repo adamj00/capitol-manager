@@ -1,5 +1,5 @@
 
-package com.capitolmanager.event.interfaces;
+package com.capitolmanager.event.interfaces.manager;
 
 import static com.capitolmanager.utils.DateUtils.formatLocalDateToDDMM;
 
@@ -32,6 +32,7 @@ public class EventController {
 
 	private static final String VIEW_NAME = "events";
 	private static final String M_EVENT_FORM = "eventForm";
+	public static final String REDIRECT = "redirect:";
 
 	private final EventApplicationService eventService;
 	private final ShowApplicationService showApplicationService;
@@ -56,7 +57,7 @@ public class EventController {
 
 		if (eventGroupId == null) {
 
-			return "redirect:" + "/eventGroups";
+			return REDIRECT + "/eventGroups";
 		}
 
 		if (weekStart == null) {
@@ -84,7 +85,7 @@ public class EventController {
 
 		EventForm form = EventFormFactory.getEmptyForm();
 		form.setEventGroupId(eventGroupId);
-		model.addAttribute("eventForm", form);
+		model.addAttribute(M_EVENT_FORM, form);
 
 		return VIEW_NAME;
 	}
@@ -102,7 +103,7 @@ public class EventController {
 			eventService.updateEvent(eventForm);
 		}
 
-		return "redirect:" + "events?weekStart=" + eventForm.getEventStartTime().format(DateTimeFormatter.ISO_DATE)
+		return REDIRECT + "events?weekStart=" + eventForm.getEventStartTime().format(DateTimeFormatter.ISO_DATE)
 			+ "&eventGroup=" + eventForm.getEventGroupId();
 
 	}
@@ -116,7 +117,7 @@ public class EventController {
 
 		eventService.deleteEvent(id);
 
-		return "redirect:" + "/events?weekStart=" + weekStart + "&eventGroup=" + eventGroup;
+		return REDIRECT + "/events?weekStart=" + weekStart + "&eventGroup=" + eventGroup;
 	}
 
 	@GetMapping("/{id}")

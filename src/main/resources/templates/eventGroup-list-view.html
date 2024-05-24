@@ -14,13 +14,26 @@
                             <!-- Zawartość karty -->
                             <div class="card-body">
                                 <h5 class="card-title" th:text="${eventGroup.name}" style="cursor:pointer;" data-bs-toggle="modal" data-bs-target="#editGroupNameModal">Nazwa grupy</h5>
+                                
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" th:id="'availabilitySwitch-' + ${eventGroup.id}" th:checked="${eventGroup.availabilityActive}">
-                                    <label class="form-check-label" for="availabilitySwitch">Dyspozycyjność aktywna</label>
+                                    <input class="form-check-input availability" type="checkbox" th:id="'availabilitySwitch-' + ${eventGroup.id}" th:checked="${eventGroup.availabilityActive}">
+                                    <label class="form-check-label" for="availabilitySwitch">Pokazuj dyspozycyjność</label>
                                 </div>
+
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input activity" type="checkbox" th:id="'activitySwitch-' + ${eventGroup.id}" th:checked="${eventGroup.scheduleActive}">
+                                    <label class="form-check-label" for="activitySwitch">Pokazuj grafik</label>
+                                </div>
+
                                 <br>
                                 <a th:href="@{/events(eventGroup=${eventGroup.id})}" class="btn btn-primary">
                                     <i class="bi bi-pencil-square"></i> Edytuj wydarzenia
+                                </a>
+                                <a th:href="@{/scheduleEdit(eventGroup=${eventGroup.id})}" class="btn btn-secondary mt-2">
+                                    <i class="bi bi-person-plus-fill"></i> Przypisz pracowników
+                                </a>
+                                <a th:href="@{/positionAssigning(eventGroup=${eventGroup.id})}" class="btn btn-secondary mt-2">
+                                    <i class="bi bi-pencil-fill"></i> Przypisz stanowiska
                                 </a>
                             </div>
                         </div>
@@ -71,7 +84,9 @@
                                     <input type="text" class="form-control" id="editEventGroupName" name="name" required>
                                     <input type="hidden" id="editEventGroupId" name="id" value="">
                                 </div>
-                                <button type="submit" class="btn btn-primary">Zapisz zmiany</button>
+                                <button type="submit" class="btn btn-primary">
+									<i class="bi bi-clipboard-plus"></i> Zapisz zmiany
+								</button>
                             </form>
                         </div>
                     </div>
@@ -134,6 +149,52 @@
                         window.location = '/eventGroups/delete?id=' + groupId;
                     }
                 }
+
+                document.querySelectorAll('.availability').forEach(function(checkbox) {
+                    checkbox.addEventListener('change', function() {
+                        var eventGroupId = this.id.split('-')[1];
+                        var value = this.checked;
+                        var formData = new FormData();
+                        formData.append('id', eventGroupId);
+                        formData.append('value', value);
+
+                        fetch('/eventGroups/changeAvailabilityActive', {
+                            method: 'POST',
+                            body: formData
+                        }).then(response => {
+                            if(response.ok) {
+                                console.log('Availability active status changed');
+                            } else {
+                                throw new Error('Network response was not ok.');
+                            }
+                        }).catch(error => {
+                            console.error('There has been a problem with your fetch operation:', error);
+                        });
+                    });
+                });
+
+                document.querySelectorAll('.activity').forEach(function(checkbox) {
+                    checkbox.addEventListener('change', function() {
+                        var eventGroupId = this.id.split('-')[1];
+                        var value = this.checked;
+                        var formData = new FormData();
+                        formData.append('id', eventGroupId);
+                        formData.append('value', value);
+
+                        fetch('/eventGroups/changeScheduleActive', {
+                            method: 'POST',
+                            body: formData
+                        }).then(response => {
+                            if(response.ok) {
+                                console.log('Schedule active status changed');
+                            } else {
+                                throw new Error('Network response was not ok.');
+                            }
+                        }).catch(error => {
+                            console.error('There has been a problem with your fetch operation:', error);
+                        });
+                    });
+                });
             
             </script>
         </div>

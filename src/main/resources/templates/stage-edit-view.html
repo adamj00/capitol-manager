@@ -45,9 +45,12 @@
             </script>
 
         <div class="container mt-5">
-            <h2>Edycja sceny</h2>
+            <h2 th:if="${stage.id != null}" style="text-align: center;" th:text="'Edycja sceny: ' + ${stage.name}"></h2>
+            <h2 th:if="${stage.id == null}" style="text-align: center;">Tworzenie nowej sceny</h2>
             <div class="mb-3">
-                <a href="/stage-list" class="btn btn-success">Powrót</a>
+                <a href="/stage-list" class="btn btn-secondary">
+					<i class="bi bi-arrow-left"></i> Powrót
+				</a>
                 <button th:if="${canDelete}" onclick="confirmDelete()" class="btn btn-danger">
                     <i class="bi bi-trash">Usuń</i>
                 </button>
@@ -102,10 +105,13 @@
                             </tr>
                         </tbody>
                     </table>
+                    <br>
                     <button type="button" class="btn btn-primary btn-sm" onclick="addPosition()">Dodaj stanowisko</button>
                 </div>
         
-                <button type="submit" class="btn btn-primary">Zapisz</button>
+                <button type="submit" class="btn btn-primary">
+					<i class="bi bi-clipboard-plus"></i> Zapisz
+				</button>
             </form>
         </div>
     </div>

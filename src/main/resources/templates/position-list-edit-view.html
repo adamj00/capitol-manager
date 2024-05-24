@@ -2,7 +2,7 @@
 
     <div layout:fragment="content">
         <div class="container mt-5">
-            <h2>Edycja stanowisk</h2>
+            <h2 style="text-align: center;">Stanowiska</h2>
             
             <form th:action="@{/savePositions}" th:object="${positionsForm}" method="post">
                 <div class="error" th:if="${#fields.hasErrors('positions')}" th:errors="*{positions}">Błąd walidacji</div>
@@ -39,8 +39,13 @@
                         </table>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary">Zapisz</button>
-                <a href="/positions?createNew=true" class="btn btn-success">Utwórz</a>
+                <br>
+                <button type="submit" class="btn btn-primary">
+					<i class="bi bi-clipboard-plus"></i> Zapisz
+				</button>
+                <a href="/positions?createNew=true" class="btn btn-success">
+					<i class="bi bi-clipboard-plus"></i> Utwórz
+				</a>
             </form>
         </div>
     </div>

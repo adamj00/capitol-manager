@@ -18,7 +18,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import com.capitolmanager.hibernate.AbstractEntity;
@@ -34,18 +33,18 @@ public class EventGroup extends AbstractEntity {
 	@OneToMany(mappedBy = "eventGroup", fetch = FetchType.EAGER)
 	private Set<Event> events;
 
-	@OneToOne(mappedBy = "eventGroup")
-	private Schedule schedule;
-
 	@Column(name = "availability_active")
 	private boolean availabilityActive;
 
-	public EventGroup(String name, Set<Event> events, Schedule schedule, boolean availabilityActive) {
+	@Column
+	private boolean active;
+
+	public EventGroup(String name, Set<Event> events, boolean availabilityActive, boolean active) {
 
 		this.name = name;
 		this.events = events;
-		this.schedule = schedule;
 		this.availabilityActive = availabilityActive;
+		this.active = active;
 	}
 
 	public EventGroup() {
@@ -72,16 +71,6 @@ public class EventGroup extends AbstractEntity {
 		this.events = events;
 	}
 
-	public Schedule getSchedule() {
-
-		return schedule;
-	}
-
-	public void setSchedule(Schedule schedule) {
-
-		this.schedule = schedule;
-	}
-
 	public boolean isAvailabilityActive() {
 
 		return availabilityActive;
@@ -90,5 +79,15 @@ public class EventGroup extends AbstractEntity {
 	public void setAvailabilityActive(boolean availabilityActive) {
 
 		this.availabilityActive = availabilityActive;
+	}
+
+	public boolean isActive() {
+
+		return active;
+	}
+
+	public void setActive(boolean active) {
+
+		this.active = active;
 	}
 }

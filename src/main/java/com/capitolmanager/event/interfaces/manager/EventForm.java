@@ -10,7 +10,7 @@
  * i w zgodzie z warunkami umowy licencyjnej zawartej z Unity S.A.
  */
 
-package com.capitolmanager.event.interfaces;
+package com.capitolmanager.event.interfaces.manager;
 
 import java.time.LocalDateTime;
 
@@ -25,20 +25,14 @@ public class EventForm {
 	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
 	private LocalDateTime eventStartTime;
 
-	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-	private LocalDateTime shiftStartTime;
-	private String notes;
-
 	public EventForm () {}
 
-	public EventForm(Long id, Long show, Long eventGroupId, LocalDateTime eventStartTime, LocalDateTime shiftStartTime, String notes) {
+	public EventForm(Long id, Long show, Long eventGroupId, LocalDateTime eventStartTime) {
 
 		this.id = id;
 		this.show = show;
 		this.eventGroupId = eventGroupId;
 		this.eventStartTime = eventStartTime;
-		this.shiftStartTime = shiftStartTime;
-		this.notes = notes;
 	}
 
 	public Long getShow() {
@@ -59,26 +53,6 @@ public class EventForm {
 	public void setEventStartTime(LocalDateTime eventStartTime) {
 
 		this.eventStartTime = eventStartTime;
-	}
-
-	public LocalDateTime getShiftStartTime() {
-
-		return shiftStartTime;
-	}
-
-	public void setShiftStartTime(LocalDateTime shiftStartTime) {
-
-		this.shiftStartTime = shiftStartTime;
-	}
-
-	public String getNotes() {
-
-		return notes;
-	}
-
-	public void setNotes(String notes) {
-
-		this.notes = notes;
 	}
 
 	public Long getId() {

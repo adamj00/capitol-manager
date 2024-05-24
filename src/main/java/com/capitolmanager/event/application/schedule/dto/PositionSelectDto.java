@@ -1,5 +1,5 @@
 /*
- * Created on 11-05-2024 22:58 by ajarzabe
+ * Created on 17-05-2024 21:14 by ajarzabe
  *
  * Copyright (c) 2001-2024 Unity S.A.
  * ul. Strzegomska 2-4, 53-611 Wrocław, Poland
@@ -10,23 +10,17 @@
  * i w zgodzie z warunkami umowy licencyjnej zawartej z Unity S.A.
  */
 
-package com.capitolmanager.event.application;
+package com.capitolmanager.event.application.schedule.dto;
 
-public class EventGroupListDto {
+public class PositionSelectDto {
 
 	private Long id;
 	private String name;
-	private boolean availabilityActive;
 
-	public EventGroupListDto(Long id, String name, boolean availabilityActive) {
+	public PositionSelectDto(Long id, String name) {
 
 		this.id = id;
 		this.name = name;
-		this.availabilityActive = availabilityActive;
-	}
-
-	public EventGroupListDto() {
-
 	}
 
 	public Long getId() {
@@ -47,15 +41,5 @@ public class EventGroupListDto {
 	public void setName(String name) {
 
 		this.name = name;
-	}
-
-	public boolean isAvailabilityActive() {
-
-		return availabilityActive;
-	}
-
-	public void setAvailabilityActive(boolean availabilityActive) {
-
-		this.availabilityActive = availabilityActive;
 	}
 }

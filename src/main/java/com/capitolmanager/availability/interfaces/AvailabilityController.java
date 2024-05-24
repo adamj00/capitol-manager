@@ -36,7 +36,7 @@ public class AvailabilityController {
 	@GetMapping
 	String getView(@RequestParam(required = false) Long eventGroup, Model model) {
 
-		if (eventGroup == null) {
+		if (eventGroup == null || !availabilityApplicationService.isAvailabilityActive(eventGroup)) {
 
 			return "redirect:/availabilityList";
 		}
@@ -49,7 +49,7 @@ public class AvailabilityController {
 	}
 	@PostMapping("/change")
 	@ResponseBody
-	public ResponseEntity<?> changeAvailability(
+	public ResponseEntity<String> changeAvailability(
 		@RequestParam("id") Long availabilityId,
 		@RequestParam("value") boolean value) {
 

@@ -1,0 +1,202 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+
+    <div layout:fragment="content">
+
+        <style>
+            .scrollable-table-container {
+                overflow-x: auto; /* Enable horizontal scrolling */
+                min-width: 1500px;
+            }
+        
+            .name-column {
+                width: auto;
+                min-width: 180px;
+                white-space: nowrap;
+            }
+            .event-title {
+                white-space: nowrap;
+            }
+        
+            /* Style dla checkboxów */
+            .checkbox-container {
+                display: flex; /* Używamy Flexboxa do wyśrodkowania */
+                justify-content: center; /* Wyśrodkowanie poziome */
+                align-items: center; /* Wyśrodkowanie pionowe */
+                height: 100%; /* Wysokość kontenera równa komórce tabeli */
+            }
+        
+            .checkbox-container input[type="checkbox"] {
+                transform: scale(1.8); /* Powiększenie checkboxa */
+                margin: 0; /* Usunięcie domyślnych marginesów */
+                cursor: pointer; /* Kursor wskazujący na możliwość kliknięcia */
+                color: blue;
+            }
+
+            .active-cell {
+                background-color: #FFFFFF; /* Białe tło dla aktywnych komórek */
+            }
+            .inactive-cell {
+                background-color: #7a7575; /* Szare tło dla nieaktywnych komórek */
+            }
+        </style>
+
+        
+
+        <div class="container mt-3">
+
+            <div class="row mb-3 align-items-center">
+                <div class="col-auto">
+                    <!-- Przycisk powrotu -->
+                    <a href="/eventGroups" class="btn btn-secondary mb-3">
+                        <i class="bi bi-arrow-left"></i> Powrót
+                    </a>
+                </div>
+                <div class="col text-center">
+                    <h2 th:text="'Przypisywanie pracowników: ' + ${title}">May 2024</h2>
+                </div>
+            </div>
+            <div class="scrollable-table-container">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <!-- Pusta komórka dla kolumny z imieniem i nazwiskiem -->
+                            <th class="name-column"></th>
+                            <!-- Pętla po wydarzeniach dla dat rozpoczęcia -->
+                            <th th:each="event, eventStat : ${events}">
+                                <div style="text-align: center;" th:text="${event.eventStartTime}">Data i godzina rozpoczęcia</div>
+                            </th>
+                        </tr>
+                        <tr>
+                            <!-- Komórka dla kolumny z imieniem i nazwiskiem -->
+                            <th class="name-column">Imię i nazwisko</th>
+                            <!-- Pętla po wydarzeniach dla nazw -->
+                            <th class="event-title" th:each="event, eventStat : ${events}">
+                                <div class="card" th:id="'event-tile-' + ${eventStat.index}">
+                                    <div class="card-body">
+                                        <h5 class="card-title" th:text="${event.title}">Nazwa wydarzenia</h5>
+                                        <!-- Tutaj dynamicznie aktualizowana liczba przypisanych pracowników -->
+                                        <p class="card-text" th:text="${event.assignedEmployeesCount} + '/' + ${event.requiredEmployeesCount}">0 pracowników</p>
+                                    </div>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Pętla po pracownikach -->
+                        <tr th:each="employee, empStat : ${employees}">
+                            <td class="sticky-column" th:text="${employee.name}">Jan Kowalski</td>
+                            <!-- Pętla po wydarzeniach dla checkboxów -->
+                            <td th:each="event, eventStat : ${events}"
+                                th:class="${#lists.contains(employee.availableForEvents, event.id) ? 'active-cell' : 'inactive-cell'}">
+                                <div class="checkbox-container">
+                                    <input type="checkbox" th:data-user-id="${employee.id}" th:data-event-id="${event.id}"
+                                        th:id="'event' + ${eventStat.index} + '_employee' + ${empStat.index}"
+                                        th:name="'event' + ${eventStat.index}" th:value="${employee.id}" 
+                                        th:checked="${#lists.contains(employee.assignedEvents, event.id)}"
+                                        th:disabled="${!#lists.contains(employee.availableForEvents, event.id)}">
+                                    <label class="form-check-label" th:for="'event' + ${eventStat.index} + '_employee' + ${empStat.index}"></label>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+            document.addEventListener('DOMContentLoaded', function () {
+                // Funkcja do aktualizacji koloru tła kafelka wydarzenia
+                function updateEventTileBackground(eventTile, assignedCount, requiredCount) {
+                    // Porównaj liczbę przypisanych pracowników z wymaganą liczbą
+                    if (assignedCount === requiredCount) {
+                        // Ustaw zielone półprzezroczyste tło
+                        eventTile.style.backgroundColor = 'rgba(0, 255, 0, 0.25)';
+                    } else {
+                        // Ustaw czerwone półprzezroczyste tło
+                        eventTile.style.backgroundColor = 'rgba(255, 0, 0, 0.25)';
+                    }
+                }
+                function sendPostRequest(userId, eventId, value) {
+                    // Prepare data to be sent in the request
+                    const formData = new FormData();
+                    formData.append('user', userId);
+                    formData.append('event', eventId);
+                    formData.append('value', value);
+
+                    // Send the POST request using Fetch API
+                    fetch('/scheduleEdit/change', {
+                        method: 'POST',
+                        body: formData
+                    }).then(response => {
+                        if (response.ok) {
+                            console.log('Schedule updated successfully.');
+                        } else {
+                            console.error('Failed to update schedule.');
+                        }
+                    }).catch(error => {
+                        console.error('Error:', error);
+                    });
+                }
+        
+                // Funkcja do aktualizacji kolorów tła wszystkich kafelków wydarzeń
+                function updateAllEventTilesBackground() {
+                    // Pobierz wszystkie kafelki wydarzeń
+                    var eventTiles = document.querySelectorAll('.card');
+                    eventTiles.forEach(function(eventTile) {
+                        // Pobierz element wyświetlający liczbę przypisanych pracowników
+                        var assignedCountElement = eventTile.querySelector('.card-text');
+                        // Pobierz aktualną liczbę przypisanych pracowników oraz całkowitą liczbę wymaganych pracowników
+                        var counts = assignedCountElement.textContent.split('/');
+                        var assignedCount = parseInt(counts[0]);
+                        var requiredCount = parseInt(counts[1]);
+                        // Zaktualizuj kolor tła kafelka wydarzenia
+                        updateEventTileBackground(eventTile, assignedCount, requiredCount);
+                    });
+                }
+        
+                // Pobierz wszystkie checkboxy
+                var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        
+                // Dodaj nasłuchiwacz zdarzeń do każdego checkboxa
+                checkboxes.forEach(function(checkbox) {
+                    checkbox.addEventListener('change', function() {
+                        // Pobierz indeks wydarzenia z id checkboxa
+                        var eventIndex = this.name.replace('event', '');
+                        // Pobierz kafelek wydarzenia
+                        var eventTile = document.getElementById('event-tile-' + eventIndex);
+                        // Pobierz element wyświetlający liczbę przypisanych pracowników
+                        var assignedCountElement = eventTile.querySelector('.card-text');
+                        // Pobierz aktualną liczbę przypisanych pracowników oraz całkowitą liczbę wymaganych pracowników
+                        var counts = assignedCountElement.textContent.split('/');
+                        var assignedCount = parseInt(counts[0]);
+                        var requiredCount = parseInt(counts[1]);
+        
+                        // Zaktualizuj liczbę przypisanych pracowników
+                        if (this.checked) {
+                            assignedCount += 1;
+                        } else {
+                            assignedCount -= 1;
+                        }
+                        assignedCountElement.textContent = assignedCount + '/' + requiredCount;
+        
+                        // Zaktualizuj kolor tła kafelka wydarzenia
+                        updateEventTileBackground(eventTile, assignedCount, requiredCount);
+
+                         // Get user ID, event ID, and schedule ID from data attributes
+                        var userId = this.getAttribute('data-user-id');
+                        var eventId = this.getAttribute('data-event-id');
+
+                        // Call the function to send the POST request
+                        sendPostRequest(userId, eventId, this.checked);
+                    });
+                });
+        
+                // Zaktualizuj kolor tła dla wszystkich kafelków przy inicjalnym ładowaniu
+                updateAllEventTilesBackground();
+            });
+            /*]]>*/
+        </script>
+    </div>
+
+</html>

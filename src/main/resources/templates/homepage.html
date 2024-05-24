@@ -1,17 +1,102 @@
-<html
-		xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-		layout:decorate="~{layout}">
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+	<body>
+		<div layout:fragment="content" class="container mt-5">
 
+			<style>
+				.event-list-item {
+					background-color: #f8f9fa; 
+					border-left: 5px solid #007bff; 
+					margin-bottom: 10px; 
+					border-radius: 5px; 
+					padding: 10px 15px; 
+					cursor: pointer; /* This line changes the cursor to a pointer */
+				}
+				.event-list-item:hover {
+					background-color: #e2e6ea; 
+				}
+				.hidden {
+					display: none;
+				}
+			</style>
 
-	  <div layout:fragment="content">
+			<h1 th:text="'Witaj, ' + ${userName} + '!'">Witaj w systemie zarządzania bileterami!</h1>
+        	<br>
+        
+			<h2 th:if="${not #lists.isEmpty(events)}">Nadchodzące zmiany</h2>
+			<ul class="list-unstyled"> <!-- Usunięcie domyślnego stylowania listy -->
+				<li class="event-list-item" th:each="event : ${events}" th:id="${event.id}" th:text="${event.label}">Przykładowe wydarzenie</li>			</ul>
 
-		<h1>Witaj w systemie zarządzania bileterami!</h1>
+			<!-- Modal -->
+			<div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
+				<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+					<h5 class="modal-title" id="eventModalLabel">Szczegóły wydarzenia</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<dl class="row">
+							<dt class="col-sm-4">Tytuł:</dt>
+							<dd class="col-sm-8" id="showTitle"><span></span></dd>
+					
+							<dt class="col-sm-4">Początek:</dt>
+							<dd class="col-sm-8" id="eventStartTime"><span></span></dd>
+					
+							<dt class="col-sm-4">Czas trwania:</dt>
+							<dd class="col-sm-8" id="duration"><span></span></dd>
+					
+							<dt class="col-sm-4" id="position-label">Stanowisko:</dt>
+							<dd class="col-sm-8" id="position"><span></span></dd>
+					
+							<dt class="col-sm-4">Scena:</dt>
+							<dd class="col-sm-8" id="stage"><span></span></dd>
+						</dl>
+					</div>
+					<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
+					</div>
+				</div>
+				</div>
+			</div>
 
-		<br>
-		
-		<h2>Nadchodzące zmiany</h2>
-		<span>Wtorek 12.04.2024 godzina 18:00 - Mock. Czarna Burleska.</span>
-		
+			<script>
+				document.addEventListener('DOMContentLoaded', (event) => {
+					document.querySelectorAll('.event-list-item').forEach(item => {
+						item.addEventListener('click', function(e) {
+							const eventId = this.getAttribute('id');
+							fetch(`/eventDetails?eventId=${eventId}`)
+								.then(response => response.json())
+								.then(data => {
+			
+									document.getElementById('showTitle').querySelector('span').textContent = data.showTitle;
+									document.getElementById('eventStartTime').querySelector('span').textContent = data.eventStartTime;
+									document.getElementById('duration').querySelector('span').textContent = data.duration;
+									
+				
+									const positionElement = document.getElementById('position');
+									const positionLabel = document.getElementById('position-label');
+									if (data.position) {
+										positionElement.classList.remove('hidden');
+										positionLabel.classList.remove('hidden');
+										positionElement.querySelector('span').textContent = data.position;
+									} else {
+										positionElement.classList.add('hidden');
+										positionLabel.classList.add('hidden');
+									}
+									
+									document.getElementById('stage').querySelector('span').textContent = data.stage;
+								
+									
+									new bootstrap.Modal(document.getElementById('eventModal')).show();
+								})
+								.catch(error => {
+									console.error('Error fetching event details:', error);
+								});
+						});
+					});
+				});
+		</script>
+			
 		</div>
-
+	</body>
 </html>

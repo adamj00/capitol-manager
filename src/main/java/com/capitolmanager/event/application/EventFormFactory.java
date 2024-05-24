@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import com.capitolmanager.event.domain.Event;
-import com.capitolmanager.event.interfaces.EventForm;
+import com.capitolmanager.event.interfaces.manager.EventForm;
 
 
 @Service
@@ -48,8 +48,6 @@ public class EventFormFactory {
 		return new EventForm(event.getId(),
 			event.getShow().getId(),
 			event.getEventGroup().getId(),
-			event.getEventStartTime(),
-			event.getShiftStartTime(),
-			event.getNotes());
+			event.getEventStartTime());
 	}
 }
