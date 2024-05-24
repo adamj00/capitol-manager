@@ -26,8 +26,8 @@ import com.capitolmanager.position.application.PositionDto;
 @Service
 public class PositionsValidator implements Validator {
 
-	private static final String E_POSITION_NAME_MUST_NOT_BE_EMPTY = "positions.name.must.not.be.empty";
-	private static final String E_POSITION_NAME_MUST_BE_UNIQUE = "positions.name.must.be.unique";
+	public static final String E_POSITION_NAME_MUST_NOT_BE_EMPTY = "positions.name.must.not.be.empty";
+	public static final String E_POSITION_NAME_MUST_BE_UNIQUE = "positions.name.must.be.unique";
 
 	@Override
 	public boolean supports(Class<?> clazz) {
