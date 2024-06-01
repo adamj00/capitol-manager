@@ -44,12 +44,13 @@ public class HomepageService {
 	public List<EventListDto> getCloseEventsForLoggedUser() {
 
 		Long userId = userApplicationService.getLoggedUserId();
+		boolean isUserManager = userApplicationService.isUserManager(userId);
 
 		return eventGroupQueries.getAll().stream()
 			.filter(EventGroup::isActive)
 			.flatMap(eventGroup -> eventGroup.getEvents().stream())
 			.flatMap(event -> event.getAssignments().stream())
-			.filter(assignment -> assignment.getUser().getId().equals(userId))
+			.filter(assignment -> isUserManager || assignment.getUser().getId().equals(userId))
 			.map(EventPositionAssignment::getEvent)
 			.filter(event -> isFromCurrentWeek(event.getEventStartTime().toLocalDate()))
 			.distinct()

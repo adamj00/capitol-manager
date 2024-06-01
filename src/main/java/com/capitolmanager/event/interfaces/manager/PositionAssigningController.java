@@ -44,6 +44,7 @@ public class PositionAssigningController {
 		model.addAttribute("events", scheduleApplicationService.getEventsForAssignment(eventGroupId));
 		model.addAttribute("assignedPositions", scheduleApplicationService.getAssignments(eventGroupId));
 		model.addAttribute("title", scheduleApplicationService.getEventGroupName(eventGroupId));
+		model.addAttribute("eventGroup", eventGroupId);
 
 		return VIEW_NAME;
 	}
