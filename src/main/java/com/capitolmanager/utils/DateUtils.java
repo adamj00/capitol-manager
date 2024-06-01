@@ -21,6 +21,7 @@ import java.util.List;
 public class DateUtils {
 
 	private DateUtils() {
+
 		throw new IllegalStateException("Utility class");
 	}
 
@@ -32,7 +33,21 @@ public class DateUtils {
 		"sobota",
 		"niedziela");
 
+	static List<String> monthNames = List.of("Styczeń",
+		"Luty",
+		"Marzec",
+		"Kwiecień",
+		"Maj",
+		"Czerwiec",
+		"Lipiec",
+		"Sierpień",
+		"Wrzesień",
+		"Październik",
+		"Listopad",
+		"Grudzień");
+
 	public static String formatLocalDateToDDMM(LocalDate date) {
+
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM");
 		return date.format(formatter);
 	}
@@ -40,7 +55,7 @@ public class DateUtils {
 	public static String formatLocalDateTime(LocalDateTime localDateTime) {
 
 		String dayString = formatLocalDateToDDMM(localDateTime.toLocalDate());
-		String weekDay = weekDays.get(localDateTime.getDayOfWeek().getValue() -1);
+		String weekDay = weekDays.get(localDateTime.getDayOfWeek().getValue() - 1);
 		String time = localDateTime.toLocalTime().toString();
 
 		return weekDay + " " + dayString + " " + time;
@@ -49,9 +64,18 @@ public class DateUtils {
 	public static String formatLocalDateTimeWithGodzina(LocalDateTime localDateTime) {
 
 		String dayString = formatLocalDateToDDMM(localDateTime.toLocalDate());
-		String weekDay = weekDays.get(localDateTime.getDayOfWeek().getValue() -1);
+		String weekDay = weekDays.get(localDateTime.getDayOfWeek().getValue() - 1);
 		String time = localDateTime.toLocalTime().toString();
 
-		return weekDay + " " + dayString + " godzina " + time;
+		return weekDay + " " + dayString + ", godzina " + time;
+	}
+
+	public static String getMonthString(int month) {
+
+		if (month >12 || month < 1){
+			throw new IllegalArgumentException();
+		}
+
+		return monthNames.get(month);
 	}
 }

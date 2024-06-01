@@ -1,3 +1,4 @@
+
 <html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
 	<body>
 		<div layout:fragment="content" class="container mt-5">
@@ -17,6 +18,112 @@
 				.hidden {
 					display: none;
 				}
+
+				.container {
+					max-width: 1200px;
+					margin: 0 auto;
+					padding: 0 15px;
+				}
+				.btn-secondary {
+					background-color: #6c757d;
+					border: none;
+					padding: 0.75rem 1.25rem;
+					border-radius: 0.3rem;
+					color: white;
+					text-decoration: none;
+					transition: background-color 0.3s ease;
+				}
+				.btn-secondary:hover {
+					background-color: #5a6268;
+				}
+				.btn-secondary i {
+					margin-right: 0.5rem;
+				}
+				.calendar-day {
+					min-height: 150px;
+					border: 1px solid #dee2e6;
+					position: relative;
+					transition: background-color 0.3s ease;
+				}
+				.calendar-day:hover {
+					background-color: #f8f9fa;
+				}
+				.calendar-day-past {
+					background-color: #e9ecef;
+				}
+				.day-number {
+					position: absolute;
+					top: 5px;
+					right: 5px;
+					font-size: 0.85em;
+					z-index: 2;
+					background-color: white;
+					padding: 2px 5px;
+					border-radius: 50%;
+					box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+				}
+				.event-tile {
+					border: 1px solid #dee2e6;
+					margin-bottom: .5rem;
+					padding: .5rem;
+					border-radius: .25rem;
+					position: relative;
+					box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+					transition: transform 0.2s ease, box-shadow 0.2s ease;
+					background-color: rgba(6, 6, 157, 0.1)
+				}
+				.event-tile:hover {
+					transform: translateY(-3px);
+					box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+				}
+				.event-title {
+					font-size: 1rem;
+					font-weight: 600;
+					color: #32325d;
+				}
+				.stage-name {
+					font-size: 0.85rem;
+					color: #6c757d;
+				}
+				.event-time {
+					font-size: 1rem;
+					color: #495057;
+					font-weight: 600;
+				}
+				.show-duration {
+					font-size: 0.85rem;
+					color: #6c757d;
+				}
+				.assigned {
+					background-color: rgba(40, 167, 69, 0.5);
+				}
+				.not-assigned {
+					background-color: #f8f9fa;
+				}
+				/* Zmniejsz szerokość kalendarza */
+		
+
+				/* Styl dla przycisku rozwijania/zwijania */
+				.toggle-calendar {
+					background-color: #007bff;
+					color: white;
+					border: none;
+					padding: 10px;
+					margin: 10px 0;
+					cursor: pointer;
+					display: block;
+					width: 200px;
+					margin-left: auto;
+					margin-right: auto;
+				}
+
+				/* Ukryj kalendarz domyślnie */
+				.calendar-hidden {
+					display: none;
+				}
+				.today {
+					border: 2px solid black;
+				}
 			</style>
 
 			<h1 th:text="'Witaj, ' + ${userName} + '!'">Witaj w systemie zarządzania bileterami!</h1>
@@ -24,7 +131,53 @@
         
 			<h2 th:if="${not #lists.isEmpty(events)}">Nadchodzące zmiany</h2>
 			<ul class="list-unstyled"> <!-- Usunięcie domyślnego stylowania listy -->
-				<li class="event-list-item" th:each="event : ${events}" th:id="${event.id}" th:text="${event.label}">Przykładowe wydarzenie</li>			</ul>
+				<li class="event-list-item" th:each="event : ${events}" th:id="${event.id}" th:text="${event.label}">Przykładowe wydarzenie</li>
+			</ul>
+
+			<br><br>
+				
+				<h2>Kalendarz wydarzeń</h2>
+
+				<div class="card">
+		
+					<div class="container mt-4">
+
+						<div class="row mb-3 align-items-center">
+							
+							<div class="card-header col text-center">
+								<h3 th:text="${monthName}">May 2024</h2> 		
+							</div>
+						</div>
+
+						<div class="card-body calendar-container">
+							<div class="row text-center fw-bold">
+								<div class="col">Pon</div>
+								<div class="col">Wt</div>
+								<div class="col">Śr</div>
+								<div class="col">Czw</div>
+								<div class="col">Pt</div>
+								<div class="col">Sob</div>
+								<div class="col">Ndz</div>
+							</div>
+					
+							<div th:each="week : ${weeks}" class="row border-top">
+								<div th:each="dayWithEvents : ${week}" class="col p-2 calendar-day" th:classappend="${dayWithEvents.date != null} ? '' : 'calendar-day-past'">
+									<div class="day-number" th:text="${dayWithEvents.date != null} ? ${dayWithEvents.date.dayOfMonth} : ''"></div>
+									<div th:if="${dayWithEvents.date != null}"
+										th:each="event : ${dayWithEvents.events}"
+										th:id="'event' + ${event.id}"
+										class="event-tile">
+										<div class="event-title" th:text="${event.title}"></div>
+										<div class="stage-name" th:text="${event.stage}"></div> 
+										<div class="event-time" th:text="${event.eventStartTime.format(formatter)}"></div>
+										<div class="show-duration" th:text="'Czas trwania: ' + ${event.duration}"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+				</div>
+
+				<button class="toggle-calendar" onclick="toggleCalendar()">Ukryj wydarzenia</button>
 
 			<!-- Modal -->
 			<div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
@@ -95,6 +248,21 @@
 						});
 					});
 				});
+
+				// Funkcja do przełączania widoczności kalendarza
+				function toggleCalendar() {
+					var calendar = document.querySelector('.calendar-container');
+					var button = document.querySelector('.toggle-calendar');
+					if (calendar.classList.contains('calendar-hidden')) {
+						calendar.classList.remove('calendar-hidden');
+						button.textContent = 'Ukryj wydarzenia';
+					} else {
+						calendar.classList.add('calendar-hidden');
+						button.textContent = 'Pokaż wydarzenia';
+					}
+				}
+
+				
 		</script>
 			
 		</div>

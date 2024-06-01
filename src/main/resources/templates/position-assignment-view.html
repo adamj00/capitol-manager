@@ -52,6 +52,10 @@
                     <a href="/eventGroups" class="btn btn-secondary mb-3">
                         <i class="bi bi-arrow-left"></i> Powrót
                     </a>
+
+                    <a href="javascript:void(0);" th:onclick="'confirmAutoAssign(' + ${eventGroup} + ');'" class="btn btn-primary mb-3">
+                        <i class="bi bi-pencil-fill"></i> Automatycznie przypisz stanowiska
+                    </a>
                 </div>
                 <div class="col text-center">
                     <h2 th:text="'Przypisywanie stanowisk: ' + ${title}">May 2024</h2>
@@ -183,9 +187,15 @@
                     });
                 }
 
-                // Call the function to update the selected options
                 updateSelectedOptions();
             });
+
+            function confirmAutoAssign(eventGroupId) {
+                var confirmAction = confirm("Automatyczne przydzielanie stanowisk usunie dotychaczasowe przypisania");
+                if (confirmAction) {
+                    window.location.href = "/autoPositionAssignment?eventGroupId=" + eventGroupId;
+                }
+            }
         
             /*]]>*/
         </script>

@@ -144,4 +144,9 @@ public class UserApplicationService {
 
 		return userQueries.get(getLoggedUserId()).getFirstName();
 	}
+
+	public boolean isUserManager(Long id) {
+
+		return userQueries.get(id).getRole().equals(UserRole.MANAGER);
+	}
 }
