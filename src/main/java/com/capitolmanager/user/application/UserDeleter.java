@@ -23,6 +23,7 @@ import com.capitolmanager.event.application.EventQueries;
 import com.capitolmanager.event.domain.Event;
 import com.capitolmanager.event.domain.EventPositionAssignment;
 import com.capitolmanager.hibernate.Repository;
+import com.capitolmanager.payroll.application.PayrollApplicationService;
 import com.capitolmanager.user.domain.User;
 
 
@@ -35,7 +36,7 @@ public class UserDeleter {
 	private final Repository<Availability> availabilityRepository;
 	private final EventQueries eventQueries;
 	private final Repository<EventPositionAssignment> eventPositionAssignmentRepository;
-
+	private final PayrollApplicationService payrollApplicationService;
 
 	@Autowired
 	UserDeleter(Repository<User> userRepository,
@@ -43,7 +44,8 @@ public class UserDeleter {
 		AvailabilityQueries availabilityQueries,
 		Repository<Availability> availabilityRepository,
 		EventQueries eventQueries,
-		Repository<EventPositionAssignment> eventPositionAssignmentRepository) {
+		Repository<EventPositionAssignment> eventPositionAssignmentRepository,
+		PayrollApplicationService payrollApplicationService) {
 
 		Assert.notNull(userRepository, "userRepository must not be null");
 		Assert.notNull(userQueries, "userQueries must not be null");
@@ -51,6 +53,7 @@ public class UserDeleter {
 		Assert.notNull(availabilityRepository, "availabilityRepository must not be null");
 		Assert.notNull(eventQueries, "eventQueries must not be null");
 		Assert.notNull(eventPositionAssignmentRepository, "eventPositionAssignmentRepository must not be null");
+		Assert.notNull(payrollApplicationService, "payrollApplicationService must not be null");
 
 		this.userRepository = userRepository;
 		this.userQueries = userQueries;
@@ -58,12 +61,14 @@ public class UserDeleter {
 		this.availabilityRepository = availabilityRepository;
 		this.eventQueries = eventQueries;
 		this.eventPositionAssignmentRepository = eventPositionAssignmentRepository;
+		this.payrollApplicationService = payrollApplicationService;
 	}
 
 	public void deleteUser(Long id) {
 
 		deleteAvailabilities(id);
 		deleteAssignments(id);
+		deletePayrolls(id);
 
 		User user = userQueries.get(id);
 		userRepository.delete(user);
@@ -93,5 +98,10 @@ public class UserDeleter {
 				}
 			}
 		}
+	}
+
+	private void deletePayrolls(Long userId) {
+
+		payrollApplicationService.deletePayrollsForUser(userId);
 	}
 }

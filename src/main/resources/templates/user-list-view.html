@@ -37,8 +37,13 @@
                                     <td sec:authorize="hasRole('MANAGER')"><span th:text="${user.email}">Adres email</span></td>
                                     <td><span th:text="${user.phoneNumber}">Numer telefonu</span></td>
                                     <td sec:authorize="hasRole('MANAGER')"><span th:text="${user.role}">Rola</span></td>
-                                    <td sec:authorize="hasRole('MANAGER')"><a th:href="@{/user-edit(id=${user.id})}" class="btn btn-primary btn-sm">
-                                        <i class="bi bi-pencil"></i> Edytuj</a>
+                                    <td sec:authorize="hasRole('MANAGER')">
+                                        <a th:href="@{/user-edit(id=${user.id})}" class="btn btn-primary btn-sm">
+                                            <i class="bi bi-pencil"></i> Edytuj
+                                        </a>
+                                        <a th:href="@{/payroll/manager(userId=${user.id})}" class="btn btn-secondary btn-sm">
+                                            <i class="bi bi-clock-history"></i> Raporty czasu pracy
+                                        </a>
                                     </td>
                                 </tr>
                             </tbody>

@@ -149,4 +149,13 @@ public class UserApplicationService {
 
 		return userQueries.get(id).getRole().equals(UserRole.MANAGER);
 	}
+
+	public User getLoggedUser() {
+
+		return userQueries.get(getLoggedUserId());
+	}
+
+	public String getUserName(Long userId) {
+		return userQueries.get(userId).toString();
+	}
 }
