@@ -14,6 +14,7 @@ package com.capitolmanager.utils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -33,7 +34,7 @@ public class DateUtils {
 		"sobota",
 		"niedziela");
 
-	static List<String> monthNames = List.of("Styczeń",
+	public static List<String> monthNames = List.of("Styczeń",
 		"Luty",
 		"Marzec",
 		"Kwiecień",
@@ -72,10 +73,15 @@ public class DateUtils {
 
 	public static String getMonthString(int month) {
 
-		if (month >12 || month < 1){
+		if (month > 12 || month < 1){
 			throw new IllegalArgumentException();
 		}
 
-		return monthNames.get(month);
+		return monthNames.get(month - 1);
+	}
+
+	public static String formatLocalTime(LocalTime time) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+		return time.format(formatter);
 	}
 }

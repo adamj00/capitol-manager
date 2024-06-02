@@ -1,0 +1,71 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+
+    <div layout:fragment="content">
+        
+        <div class="container mt-3">
+        
+            <h2 style="text-align: center;" th:text="'Raporty czasu pracy dla: ' + ${userName}"></h2>
+
+
+            <div class="card">
+
+                <div class="row mb-3">
+
+                    <div class="card-body">
+                        
+                        <div class="col-md-4">
+                            <form action="#" th:action="@{/payroll/manager}"  method="GET">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label for="month"><strong>Miesiąc:</strong></label>
+                                        <select id="month" name="month" class="form-control">
+                                            <option value="">Wybierz miesiąc</option>
+                                            <option th:each="month : ${months}" th:value="${month}" th:text="${month}"></option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="year"><strong>Rok:</strong></label>
+                                        <input type="number" id="year" name="year" class="form-control" value="2024" placeholder="Wpisz rok">
+                                    </div>
+                                    <input type="hidden" id="userId" name="userId"  th:value="${userId}" >
+                                </div>
+                                <br>
+                                <button type="submit" class="btn btn-primary">Filtruj</button>
+                            </form>
+                        </div>
+                    </div>
+                 </div>
+
+                <div class="card-body">
+
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Data</th>
+                                    <th scope="col">Rozpoczęcie</th>
+                                    <th scope="col">Zakończenie</th>
+                                    <th scope="col">Liczba godzin</th>
+                                    <th scope="col"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="payroll : ${payrolls}">
+                                    <td><span th:text="${payroll.date}"></span></td>
+                                    <td><span th:text="${payroll.start}"></span></td>
+                                    <td><span th:text="${payroll.end}"></span></td>
+                                    <td><span th:text="${payroll.hours}"></span></td>
+                            
+                                    <td><a th:href="@{/payroll/delete(id=${payroll.id},userId=${userId})}" class="btn btn-danger btn-sm">
+                                        <i class="bi bi-trash"></i> Usuń
+                                    </a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <strong th:text="'Suma: ' + ${sum} + 'h'"></strong>
+                </div>
+            </div>
+        </div>
+    </div>
+</html>

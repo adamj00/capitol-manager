@@ -1,0 +1,45 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+
+    <div layout:fragment="content">
+        <div class="container">
+            <div class="mb-3">
+                <a href="/payroll-list" class="btn btn-secondary">
+					<i class="bi bi-arrow-left"></i> Powrót
+				</a>
+                <h2 style="text-align: center;">Raport czasu pracy</h2>
+            </div>
+            <form th:action="@{/payroll-edit}" method="post" th:object="${payroll}">
+                <div class="mb-3">
+                    <label for="date" class="form-label">Data</label>
+                    <input type="date" class="form-control" id="date" name="date" th:field="*{date}" th:value="${payroll.date}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="start" class="form-label">Godzina rozpoczęcia</label>
+                    <div class="d-flex">
+                        <select class="form-select me-2" id="startHour" name="startHour" th:field="*{startHour}" required style="width: 80px;">
+                            <option th:each="hour : ${hours}" th:value="${hour}" th:text="${hour}"></option>
+                        </select>
+                        :
+                        <select class="form-select ms-2" id="startMinute" name="startMinute" th:field="*{startMinute}" required style="width: 80px;">
+                            <option th:each="minute : ${minutes}" th:value="${minute}" th:text="${minute}"></option>
+                        </select>
+                    </div>
+                    <br>
+                    <label for="start" class="form-label">Godzina zakończenia</label>
+                    <div class="d-flex">
+                        <select class="form-select me-2" id="endHour" name="endHour" th:field="*{endHour}" required style="width: 80px;">
+                            <option th:each="hour : ${hours}" th:value="${hour}" th:text="${hour}"></option>
+                        </select>
+                        :
+                        <select class="form-select ms-2" id="endMinute" name="endMinute" th:field="*{endMinute}" required style="width: 80px;">
+                            <option th:each="minute : ${minutes}" th:value="${minute}" th:text="${minute}"></option>
+                        </select>
+                    </div>
+                </div>
+                
+                <br>
+                <button type="submit" class="btn btn-primary">Zaraportuj</button>
+            </form>
+        </div>
+    </div>
+</html>
