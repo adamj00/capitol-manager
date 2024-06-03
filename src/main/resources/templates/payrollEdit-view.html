@@ -3,10 +3,11 @@
     <div layout:fragment="content">
         <div class="container">
             <div class="mb-3">
-                <a href="/payroll-list" class="btn btn-secondary">
+                <h2 style="text-align: center;">Raport czasu pracy</h2>
+                <a href="/payroll/employee" class="btn btn-secondary">
 					<i class="bi bi-arrow-left"></i> Powrót
 				</a>
-                <h2 style="text-align: center;">Raport czasu pracy</h2>
+                
             </div>
             <form th:action="@{/payroll-edit}" method="post" th:object="${payroll}">
                 <div class="mb-3">

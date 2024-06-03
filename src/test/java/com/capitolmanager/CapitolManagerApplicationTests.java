@@ -1,4 +1,4 @@
-package com.capitolmanager.user.application;
+package com.capitolmanager;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
