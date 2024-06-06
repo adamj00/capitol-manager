@@ -23,4 +23,6 @@ public interface PositionQueries {
 	List<Position> getAll();
 
 	Optional<Position> findById(Long id);
+
+	Position get(Long id);
 }

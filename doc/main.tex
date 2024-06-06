@@ -1,0 +1,324 @@
+% Opcje klasy 'iithesis' opisane sa w komentarzach w pliku klasy. Za ich pomoca
+% ustawia sie przede wszystkim jezyk oraz rodzaj (lic/inz/mgr) pracy.
+\documentclass[shortabstract]{iithesis}
+\usepackage{amssymb}
+%\usepackage[utf8]{inputenc}
+
+%%%%% DANE DO STRONY TYTUĹOWEJ
+% Niezaleznie od jezyka pracy wybranego w opcjach klasy, tytul i streszczenie
+% pracy nalezy podac zarowno w jezyku polskim, jak i angielskim.
+% Pamietaj o madrym (zgodnym z logicznym rozbiorem zdania oraz estetyka) recznym
+% zlamaniu wierszy w temacie pracy, zwlaszcza tego w jezyku pracy. Uzyj do tego
+% polecenia \fmlinebreak.
+\polishtitle    {Aplikacja webowa wspomagająca zarządzanie\fmlinebreak pracownikami obsługi widowni teatru}
+\englishtitle   {Web Application Supporting the Management of Theater Audience Service Staff}
+\polishabstract {Celem pracy jest stworzenie aplikacji webowej wspomagającej zarządzanie pracownikami obsługi widowni teatru umożliwiającej układanie i przeglądanie grafiku, zaznaczanie dyspozycyjności, konfigurację stanowisk oraz raportowanie czasu pracowników wraz z możliwością wyświetlania podsumowań miesięcznych. Wszystko w jednej aplikacji dostępnej z poziomu przeglądarki. Wymagania funkcjonalne i niefunkcjonalne zostały sporządzone na podstawie doświadczeń autora w pracy w Teatrze Muzycznym Capitol we Wrocławiu. Docelowo aplikacja ta może zastąpić rozwiązania dotychczas używane w tym teatrze przez pracowników obsługi widowni.}
+\englishabstract{\ldots}
+% w pracach wielu autorow nazwiska mozna oddzielic poleceniem \and
+\author         {Adam Jarząbek}
+% w przypadku kilku promotorow, lub koniecznosci podania ich afiliacji, linie
+% w ponizszym poleceniu mozna zlamac poleceniem \fmlinebreak
+\advisor        {dr inż. Leszek Grocholski}
+\date          {20 czerwca 2024}                     % Data zlozenia pracy
+% Dane do oswiadczenia o autorskim wykonaniu
+%\transcriptnum {}                     % Numer indeksu
+%\advisorgen    {dr. Jana Kowalskiego} % Nazwisko promotora w dopelniaczu
+%%%%%
+
+%%%%% WLASNE DODATKOWE PAKIETY
+%
+\usepackage{graphicx,listings,amsmath,amssymb,amsthm,amsfonts,tikz}
+%
+%%%%% WĹASNE DEFINICJE I POLECENIA
+%
+%\theoremstyle{definition} \newtheorem{definition}{Definition}[chapter]
+%\theoremstyle{remark} \newtheorem{remark}[definition]{Observation}
+%\theoremstyle{plain} \newtheorem{theorem}[definition]{Theorem}
+%\theoremstyle{plain} \newtheorem{lemma}[definition]{Lemma}
+%\renewcommand \qedsymbol {\ensuremath{\square}}
+% ...
+%%%%%
+
+\begin{document}
+
+%%%%% POCZÄTEK ZASADNICZEGO TEKSTU PRACY
+
+\chapter{Wprowadzenie}
+
+\section{Opis problemu}
+
+Teatry jako instytucje kultury odgrywają kluczową rolę w życiu społecznym, oferując widzom różnorodne formy rozrywki i edukacji. Jednak za kulisami, efektywne funkcjonowanie takiego miejsca wymaga skomplikowanej organizacji pracy wielu osób. W Teatrze Muzycznym Capitol, gdzie pracuję jako pracownik obsługi widowni, codzienne wyzwania związane z koordynacją pracy około 40 bileterów stanowią istotny problem operacyjny. Bileterzy pełnią różne funkcje – od sprawdzania biletów, przez obsługę szatni, aż po pilnowanie porządku w trakcie spektakli. Zarządzanie ich pracą, ze względu na zmienną dyspozycyjność i różnorodność stanowisk, wymaga elastycznego podejścia i precyzyjnego planowania.
+
+Do tej pory proces ten był realizowany za pomocą arkusza kalkulacyjnego Google Sheets oraz tradycyjnej papierowej dokumentacji. Taki sposób zarządzania, choć częściowo efektywny, posiada liczne ograniczenia. Brak centralizacji danych, trudności w szybkim dostępie do aktualnych informacji, ograniczone możliwości personalizacji oraz brak automatyzacji w przydzielaniu stanowisk to tylko niektóre z problemów, które zidentyfikowałem jako pracownik i obserwator.
+
+W niniejszej pracy inżynierskiej postawiłem sobie za cel stworzenie aplikacji webowej, która usprawni proces zarządzania pracownikami obsługi widowni w Teatrze Muzycznym Capitol. Aplikacja ta ma umożliwić pracownikom łatwe i intuicyjne zgłaszanie swojej dyspozycyjności, przeglądanie przydzielonych im wydarzeń i stanowisk oraz dostęp do kluczowych informacji o spektaklach i scenach. Z kolei dla kierownictwa teatru aplikacja ma oferować narzędzia do efektywnego zarządzania zasobami ludzkimi, w tym konfigurację scen, rodzajów stanowisk, tworzenie wydarzeń oraz automatyczne przydzielanie pracowników do zadań.
+
+Zakres pracy obejmuje analizę istniejącego problemu, projektowanie rozwiązania, implementację systemu oraz jego testowanie i wdrożenie. W dalszych rozdziałach zostaną przedstawione szczegółowe informacje dotyczące każdego z tych etapów, wraz z oceną wpływu wprowadzonych zmian na poprawę funkcjonowania obsługi widowni w Teatrze Muzycznym Capitol.
+
+\section{Przegląd istniejących rozwiązań}
+
+Przed opisem proponowanego rozwiązania warto przyjrzeć wadom i zaletom rozwiązania aktualnie używanego w teatrze oraz alternawnym rozwiązaniom komercyjnym.
+
+\subsection{Arkusze Google Sheets}
+
+\subsubsection{Opis rozwiązania}
+Arkusze Google Sheets stanowią obecnie podstawowe narzędzie do zarządzania pracownikami obsługi widowni w Teatrze Muzycznym Capitol. Cały system oparty na arkuszach kalkulacyjnych składa się z kilku zintegrowanych zakładek, z których każda pełni określoną funkcję w procesie planowania pracy pracowników.
+
+Pierwszą z nich jest zakładka ,,dyspozycyjność'', która ma postać tabeli z kolumną zawierającą imiona i nazwiska pracowników po lewej stronie. Każda kolejna kolumna odpowiada poszczególnym wydarzeniom, zawierając informacje takie jak data, nazwa spektaklu, godzina oraz scena. Pracownicy zaznaczają w tej tabeli swoją dyspozycyjność na dane wydarzenie, wpisując ,,tak'' w odpowiedniej komórce. Brak dyspozycyjności oznaczany jest poprzez wpisanie ,,nie''. Po upływie terminu na zaznaczanie dyspozycyjności, kierownik ukrywa zakładkę ,,dyspozycyjność'' i tworzy nową zakładkę ,,zatwierdzone''.
+
+
+\begin{figure}[h] % Opcja 'h' oznacza 'here', czyli umieszczenie obrazka w miejscu definicji
+\centering % Wycentrowanie obrazka
+\includegraphics[width=1.0\textwidth]{dyspo.png} % Wstawienie obrazka
+\caption{Fragment akrusza do zaznaczania dyspozycyjności.} % Podpis pod obrazkiem
+\end{figure}
+
+
+Arkusz ,,zatwierdzone'' ma podobny układ do arkusza ,,dyspozycyjność'', ale słowo ,,tak'' przy danym wydarzeniu i pracowniku oznacza, że pracownik został oficjalnie przydzielony do pracy na tym wydarzeniu. Zazwyczaj do jednego wydarzenia przypisywanych jest, w zależności od sceny, 17 lub 6 pracowników.
+
+\begin{figure}[h] % Opcja 'h' oznacza 'here', czyli umieszczenie obrazka w miejscu definicji
+\centering % Wycentrowanie obrazka
+\includegraphics[width=1.0\textwidth]{zatwierdzone.png} % Wstawienie obrazka
+\caption{Fragment akrusza do z ,,Zatwierdzone'' z częściowo przypisanymi stanowiskami.} % Podpis pod obrazkiem
+\label{fig:dyspo} % Etykieta do odwoływania się do obrazka w tekście
+\end{figure}
+
+Dodatkowo, istnieje arkusz ,,Bileterzy'', który zawiera tabelę z imionami, nazwiskami oraz numerami telefonów pracowników i koordynatora. W miarę zbliżania się danego wydarzenia, w zakładce ,,zatwierdzone'', w komórkach z ,,tak'', dopisywane są konkretne stanowiska, na których pracownicy mają pełnić swoje obowiązki.
+
+Raportowanie czasu pracy bileterów odbywa się poprzez fizyczną dokumentację uzupełnianą po każdym wydarzeniu.
+
+\subsubsection{Wady i zalety}
+Wady i zalety tego rozwiązania są następujące:
+
+\textbf{Zalety:}
+\begin{itemize}
+  \item Dostępność – Arkusze Google Sheets są dostępne z każdego miejsca i na każdym urządzeniu z dostępem do internetu.
+  \item Możliwości - dzięki wykorzystaniu Google Sheets kordynator może korzystać z dobrodziejstw arkuszy kalkulacyjnychtakich takich jak formuły i formatowanie warunkowe.
+  \item Znajomość narzędzia – Wielu użytkowników jest już zaznajomionych z obsługą arkuszy kalkulacyjnych, co obniża próg wejścia dla nowych pracowników.
+\end{itemize}
+
+\textbf{Wady:}
+\begin{itemize}
+  \item Brak personalizacji – Wszyscy pracownicy korzystają z tego samego widoku arkusza, co oznacza brak indywidualnych tabel do zarządzania własną dyspozycyjnością czy grafikiem pracy.
+  \item Problemy z bezpieczeństwem – Dostęp do arkusza mają wszystkie osoby, które posiadają link, co stwarza ryzyko nieautoryzowanego dostępu i manipulacji danymi.
+  \item Brak automatyzacji – Proces przydzielania zadań jest całkowicie manualny, co zwiększa ryzyko błędów i jest czasochłonne dla kierownictwa.
+  \item Trudności z aktualizacją danych – W przypadku zmian w grafiku, nie ma prostego sposobu na powiadomienie pracowników, co może prowadzić do nieporozumień i błędów.
+  \item Ryzyko utraty danych – Błędne operacje użytkowników mogą prowadzić do przypadkowego usunięcia ważnych informacji bez możliwości łatwego odzyskania.
+\end{itemize}
+
+\subsection{When I Work}
+
+\subsubsection{Opis rozwiązania}
+When I Work to komercyjne oprogramowanie zaprojektowane do zarządzania grafikami pracy, które umożliwia pracownikom zgłaszanie swojej dyspozycyjności oraz umożliwia menedżerom szybkie tworzenie i modyfikowanie grafików pracy. Aplikacja oferuje możliwość komunikacji z pracownikami i posiada aplikację mobilną, co pozwala na łatwe zarządzanie zmianami w pracy z dowolnego miejsca.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1.0\linewidth]{wheniwork.jpg}
+    \caption{Aplikacja do zarządania pracownikami When I Work}
+    \label{fig:wiw}
+\end{figure}
+
+\subsubsection{Wady i zalety}
+
+\textbf{Zalety:}
+\begin{itemize}
+  \item Intuicyjny interfejs użytkownika, który ułatwia zarządzanie grafikami pracy.
+  \item Funkcja komunikacji w aplikacji pozwala na szybkie przekazywanie informacji między pracownikami a zarządem.
+  \item Aplikacja mobilna umożliwia pracownikom łatwy dostęp do grafiku pracy i zgłaszanie dyspozycyjności w dowolnym miejscu i czasie.
+  \item Automatyzacja procesu tworzenia grafiku może znacznie oszczędzić czas menedżerów i zwiększyć efektywność planowania.
+\end{itemize}
+
+\textbf{Wady:}
+\begin{itemize}
+  \item Koszt subskrypcji może być barierą dla mniejszych organizacji z ograniczonym budżetem.
+  \item Wymagany czas na szkolenie pracowników w zakresie korzystania z nowego systemu.
+  \item Zależność od dostępu do internetu i urządzeń mobilnych może być ograniczeniem w niektórych środowiskach pracy.
+\end{itemize}
+
+\section{Funkcje aplikacji}
+
+Poniżej wymienionio wymagania funkcjonalne i niefunkcjonalne aplikacji. Zostały one sporządzone na podstawie doświadczeń autora w pracy w jednym z wrocławskich teatrów w roli biletera oraz na podstawie wywiadu zebranego wśród pracowników tej instytucji.
+
+\subsection{Wymagania funkcjonalne}
+
+Wymagania funkcjonalne zostały podzielone na trzy kategorie, w zależności od roli użytkownika w systemie: wymagania dla bileterów, wymagania dla koordynatorów oraz wymagania ogólne.
+
+\subsubsection*{Wymagania dla bileterów}
+\begin{enumerate}
+  \item Bileter może wyświetlać informacje kontaktowe innych pracowników.
+  \item Bileter może wyświetlać informacje o spektaklach oraz o scenach, na których odbywają się wydarzenia.
+  \item Bileter może wyświetlać wszystkie wydarzenia z podziałem na grupy wydarzeń (np. na miesiące).
+  \item Bileter może wyświetlać informacje o wydarzeniach, do których jest przypisany, wraz z informacją o stanowisku pracy.
+  \item Bileter może określać swoją dyspozycyjność na dane wydarzenia.
+  \item Bileter może przeglądać informacje o wydarzeniach z obecnego tygodnia, do których jest przypisany.
+  \item Bileter może raportować swój czas pracy oraz wyświetlać łączny czas pracy w danym miesiącu.
+\end{enumerate}
+
+\subsubsection*{Wymagania dla koordynatorów}
+\begin{enumerate}
+  \item Koordynator może tworzyć, usuwać i edytować konta użytkowników.
+  \item Koordynator może określać jakie istnieją stanowiska pracy biletera oraz określać ich typ.
+  \item Koordynator może tworzyć i edytować sceny, na których odbywają się spektakle, w tym określać, jakie i ile stanowisk trzeba obsadzić, aby obsłużyć wydarzenie odbywające się na tej scenie.
+  \item Koordynator może tworzyć i edytować spektakle grane w teatrze.
+  \item Koordynator może tworzyć i usuwać wydarzenia (spektakl + data i godzina) z podziałem na grupy.
+  \item Koordynator może włączać i wyłączać możliwość uzupełniania dyspozycyjności dla danej grupy wydarzeń oraz sterować widocznością danych grup wydarzeń w grafiku.
+  \item Koordynator może przypisywać pracowników do wydarzeń oraz przypisywać stanowiska do pracowników.
+  \item Koordynator ma możliwość wyświetlania raportów pracy bileterów.
+\end{enumerate}
+
+\subsubsection*{Wymagania ogólne}
+\begin{enumerate}
+  \item Użytkownik może zalogować się do systemu używając adresu e-mail oraz hasła.
+  \item W zależności od przydzielonej roli, użytkownik będzie miał dostęp do odpowiednich funkcjonalności. Przewidziane role: Bileter oraz Koordynator.
+  \item Aplikacja ma umożliwiać automatyczne przypisanie stanowisk do pracowników w danej grupie wydarzeń według sensownej heurystyki.
+\end{enumerate}
+
+\subsection{Wymagania niefunkcjonalne}
+System powinien spełniać następujące wymagania niefunkcjonalne:
+\begin{enumerate}
+  \item Czas odpowiedzi systemu na żądania użytkownika nie powinien przekraczać 2 sekund.
+  \item Interfejs użytkownika powinien być intuicyjny i dostosowany do potrzeb użytkowników o różnym stopniu zaawansowania.
+  \item Aplikacja powinna być dostępna na najpopularniejszych systemach operacyjnych i przeglądarkach internetowych, w tym na Windows, macOS, Linux, Chrome, Firefox, Safari i Edge w ich aktualnych wersjach.
+  \item Wszelkie aktualizacje systemu powinny odbywać się z minimalnym wpływem na dostępność i wydajność systemu.
+  \item Dokumentacja systemu powinna być kompletna, aktualna i łatwo dostępna dla użytkowników oraz administratorów systemu.
+\end{enumerate}
+
+\chapter{Podręcznik użytkownika}
+
+W tej części przedstawiona zostanie instrukcja obsługi aplikacji, zarówno z perspektywy biletera, jak i koordynatora. Wersja aplikacji, która zostanie udostępniona użytkownikowi, zależy od roli przypisanej do jego konta.
+
+\section{Dostęp do aplikacji}
+Aby uzyskać dostęp do aplikacji, należy wejść na stronę (tu link) i zalogować się, używając adresu e-mail i hasła. Inną metodą jest lokalne uruchomienie aplikacji za pomocą środowiska IntelliJ lub podobnego, co skutkuje użyciem lokalnej bazy danych zainicjalizowanej danymi testowymi.
+
+\section{Instrukcja obsługi - część ogólna}
+
+\subsection{Strona główna}
+
+Na ekranie głównym serwisu wyświetlana jest lista wydarzeń zaplanowanych na obecny tydzień, do których użytkownik jest przypisany. Aby zobaczyć szczegóły wydarzenia, w tym przypisane stanowisko, należy kliknąć na etykietę reprezentującą dane wydarzenie.
+
+Poniżej listy nadchodzących zmian znajduje się kalendarz z wydarzeniami przypisanymi do użytkownika w bieżącym miesiącu.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=1.0\linewidth]{ekran_glowny_bileter.png}
+    \caption{Ekran główny serwisu}
+    \label{fig:glowny}
+\end{figure}
+
+\subsection{Nawigacja}
+Pasek nawigacyjny znajdujący się u góry każdego widoku umożliwia łatwe przełączanie się między różnymi sekcjami aplikacji.
+
+\subsection{Wylogowywanie się i zmiana hasła}
+Aby wylogować się z konta, należy wybrać z paska nawigacyjnego opcję \textit{Moje konto} $\rightarrow$ \textit{Wyloguj}.
+W celu zmiany hasła, użytkownik powinien wybrać \textit{Moje konto} $\rightarrow$ \textit{Zmień hasło}.
+
+\section{Instrukcja obsługi - część dla bileterów}
+
+\subsection{Wyświetlanie informacji o pracownikach}
+
+Informacje o pracownikach zarejestrowanych w systemie można znaleźć w sekcji \textit{Pracownicy}. Zawiera ona imiona, nazwiska oraz numery telefonów pracowników. Koordynatorzy są wyróżnieni na początku listy.
+
+% Tu wstawić obrazek kiedy będą już dane
+
+\subsection{Wyświetlanie informacji o scenach i spektaklach}
+
+\subsubsection{Sceny}
+\label{stages}
+Sekcja \textit{Informacje} $\rightarrow$ \textit{Sceny} zawiera tabelę z informacjami o wszystkich scenach. Tabela ta obejmuje nazwę sceny, liczbę miejsc siedzących oraz adres.
+
+% Obrazek
+
+\subsubsection{Spektakle}
+W sekcji \textit{Informacje} $\rightarrow$ \textit{Spektakle} znajdują się informacje o spektaklach wystawianych w teatrze. Dla każdego spektaklu dostępne są takie dane, jak tytuł, scena, czas trwania oraz dodatkowe informacje.
+
+%Obrazek
+
+\subsection{Grafiki}
+
+W sekcji \textit{Grafik} dostępne są aktywne grupy wydarzeń. Jeżeli dla danej grupy wydarzeń istnieje grafik, można go wyświetlić, używając przycisku \textit{Pokaż wydarzenia}. Wyświetlana jest również liczba zmian przypisanych do użytkownika w tej grupie.
+
+Jeśli w danej grupie wydarzeń możliwe jest wypełnienie dyspozycyjności, można to zrobić, klikając przycisk \textit{Wypełnij dyspozycyjność}. Na kafelku grupy wyświetlany jest również stopień wypełnienia dyspozycyjności oraz procentowa dyspozycyjność, czyli procent wydarzeń, na które użytkownik zaznaczył ,,Tak''.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=1\linewidth]{grupy_wydarzen.png}
+    \caption{Grupy wydarzeń. Dla grupy \textit{Maj 2024} można wyświetlić wydarzenia, a dla grupy \textit{Czerwiec 2024} można wypełnić dyspozycyjność.}
+    \label{fig:event-groups}
+\end{figure}
+
+\subsection{Zaznaczanie dyspozycyjności}
+
+Po wybraniu opcji \textit{Zaznacz dyspozycyjność} pojawia się widok kalendarza, na którym można zaznaczyć swoją dostępność dla wydarzeń z wybranej grupy. Każde wydarzenie zawiera informacje o tytule spektaklu, scenie, godzinie rozpoczęcia oraz czasie trwania. Aby określić swoją dyspozycyjność dla danego wydarzenia, należy zaznaczyć opcję ,,Tak'' lub ,,Nie'' w odpowiednim miejscu. Po zaznaczeniu, wybór jest automatycznie zapisywany.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=1\linewidth]{dyspo.png}
+    \caption{Ekran do uzupełniania dyspozycyjności. Wydarzenia oznaczone na zielono wskazują na dostępność, a te oznaczone na czerwono na jej brak.}
+    \label{fig:availability}
+\end{figure}
+
+\subsection{Wyświetlanie grafiku}
+
+Po wybraniu opcji \textit{Pokaż wydarzenia} wyświetlany jest kalendarz z wydarzeniami należącymi do danej grupy. Każde wydarzenie prezentuje tytuł spektaklu, nazwę sceny, godzinę rozpoczęcia, czas trwania oraz przypisane stanowisko (jeśli zostało przydzielone).
+
+Wydarzenia, do których użytkownik został oficjalnie przypisany, są zaznaczone na zielono.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=1\linewidth]{grafik.png}
+    \caption{Widok prezentujący wydarzenia z danej grupy. Przypisane wydarzenia są zaznaczone na zielono.}
+    \label{fig:schedule}
+\end{figure}
+
+\subsection{Raportowanie czasu pracy}
+
+Aby zaraportować czas pracy po zakończonej zmianie, należy wybrać opcję \textit{Raportowanie czasu pracy} z paska nawigacyjnego.
+
+Na ekranie można wyświetlić listę raportów z wybranego miesiąca oraz sumę przepracowanych godzin. Aby wybrać miesiąc, należy wybrać odpowiednią nazwę miesiąca i rok, a następnie kliknąć przycisk \textit{Filtruj}. Aby usunąć raport, należy użyć przycisku \textit{Usuń}.
+
+% Obrazek - lista raportów
+
+Aby utworzyć nowy raport, należy wybrać opcję \textit{Utwórz}. Na kolejnym ekranie należy określić datę, godzinę rozpoczęcia i zakończenia zmiany (z dokładnością do 15 minut). Aby zatwierdzić, należy kliknąć przycisk \textit{Zatwierdź}.
+
+\section{Instrukcja obsługi - część dla koordynatora}
+
+\subsection{Lista pracowników}
+\label{user-list}
+
+Aby wyświetlić listę użytkowników należy wybrać opcję \textit{Pracownicy} z menu. Ukaże się tabela zawierająca informacje o koordynatorach i biletarach
+
+% Obrazek
+
+\subsection{Edycja i tworzenie pracowników}
+
+\subsubsection{Tworzenie nowego konta}
+
+Aby stworzyć nowe konto pracownika należy wcisnąć przycisk \textit{Utwórz} na widoku \nameref{user-list}. Następnie należy określić adres e-mail, imię, nazwisko i numer telefonu pracownika oraz przypisać jedną z dwóch ról.
+
+Konto zostanie stworzone po wciśnięciu przycisku \textit{Zapisz}. Nowym konto przypisywane jest domyślne hasło \textit{capitol}.
+
+% Obrazek
+
+\subsubsection{Edycja konta}
+
+Aby edytować dane pracownika należy wcisnąć przycisk \textit{Edytuj} przy jego danych na widoku \nameref{user-list}. Na następnym widoku można edytować dane i zapisać je przyciskiem \textit{Zapisz}.
+
+\subsection{Konfiguracja stanowisk}
+
+Aby edytować stanowiska, na jakich mogą pracować bileterzy, należy przejść do sekcji \textit{Konfiguracja} \rightarrow \textit{Stanowiska}. Stanowiska są przypisywane do scen
+
+W celu stworzenia nowego stanowiska należy wybrać opcję \textit{Utwórz} i określić nazwę stanowiska oraz jego typ. Następnie należy wcisnąć przycisk \textit{Zapisz}.
+
+W celu edycji stanowiska należy edytować jego dane, a następnie wcisnąć przycisk \textit{Zapisz}.
+
+
+
+% Obrazek - nowy raport
+
+
+%%%%% BIBLIOGRAFIA
+
+%\begin{thebibliography}{1}
+%\bibitem{example} \ldots
+%\end{thebibliography}
+
+\end{document}

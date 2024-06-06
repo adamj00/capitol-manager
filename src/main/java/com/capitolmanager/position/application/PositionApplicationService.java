@@ -2,7 +2,6 @@
 package com.capitolmanager.position.application;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,6 +11,7 @@ import com.capitolmanager.hibernate.Repository;
 import com.capitolmanager.position.domain.Position;
 import com.capitolmanager.position.domain.PositionType;
 import com.capitolmanager.position.interfaces.PositionsForm;
+import com.capitolmanager.stage.application.StageQueries;
 
 
 @Service
@@ -19,16 +19,18 @@ public class PositionApplicationService {
 
 	private final PositionQueries positionQueries;
 	private final Repository<Position> positionRepository;
-
+	private final StageQueries stageQueries;
 
 	@Autowired
-	PositionApplicationService(PositionQueries positionQueries, Repository<Position> positionRepository) {
+	PositionApplicationService(PositionQueries positionQueries, Repository<Position> positionRepository, StageQueries stageQueries) {
 
 		Assert.notNull(positionQueries, "positionQueries must not be null");
 		Assert.notNull(positionRepository, "positionRepository must not be null");
+		Assert.notNull(stageQueries, "stageQueries must not be null");
 
 		this.positionQueries = positionQueries;
 		this.positionRepository = positionRepository;
+		this.stageQueries = stageQueries;
 	}
 
 	public List<PositionDto> getAllPositions() {
@@ -36,7 +38,9 @@ public class PositionApplicationService {
 		return positionQueries.getAll().stream()
 			.map(position -> new PositionDto(position.getId(),
 				position.getName(),
-				position.getPositionType()))
+				position.getPositionType().name(),
+				position.getQuantity(),
+				position.getStage().getId()))
 			.toList();
 	}
 
@@ -55,7 +59,10 @@ public class PositionApplicationService {
 		for (PositionDto position : positions) {
 
 			if (position.getId() == null) {
-				Position newPosition = new Position(position.getName(), position.getPositionType());
+				Position newPosition = new Position(position.getName(),
+					PositionType.valueOf(position.getPositionType()),
+					position.getQuantity(),
+					stageQueries.get(position.getStageId()));
 
 				positionRepository.saveOrUpdate(newPosition);
 			}
@@ -64,7 +71,7 @@ public class PositionApplicationService {
 					.orElseThrow(IllegalStateException::new);
 
 				updatedPosition.setName(position.getName());
-				updatedPosition.setPositionType(position.getPositionType());
+				updatedPosition.setPositionType(PositionType.valueOf(position.getPositionType()));
 
 				positionRepository.saveOrUpdate(updatedPosition);
 			}

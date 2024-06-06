@@ -23,4 +23,6 @@ public interface StageQueries {
 	List<Stage> getAll();
 
 	Optional<Stage> findById(Long id);
+
+	Stage get(Long id);
 }

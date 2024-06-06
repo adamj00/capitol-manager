@@ -14,7 +14,6 @@ package com.capitolmanager.stage.application;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -23,13 +22,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import com.capitolmanager.hibernate.Repository;
+import com.capitolmanager.position.application.PositionDto;
 import com.capitolmanager.position.application.PositionQueries;
-import com.capitolmanager.position.application.PositionStageEditDto;
+
 import com.capitolmanager.position.domain.Position;
+import com.capitolmanager.position.domain.PositionType;
 import com.capitolmanager.stage.domain.Stage;
-import com.capitolmanager.stage.domain.StagePosition;
 import com.capitolmanager.stage.interfaces.StageEditForm;
-import com.capitolmanager.stage.interfaces.StagePositionDto;
 
 
 @Service
@@ -38,18 +37,20 @@ public class StageApplicationService {
 	private final StageQueries stageQueries;
 	private final Repository<Stage> stageRepository;
 	private final PositionQueries positionQueries;
-
+	private final Repository<Position> positionRepository;
 
 	@Autowired
-	StageApplicationService(StageQueries stageQueries, Repository<Stage> stageRepository, PositionQueries positionQueries) {
+	public StageApplicationService(StageQueries stageQueries, Repository<Stage> stageRepository, PositionQueries positionQueries, Repository<Position> positionRepository) {
 
 		Assert.notNull(stageQueries, "stageQueries must not be null");
 		Assert.notNull(stageRepository, "stageRepository must not be null");
 		Assert.notNull(positionQueries, "positionQueries must not be null");
+		Assert.notNull(positionRepository, "positionRepository must not be null");
 
 		this.stageQueries = stageQueries;
 		this.stageRepository = stageRepository;
 		this.positionQueries = positionQueries;
+		this.positionRepository = positionRepository;
 	}
 
 	public List<StageListDto> findAllStages() {
@@ -69,17 +70,23 @@ public class StageApplicationService {
 			stageEditForm.getAddress(),
 			new LinkedList<>());
 
-		for (var stagePositionDto : stageEditForm.getRequiredPositions()) {
+		stageRepository.saveOrUpdate(stage);
 
-			Position position = positionQueries.findById(stagePositionDto.getPositionId())
-				.orElseThrow(() -> new EntityNotFoundException("Position not found"));
+		stage = stageQueries.getAll().stream()
+			.filter(s -> s.getName().equals(stageEditForm.getName()))
+			.findFirst()
+			.orElseThrow(EntityNotFoundException::new);
 
-			StagePosition stagePosition = new StagePosition();
-			stagePosition.setStage(stage);
-			stagePosition.setPosition(position);
-			stagePosition.setQuantity(stagePositionDto.getQuantity());
+		for (var positionDto : stageEditForm.getRequiredPositions()) {
 
-			stage.getRequiredPositions().add(stagePosition);
+			Position position = new Position(positionDto.getName(),
+				PositionType.valueOf(positionDto.getPositionType()),
+				positionDto.getQuantity(),
+				stage);
+
+			stage.getRequiredPositions().add(position);
+
+			positionRepository.saveOrUpdate(position);
 		}
 
 		stageRepository.saveOrUpdate(stage);
@@ -99,14 +106,6 @@ public class StageApplicationService {
 		stageRepository.saveOrUpdate(stage);
 	}
 
-	public List<PositionStageEditDto> getAllPositionsDto() {
-
-		return positionQueries.getAll().stream()
-			.map(position -> new PositionStageEditDto(position.getId(),
-				position.getName()))
-			.toList();
-	}
-
 	public List<StageSelectionDto> getAllStagesSelectionDto() {
 
 		return stageQueries.getAll().stream()
@@ -114,32 +113,43 @@ public class StageApplicationService {
 			.toList();
 	}
 
-	private void updateStagePositions(Stage stage, List<StagePositionDto> updatedPositionQuantities) {
+	private void updateStagePositions(Stage stage, List<PositionDto> positions) {
 
-		stage.getRequiredPositions().removeIf(stagePosition ->
-			updatedPositionQuantities.stream()
-				.noneMatch(stagePositionDto -> Objects.equals(stagePosition.getPosition().getId(), stagePositionDto.getPositionId())));
 
-		for (var stagePositionDto : updatedPositionQuantities) {
-			Long positionId = stagePositionDto.getPositionId();
-			Integer quantity = stagePositionDto.getQuantity();
+		for (var position : stage.getRequiredPositions()) {
 
-			StagePosition stagePosition = stage.getRequiredPositions().stream()
-				.filter(sp -> sp.getPosition().getId().equals(positionId))
-				.findFirst()
-				.orElse(null);
+			if (positions.stream().noneMatch(p -> p.getId().equals(position.getId()))) {
 
-			if (stagePosition == null) {
+				stage.getRequiredPositions().remove(position);
 
-				stagePosition = new StagePosition();
-				stagePosition.setStage(stage);
-				Position position = positionQueries.findById(positionId)
-					.orElseThrow(() -> new EntityNotFoundException("Position not found"));
-				stagePosition.setPosition(position);
-				stage.getRequiredPositions().add(stagePosition);
+				positionRepository.delete(position);
 			}
+		}
 
-			stagePosition.setQuantity(quantity);
+		for (var positionDto : positions) {
+
+			Position position;
+			if (positionDto.getId() == null) {
+				position = new Position(positionDto.getName(),
+					PositionType.valueOf(positionDto.getPositionType()),
+					positionDto.getQuantity(),
+					stage);
+
+				stage.getRequiredPositions().add(position);
+
+			}
+			else {
+				position = positionQueries.findById(positionDto.getId())
+					.orElseThrow(EntityNotFoundException::new);
+
+				position.setName(positionDto.getName());
+				position.setPositionType(PositionType.valueOf(positionDto.getPositionType()));
+				position.setQuantity(positionDto.getQuantity());
+
+			}
+			positionRepository.saveOrUpdate(position);
+
+			stageRepository.saveOrUpdate(stage);
 		}
 	}
 

@@ -265,10 +265,10 @@ public class ScheduleApplicationService {
 		return event
 			.getShow().getStage().getRequiredPositions().stream()
 			.distinct()
-			.map(stagePosition -> new PositionDto(stagePosition.getPosition().getId(),
-				stagePosition.getPosition().getName(),
-				stagePosition.getPosition().getPositionType(),
-				stagePosition.getQuantity()))
+			.map(position -> new PositionDto(position.getId(),
+				position.getName(),
+				position.getPositionType(),
+				position.getQuantity()))
 			.toList();
 	}
 

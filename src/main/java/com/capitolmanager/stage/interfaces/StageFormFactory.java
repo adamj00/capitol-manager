@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import com.capitolmanager.position.application.PositionDto;
 import com.capitolmanager.stage.application.StageQueries;
 import com.capitolmanager.stage.domain.Stage;
 
@@ -42,10 +43,12 @@ public class StageFormFactory {
 		Stage stage = stageQueries.findById(id)
 			.orElseThrow(() -> new EntityNotFoundException("No stage " + id));
 
-		List<StagePositionDto> requiredPositions = stage.getRequiredPositions().stream()
-			.map(stagePosition -> new StagePositionDto(stagePosition.getPosition().getId(),
-				stagePosition.getPosition().getName(),
-				stagePosition.getQuantity()))
+		List<PositionDto> requiredPositions = stage.getRequiredPositions().stream()
+			.map(position -> new PositionDto(position.getId(),
+				position.getName(),
+				position.getPositionType().name(),
+				position.getQuantity(),
+				stage.getId()))
 			.toList();
 
 		return new StageEditForm(stage.getId(),

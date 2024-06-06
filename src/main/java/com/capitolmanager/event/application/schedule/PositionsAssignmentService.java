@@ -29,7 +29,6 @@ import com.capitolmanager.event.domain.EventPositionAssignment;
 import com.capitolmanager.hibernate.Repository;
 import com.capitolmanager.position.domain.Position;
 import com.capitolmanager.position.domain.PositionType;
-import com.capitolmanager.stage.domain.StagePosition;
 import com.capitolmanager.user.domain.User;
 
 
@@ -136,14 +135,14 @@ public class PositionsAssignmentService {
 
 	private List<Position> getRequiredPositonsSortedByPriority(Event event) {
 
-		List<StagePosition> stagePositions = event.getShow().getStage().getRequiredPositions();
+		List<Position> stagePositions = event.getShow().getStage().getRequiredPositions();
 
 		List<Position> requiredPositions = new ArrayList<>();
 
 		for (var stagePosition : stagePositions) {
 
 			for (int i = 0; i < stagePosition.getQuantity(); i++) {
-				requiredPositions.add(stagePosition.getPosition());
+				requiredPositions.add(stagePosition);
 			}
 		}
 

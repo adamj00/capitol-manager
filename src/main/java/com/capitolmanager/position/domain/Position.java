@@ -16,10 +16,14 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 import org.springframework.util.Assert;
 
 import com.capitolmanager.hibernate.AbstractEntity;
+import com.capitolmanager.stage.domain.Stage;
 
 
 @Entity(name = "positions")
@@ -32,13 +36,19 @@ public class Position extends AbstractEntity {
 	@Column(nullable = false)
 	private PositionType positionType;
 
-	public Position(String name, PositionType positionType) {
+	@Column(nullable = false)
+	private int quantity;
 
-		Assert.notNull(name, "name must not be null");
-		Assert.notNull(positionType, "positionType must not be null");
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "stage_id")
+	private Stage stage;
+
+	public Position(String name, PositionType positionType, int quantity, Stage stage) {
 
 		this.name = name;
 		this.positionType = positionType;
+		this.quantity = quantity;
+		this.stage = stage;
 	}
 
 	public Position() {
@@ -63,5 +73,25 @@ public class Position extends AbstractEntity {
 	public void setPositionType(PositionType positionType) {
 
 		this.positionType = positionType;
+	}
+
+	public int getQuantity() {
+
+		return quantity;
+	}
+
+	public void setQuantity(int quantity) {
+
+		this.quantity = quantity;
+	}
+
+	public Stage getStage() {
+
+		return stage;
+	}
+
+	public void setStage(Stage stage) {
+
+		this.stage = stage;
 	}
 }

@@ -12,26 +12,24 @@
 
 package com.capitolmanager.position.application;
 
-import org.springframework.util.Assert;
-
-import com.capitolmanager.position.domain.PositionType;
+import com.capitolmanager.stage.interfaces.PositionTypeDto;
 
 
 public class PositionDto {
 
 	private Long id;
 	private String name;
-	private PositionType positionType;
+	private String positionType;
+	private int quantity;
+	private Long stageId;
 
-	public PositionDto(Long id, String name, PositionType positionType) {
-
-		Assert.notNull(id, "id must not be null");
-		Assert.notNull(name, "name must not be null");
-		Assert.notNull(positionType, "positionType must not be null");
+	public PositionDto(Long id, String name, String positionType, int quantity, Long stageId) {
 
 		this.id = id;
 		this.name = name;
 		this.positionType = positionType;
+		this.quantity = quantity;
+		this.stageId = stageId;
 	}
 
 	public PositionDto() {
@@ -58,13 +56,33 @@ public class PositionDto {
 		this.name = name;
 	}
 
-	public PositionType getPositionType() {
+	public String getPositionType() {
 
 		return positionType;
 	}
 
-	public void setPositionType(PositionType positionType) {
+	public void setPositionType(String positionType) {
 
 		this.positionType = positionType;
+	}
+
+	public int getQuantity() {
+
+		return quantity;
+	}
+
+	public void setQuantity(int quantity) {
+
+		this.quantity = quantity;
+	}
+
+	public Long getStageId() {
+
+		return stageId;
+	}
+
+	public void setStageId(Long stageId) {
+
+		this.stageId = stageId;
 	}
 }

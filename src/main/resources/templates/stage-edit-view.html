@@ -13,25 +13,30 @@
 
         <script th:inline="javascript">
             /*<![CDATA[*/
-            var allPositions = /*[[${allPositions}]]*/ [];
+            var allPositionTypes = /*[[${allPositionTypes}]]*/ [];
             
             function addPosition() {
                 var table = document.getElementById('positionsTable').getElementsByTagName('tbody')[0];
                 var newRow = table.insertRow(table.rows.length);
-                var cell1 = newRow.insertCell(0);
-                var cell2 = newRow.insertCell(1);
-                var cell3 = newRow.insertCell(2);
+                var cell0 = newRow.insertCell(0);
+                var cell1 = newRow.insertCell(1);
+                var cell2 = newRow.insertCell(2);
+                var cell3 = newRow.insertCell(3);
                 var newIndex = table.rows.length - 1;
             
-                var selectHTML = '<select name="requiredPositions[' + newIndex + '].positionId" class="form-control">' +
-                                 '<option value="">Wybierz pozycję...</option>';
+                var selectHTML = '<select class="form-select" th:field="*{requiredPositions[' + newIndex + '].positionType}">' +
+                                    '<option value="">Wybierz typ...</option>';
+                                       // '<option th:each="type : ${allPositionTypes}" th:value="${type}" th:text="${type.label}">Typ stanowiska</option>';
+
             
-                allPositions.forEach(function(position) {
-                    selectHTML += '<option value="' + position.id + '">' + position.name + '</option>';
+                allPositionTypes.forEach(function(position) {
+                    console.log(position);
+                    selectHTML += '<option value="' + position.value + '">' + position.label + '</option>';
                 });
             
                 selectHTML += '</select>';
             
+                cell0.innerHTML = '<input type="text" name="requiredPositions[' + newIndex + '].value" class="form-control medium-input" required />';
                 cell1.innerHTML = selectHTML;
                 cell2.innerHTML = '<input type="number" name="requiredPositions[' + newIndex + '].quantity" class="form-control" min="0" required />';
                 cell3.innerHTML = '<button type="button" class="btn btn-danger btn-sm" onclick="removePosition(this)">Usuń</button>';
@@ -73,13 +78,14 @@
                     <input type="text" id="address" th:field="*{address}" class="form-control medium-input" required>
                 </div>
 
-                <div class="mb-3">
+                <div class="mb-4">
                     <label for="requiredPositions" class="form-label">Stanowiska</label>
                     <div class="error" th:if="${#fields.hasErrors('requiredPositions')}" th:errors="*{requiredPositions}">Błąd walidacji</div>
                     <table id="positionsTable" class="table-responsive">
                         <thead>
                             <tr>
-                                <th scope="col">Stanowisko</th>
+                                <th scope="col">Nazwa</th>
+                                <th scope="col">Typ</th>
                                 <th scope="col">Ilość</th>
                                 <th scope="col">Akcje</th>
                             </tr>
@@ -87,18 +93,22 @@
                         <tbody>
                             <tr th:each="stagePosition, iterStat : *{requiredPositions}">
                                 <td>
-                                    <select th:field="*{requiredPositions[__${iterStat.index}__].positionId}" class="form-control">
-                                        <option value="">Wybierz stanowisko...</option>
-                                        <option th:each="position : ${allPositions}"
-                                                th:value="${position.id}"
-                                                th:text="${position.name}"
-                                                th:selected="${stagePosition.positionId == position.id}">
-                                        </option>
+                                    <input type="text" th:field="*{requiredPositions[__${iterStat.index}__].name}" class="form-control medium-input" required>
+                                </td>
+                                
+                                <td>
+                                    <select class="form-select" th:field="*{requiredPositions[__${iterStat.index}__].positionType}">
+                                        <option th:each="type : ${allPositionTypes}" th:value="${type.value}" th:text="${type.label}">Typ stanowiska</option>
                                     </select>
                                 </td>
+
                                 <td>
                                     <input type="number" th:field="*{requiredPositions[__${iterStat.index}__].quantity}" class="form-control short-input" min="0" required />
                                 </td>
+
+                                <input type="hidden" th:field="*{requiredPositions[__${iterStat.index}__].id}"/>
+
+
                                 <td>
                                     <button type="button" class="btn btn-danger btn-sm" onclick="removePosition(this)">Usuń</button>
                                 </td>

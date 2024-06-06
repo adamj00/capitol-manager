@@ -15,6 +15,7 @@ package com.capitolmanager.stage.interfaces;
 import static com.capitolmanager.stage.interfaces.StageEditController.STAGE_EDIT_PATH;
 import static com.capitolmanager.stage.interfaces.StageListController.STAGE_LIST_PATH;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.capitolmanager.position.application.PositionStageEditDto;
+import com.capitolmanager.position.domain.PositionType;
 import com.capitolmanager.show.application.ShowApplicationService;
 import com.capitolmanager.stage.application.StageApplicationService;
 
@@ -108,10 +109,12 @@ public class StageEditController {
 		return REDIRECT + STAGE_LIST_PATH;
 	}
 
-	@ModelAttribute(name="allPositions")
-	List<PositionStageEditDto> getPositions() {
+	@ModelAttribute(name="allPositionTypes")
+	List<PositionTypeDto> getPositionTypes() {
 
-		return stageApplicationService.getAllPositionsDto();
+		return Arrays.stream(PositionType.values())
+			.map(positionType -> new PositionTypeDto(positionType.name(), positionType.getLabel()))
+			.toList();
 	}
 
 	@ModelAttribute(name=M_CAN_DELETE)

@@ -15,6 +15,8 @@ package com.capitolmanager.stage.interfaces;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.capitolmanager.position.application.PositionDto;
+
 
 public class StageEditForm {
 
@@ -25,9 +27,9 @@ public class StageEditForm {
 	private String name;
 	private int numberOfSeats;
 	private String address;
-	private List<StagePositionDto> requiredPositions = new ArrayList<>();
+	private List<PositionDto> requiredPositions = new ArrayList<>();
 
-	public StageEditForm(Long id, String name, int numberOfSeats, String address, List<StagePositionDto> requiredPositions) {
+	public StageEditForm(Long id, String name, int numberOfSeats, String address, List<PositionDto> requiredPositions) {
 
 		this.id = id;
 		this.name = name;
@@ -80,12 +82,12 @@ public class StageEditForm {
 		this.address = address;
 	}
 
-	public List<StagePositionDto> getRequiredPositions() {
+	public List<PositionDto> getRequiredPositions() {
 
 		return requiredPositions;
 	}
 
-	public void setRequiredPositions(List<StagePositionDto> requiredPositions) {
+	public void setRequiredPositions(List<PositionDto> requiredPositions) {
 
 		this.requiredPositions = requiredPositions;
 	}
