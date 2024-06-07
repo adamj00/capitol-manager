@@ -28,13 +28,13 @@ import com.capitolmanager.position.domain.Position;
 @Entity(name = "stages")
 public class Stage extends AbstractEntity {
 
-	@Column
+	@Column(name = "name")
 	private String name;
 
-	@Column
+	@Column(name="number_of_seats")
 	private int numberOfSeats;
 
-	@Column
+	@Column(name = "address")
 	private String address;
 
 	@OneToMany(mappedBy = "stage", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)

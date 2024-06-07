@@ -27,7 +27,7 @@ import com.capitolmanager.hibernate.AbstractEntity;
 @Table(name = "event_groups")
 public class EventGroup extends AbstractEntity {
 
-	@Column
+	@Column(name = "name")
 	private String name;
 
 	@OneToMany(mappedBy = "eventGroup", fetch = FetchType.EAGER)
@@ -36,7 +36,7 @@ public class EventGroup extends AbstractEntity {
 	@Column(name = "availability_active")
 	private boolean availabilityActive;
 
-	@Column
+	@Column(name = "active")
 	private boolean active;
 
 	public EventGroup(String name, Set<Event> events, boolean availabilityActive, boolean active) {
