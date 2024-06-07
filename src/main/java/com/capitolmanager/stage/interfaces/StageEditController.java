@@ -13,9 +13,6 @@
 package com.capitolmanager.stage.interfaces;
 
 import static com.capitolmanager.stage.interfaces.StageEditController.STAGE_EDIT_PATH;
-import static com.capitolmanager.stage.interfaces.StageListController.STAGE_LIST_PATH;
-
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -31,7 +28,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.capitolmanager.position.application.PositionStageEditDto;
 import com.capitolmanager.show.application.ShowApplicationService;
 import com.capitolmanager.stage.application.StageApplicationService;
 
@@ -91,27 +87,22 @@ public class StageEditController {
 	}
 
 	@PostMapping
-	String saveOrUpdateUser(@Validated @ModelAttribute(M_STAGE_FORM) StageEditForm stageForm, BindingResult bindingResult, Model model) {
+	String saveOrUpdateStage(@Validated @ModelAttribute(M_STAGE_FORM) StageEditForm stageForm, BindingResult bindingResult, Model model) {
 
 		if (bindingResult.hasErrors()) {
-
 			return STAGE_EDIT_VIEW;
 		}
 
+		Long savedStageId;
+
 		if (stageForm.getId() == null) {
-			stageApplicationService.saveStage(stageForm);
-		}
-		else {
+			savedStageId = stageApplicationService.saveStage(stageForm);
+		} else {
 			stageApplicationService.updateStage(stageForm);
+			savedStageId = stageForm.getId();
 		}
 
-		return REDIRECT + STAGE_LIST_PATH;
-	}
-
-	@ModelAttribute(name="allPositions")
-	List<PositionStageEditDto> getPositions() {
-
-		return stageApplicationService.getAllPositionsDto();
+		return REDIRECT + STAGE_EDIT_PATH + "?" + P_ID + "=" + savedStageId;
 	}
 
 	@ModelAttribute(name=M_CAN_DELETE)

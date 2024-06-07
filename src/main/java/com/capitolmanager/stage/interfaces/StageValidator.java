@@ -13,7 +13,6 @@
 package com.capitolmanager.stage.interfaces;
 
 import static com.capitolmanager.stage.interfaces.StageEditForm.F_NAME;
-import static com.capitolmanager.stage.interfaces.StageEditForm.F_REQUIRED_POSITIONS;
 import static com.capitolmanager.utils.StringUtils.hasText;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +28,6 @@ import com.capitolmanager.stage.application.StageApplicationService;
 public class StageValidator implements Validator {
 
 	private static final String E_MUST_NOT_BE_EMPTY = "must.not.be.empty";
-	private static final String E_POSITION_MUST_NOT_BE_NULL = "stage.position.must.not.be.null";
-	private static final String E_POSITION_MUST_BE_UNIQUE ="stage.positions.must.be.unique";
 	private static final String E_STAGE_NAME_MUST_BE_UNIQUE = "stage.name.must.be.unique";
 
 	private final StageApplicationService stageApplicationService;
@@ -69,27 +66,6 @@ public class StageValidator implements Validator {
 			errors.rejectValue(F_NAME, E_STAGE_NAME_MUST_BE_UNIQUE);
 		}
 
-		if (anyPositionIsNull(form)) {
-
-			errors.rejectValue(F_REQUIRED_POSITIONS, E_POSITION_MUST_NOT_BE_NULL);
-		}
-
-		else if (doPositionsHaveDuplicates(form)) {
-
-			errors.rejectValue(F_REQUIRED_POSITIONS, E_POSITION_MUST_BE_UNIQUE);
-		}
 	}
 
-	private boolean anyPositionIsNull(StageEditForm form) {
-
-		return form.getRequiredPositions().stream()
-			.anyMatch(stagePositionDto -> stagePositionDto == null || stagePositionDto.getPositionId() == null);
-	}
-	private boolean doPositionsHaveDuplicates(StageEditForm form) {
-
-		return form.getRequiredPositions().stream()
-			.map(StagePositionDto::getPositionId)
-			.distinct()
-			.toList().size() != form.getRequiredPositions().size();
-	}
 }

@@ -12,8 +12,6 @@
 
 package com.capitolmanager.stage.interfaces;
 
-import java.util.List;
-
 import javax.persistence.EntityNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,17 +40,10 @@ public class StageFormFactory {
 		Stage stage = stageQueries.findById(id)
 			.orElseThrow(() -> new EntityNotFoundException("No stage " + id));
 
-		List<StagePositionDto> requiredPositions = stage.getRequiredPositions().stream()
-			.map(stagePosition -> new StagePositionDto(stagePosition.getPosition().getId(),
-				stagePosition.getPosition().getName(),
-				stagePosition.getQuantity()))
-			.toList();
-
 		return new StageEditForm(stage.getId(),
 			stage.getName(),
 			stage.getNumberOfSeats(),
-			stage.getAddress(),
-			requiredPositions);
+			stage.getAddress());
 	}
 
 	public static StageEditForm emptyForm() {

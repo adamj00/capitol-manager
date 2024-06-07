@@ -1,5 +1,5 @@
 /*
- * Created on 26-03-2024 21:26 by ajarzabe
+ * Created on 06-06-2024 22:03 by ajarzabe
  *
  * Copyright (c) 2001-2024 Unity S.A.
  * ul. Strzegomska 2-4, 53-611 Wrocław, Poland
@@ -10,31 +10,29 @@
  * i w zgodzie z warunkami umowy licencyjnej zawartej z Unity S.A.
  */
 
-package com.capitolmanager.position.application;
-
-import org.springframework.util.Assert;
+package com.capitolmanager.position.interfaces;
 
 import com.capitolmanager.position.domain.PositionType;
 
 
-public class PositionDto {
+public class PositionEditForm {
 
 	private Long id;
 	private String name;
 	private PositionType positionType;
+	private int quantity;
+	private Long stageId;
 
-	public PositionDto(Long id, String name, PositionType positionType) {
-
-		Assert.notNull(id, "id must not be null");
-		Assert.notNull(name, "name must not be null");
-		Assert.notNull(positionType, "positionType must not be null");
+	public PositionEditForm(Long id, String name, PositionType positionType, int quantity, Long stageId) {
 
 		this.id = id;
 		this.name = name;
 		this.positionType = positionType;
+		this.quantity = quantity;
+		this.stageId = stageId;
 	}
 
-	public PositionDto() {
+	public PositionEditForm() {
 
 	}
 
@@ -66,5 +64,25 @@ public class PositionDto {
 	public void setPositionType(PositionType positionType) {
 
 		this.positionType = positionType;
+	}
+
+	public int getQuantity() {
+
+		return quantity;
+	}
+
+	public void setQuantity(int quantity) {
+
+		this.quantity = quantity;
+	}
+
+	public Long getStageId() {
+
+		return stageId;
+	}
+
+	public void setStageId(Long stageId) {
+
+		this.stageId = stageId;
 	}
 }

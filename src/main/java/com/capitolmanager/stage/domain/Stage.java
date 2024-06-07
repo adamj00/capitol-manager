@@ -22,6 +22,7 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 
 import com.capitolmanager.hibernate.AbstractEntity;
+import com.capitolmanager.position.domain.Position;
 
 
 @Entity(name = "stages")
@@ -37,9 +38,9 @@ public class Stage extends AbstractEntity {
 	private String address;
 
 	@OneToMany(mappedBy = "stage", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-	private List<StagePosition> requiredPositions = new LinkedList<>();
+	private List<Position> requiredPositions = new LinkedList<>();
 
-	public Stage(String name, int numberOfSeats, String address, List<StagePosition> requiredPositions) {
+	public Stage(String name, int numberOfSeats, String address, List<Position> requiredPositions) {
 
 		this.name = name;
 		this.numberOfSeats = numberOfSeats;
@@ -88,12 +89,12 @@ public class Stage extends AbstractEntity {
 		this.address = address;
 	}
 
-	public List<StagePosition> getRequiredPositions() {
+	public List<Position> getRequiredPositions() {
 
 		return requiredPositions;
 	}
 
-	public void setRequiredPositions(List<StagePosition> requiredPositions) {
+	public void setRequiredPositions(List<Position> requiredPositions) {
 
 		this.requiredPositions = requiredPositions;
 	}

@@ -64,7 +64,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 			.authorizeRequests()
 
 			.antMatchers("/user-edit**").hasRole(MANAGER)
-			.antMatchers("/positions**").hasRole(MANAGER)
+			.antMatchers("/position**").hasRole(MANAGER)
 			.antMatchers("/stage-edit**").hasRole(MANAGER)
 			.antMatchers("/show-edit**").hasRole(MANAGER)
 			.antMatchers("/events**").hasRole(MANAGER)

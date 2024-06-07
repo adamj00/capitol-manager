@@ -15,7 +15,6 @@
                     <table class="table table-striped">
                         <thead>
                             <tr>
-                                <th>ID</th>
                                 <th>Nazwa</th>
                                 <th>Liczba miejsc</th>
                                 <th>Adres</th>
@@ -24,15 +23,18 @@
                         </thead>
                         <tbody>
                             <tr th:each="stage : ${stages}">
-                                <td th:text="${stage.id}">ID</td>
-                                <td th:text="${stage.name}">Nazwa</td>
+                                <td> <b th:text="${stage.name}"></b></td>
                                 <td th:text="${stage.numberOfSeats}">Liczba miejsc</td>
                                 <td th:text="${stage.address}">Liczba miejsc</td>
                                 <td sec:authorize="hasRole('MANAGER')">
-                                    <a th:href="@{/stage-edit(id=${stage.id})}" class="btn btn-primary btn-sm">
+                                    <a th:href="@{/stage-edit(id=${stage.id})}" class="btn btn-primary">
                                         <i class="bi bi-pencil"></i> Edytuj
                                     </a>
+                                    <a th:href="@{/position-edit(stageId=${stage.id})}" class="btn btn-info">
+                                        <i class="bi bi-pencil-square"></i> Edytuj stanowiska
+                                    </a>
                                 </td>
+
                             </tr>
                         </tbody>
                     </table>

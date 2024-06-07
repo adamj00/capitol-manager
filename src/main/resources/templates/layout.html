@@ -45,31 +45,40 @@
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           
           <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="/">Strona główna</a>
+            <a class="nav-link active" aria-current="page" href="/">
+              <i class="bi bi-house"></i> Strona główna
+            </a>
           </li>
 
           <li sec:authorize="hasRole('EMPLOYEE')" class="nav-item">
-            <a class="nav-link active" aria-current="page" href="/scheduleList">Grafik</a>
+            <a class="nav-link active" aria-current="page" href="/scheduleList">
+              <i class="bi bi-calendar"></i> Grafik
+            </a>
           </li>
 
           <li sec:authorize="hasRole('MANAGER')" class="nav-item">
-            <a class="nav-link active" aria-current="page" href="/eventGroups">Grafik</a>
+            <a class="nav-link active" aria-current="page" href="/eventGroups">
+              <i class="bi bi-calendar-check"></i> Grafik
+            </a>
           </li>
 
           <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="/user-list">Pracownicy</a>
+            <a class="nav-link active" aria-current="page" href="/user-list">
+              <i class="bi bi-people"></i> Pracownicy
+            </a>
           </li>
 
           <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="/payroll/employee">Raportowanie czasu pracy</a>
+            <a class="nav-link active" aria-current="page" href="/payroll/employee">
+              <i class="bi bi-clock-history"></i> Raportowanie czasu pracy
+            </a>
           </li>
 
           <li sec:authorize="hasRole('MANAGER')" class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Konfiguracja
+              <i class="bi bi-gear-fill"></i> Konfiguracja
             </a>
             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <li sec:authorize="hasRole('MANAGER')"><a class="dropdown-item" href="/positions">Stanowiska</a></li>
               <li><a class="dropdown-item" href="/stage-list">Sceny</a></li>
               <li><a class="dropdown-item" href="/show-list">Spektakle</a></li>
             </ul>
@@ -77,8 +86,9 @@
 
           <li sec:authorize="hasRole('EMPLOYEE')" class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Informacje
+              <i class="bi bi-info-square"></i> Informacje
             </a>
+            
             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
               <li><a class="dropdown-item" href="/stage-list">Sceny</a></li>
               <li><a class="dropdown-item" href="/show-list">Spektakle</a></li>
@@ -87,7 +97,7 @@
 
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              Moje konto
+              <i class="bi bi-person-fill"></i> Moje konto
             </a>
             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
               <li><a class="dropdown-item" href="/changePassword">Zmień hasło</a></li>
