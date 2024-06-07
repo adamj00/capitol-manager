@@ -1,5 +1,5 @@
 /*
- * Created on 26-03-2024 21:26 by ajarzabe
+ * Created on 06-06-2024 22:03 by ajarzabe
  *
  * Copyright (c) 2001-2024 Unity S.A.
  * ul. Strzegomska 2-4, 53-611 Wrocław, Poland
@@ -10,20 +10,20 @@
  * i w zgodzie z warunkami umowy licencyjnej zawartej z Unity S.A.
  */
 
-package com.capitolmanager.position.application;
+package com.capitolmanager.position.interfaces;
 
-import com.capitolmanager.stage.interfaces.PositionTypeDto;
+import com.capitolmanager.position.domain.PositionType;
 
 
-public class PositionDto {
+public class PositionEditForm {
 
 	private Long id;
 	private String name;
-	private String positionType;
+	private PositionType positionType;
 	private int quantity;
 	private Long stageId;
 
-	public PositionDto(Long id, String name, String positionType, int quantity, Long stageId) {
+	public PositionEditForm(Long id, String name, PositionType positionType, int quantity, Long stageId) {
 
 		this.id = id;
 		this.name = name;
@@ -32,7 +32,7 @@ public class PositionDto {
 		this.stageId = stageId;
 	}
 
-	public PositionDto() {
+	public PositionEditForm() {
 
 	}
 
@@ -56,12 +56,12 @@ public class PositionDto {
 		this.name = name;
 	}
 
-	public String getPositionType() {
+	public PositionType getPositionType() {
 
 		return positionType;
 	}
 
-	public void setPositionType(String positionType) {
+	public void setPositionType(PositionType positionType) {
 
 		this.positionType = positionType;
 	}

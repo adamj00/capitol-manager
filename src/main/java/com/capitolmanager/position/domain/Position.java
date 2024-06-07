@@ -51,6 +51,14 @@ public class Position extends AbstractEntity {
 		this.stage = stage;
 	}
 
+	public void update(String name, PositionType positionType, int quantity, Stage stage) {
+
+		this.name = name;
+		this.positionType = positionType;
+		this.quantity = quantity;
+		this.stage = stage;
+	}
+
 	public Position() {
 
 	}

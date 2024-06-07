@@ -22,11 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import com.capitolmanager.hibernate.Repository;
-import com.capitolmanager.position.application.PositionDto;
-import com.capitolmanager.position.application.PositionQueries;
-
-import com.capitolmanager.position.domain.Position;
-import com.capitolmanager.position.domain.PositionType;
 import com.capitolmanager.stage.domain.Stage;
 import com.capitolmanager.stage.interfaces.StageEditForm;
 
@@ -36,21 +31,15 @@ public class StageApplicationService {
 
 	private final StageQueries stageQueries;
 	private final Repository<Stage> stageRepository;
-	private final PositionQueries positionQueries;
-	private final Repository<Position> positionRepository;
 
 	@Autowired
-	public StageApplicationService(StageQueries stageQueries, Repository<Stage> stageRepository, PositionQueries positionQueries, Repository<Position> positionRepository) {
+	public StageApplicationService(StageQueries stageQueries, Repository<Stage> stageRepository) {
 
 		Assert.notNull(stageQueries, "stageQueries must not be null");
 		Assert.notNull(stageRepository, "stageRepository must not be null");
-		Assert.notNull(positionQueries, "positionQueries must not be null");
-		Assert.notNull(positionRepository, "positionRepository must not be null");
 
 		this.stageQueries = stageQueries;
 		this.stageRepository = stageRepository;
-		this.positionQueries = positionQueries;
-		this.positionRepository = positionRepository;
 	}
 
 	public List<StageListDto> findAllStages() {
@@ -63,7 +52,7 @@ public class StageApplicationService {
 			.toList();
 	}
 
-	public void saveStage(StageEditForm stageEditForm) {
+	public Long saveStage(StageEditForm stageEditForm) {
 
 		Stage stage = new Stage(stageEditForm.getName(),
 			stageEditForm.getNumberOfSeats(),
@@ -72,32 +61,13 @@ public class StageApplicationService {
 
 		stageRepository.saveOrUpdate(stage);
 
-		stage = stageQueries.getAll().stream()
-			.filter(s -> s.getName().equals(stageEditForm.getName()))
-			.findFirst()
-			.orElseThrow(EntityNotFoundException::new);
-
-		for (var positionDto : stageEditForm.getRequiredPositions()) {
-
-			Position position = new Position(positionDto.getName(),
-				PositionType.valueOf(positionDto.getPositionType()),
-				positionDto.getQuantity(),
-				stage);
-
-			stage.getRequiredPositions().add(position);
-
-			positionRepository.saveOrUpdate(position);
-		}
-
-		stageRepository.saveOrUpdate(stage);
+		return stage.getId();
 	}
 
 	public void updateStage(StageEditForm stageEditForm) {
 
 		Stage stage = stageQueries.findById(stageEditForm.getId())
 			.orElseThrow(EntityNotFoundException::new);
-
-		updateStagePositions(stage, stageEditForm.getRequiredPositions());
 
 		stage.updateStage(stageEditForm.getName(),
 			stageEditForm.getNumberOfSeats(),
@@ -113,46 +83,6 @@ public class StageApplicationService {
 			.toList();
 	}
 
-	private void updateStagePositions(Stage stage, List<PositionDto> positions) {
-
-
-		for (var position : stage.getRequiredPositions()) {
-
-			if (positions.stream().noneMatch(p -> p.getId().equals(position.getId()))) {
-
-				stage.getRequiredPositions().remove(position);
-
-				positionRepository.delete(position);
-			}
-		}
-
-		for (var positionDto : positions) {
-
-			Position position;
-			if (positionDto.getId() == null) {
-				position = new Position(positionDto.getName(),
-					PositionType.valueOf(positionDto.getPositionType()),
-					positionDto.getQuantity(),
-					stage);
-
-				stage.getRequiredPositions().add(position);
-
-			}
-			else {
-				position = positionQueries.findById(positionDto.getId())
-					.orElseThrow(EntityNotFoundException::new);
-
-				position.setName(positionDto.getName());
-				position.setPositionType(PositionType.valueOf(positionDto.getPositionType()));
-				position.setQuantity(positionDto.getQuantity());
-
-			}
-			positionRepository.saveOrUpdate(position);
-
-			stageRepository.saveOrUpdate(stage);
-		}
-	}
-
 	public void deleteStage(Long id) {
 
 		Stage stage = stageQueries.findById(id)
@@ -165,5 +95,10 @@ public class StageApplicationService {
 
 		return stageQueries.getAll().stream()
 			.anyMatch(stage -> stage.getName().equals(name) && !stage.getId().equals(id));
+	}
+
+	public String getStageName(Long stageId) {
+
+		return stageQueries.get(stageId).getName();
 	}
 }

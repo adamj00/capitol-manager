@@ -12,15 +12,12 @@
 
 package com.capitolmanager.stage.interfaces;
 
-import java.util.List;
-
 import javax.persistence.EntityNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-import com.capitolmanager.position.application.PositionDto;
 import com.capitolmanager.stage.application.StageQueries;
 import com.capitolmanager.stage.domain.Stage;
 
@@ -43,19 +40,10 @@ public class StageFormFactory {
 		Stage stage = stageQueries.findById(id)
 			.orElseThrow(() -> new EntityNotFoundException("No stage " + id));
 
-		List<PositionDto> requiredPositions = stage.getRequiredPositions().stream()
-			.map(position -> new PositionDto(position.getId(),
-				position.getName(),
-				position.getPositionType().name(),
-				position.getQuantity(),
-				stage.getId()))
-			.toList();
-
 		return new StageEditForm(stage.getId(),
 			stage.getName(),
 			stage.getNumberOfSeats(),
-			stage.getAddress(),
-			requiredPositions);
+			stage.getAddress());
 	}
 
 	public static StageEditForm emptyForm() {

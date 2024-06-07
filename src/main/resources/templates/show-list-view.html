@@ -27,7 +27,7 @@
                             </thead>
                             <tbody>
                                 <tr th:each="show : ${shows}">
-                                    <td><span th:text="${show.title}"></span></td>
+                                    <td><span> <b th:text="${show.title}"> </b></span></td>
                                     <td><span th:text="${show.stage}"></span></td>
                                     <td><span th:text="${show.duration}"></span></td>
                                     <td><span th:text="${show.additionalInformation}"></span></td>

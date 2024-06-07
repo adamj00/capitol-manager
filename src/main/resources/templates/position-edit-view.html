@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head>
+    <style>
+        /* Styl dla kontenera tabeli i karty */
+        .custom-container {
+            max-width: 600px; 
+            margin: auto; 
+        }
+
+        .custom-table {
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .custom-table th,
+        .custom-table td {
+            text-align: center;
+            padding: 10px; 
+        }
+
+        .card-custom {
+            border-radius: 15px; 
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="container mt-3">
+            <h2 th:text="'Edycja stanowisk dla: ' + ${stageName}" style="text-align: center;"> </h2>
+            <br>
+            <div class="mb-3 custom-container">
+                <a href="/stage-list" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Powrót
+                </a>
+            </div>
+
+            <div class="custom-container">
+                <div class="card card-custom">
+                    <div class="card-body">
+                        <div class="custom-table-container">
+                            <table class="table table-striped custom-table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Nazwa</th>
+                                        <th scope="col">Typ stanowiska</th>
+                                        <th scope="col">Ilość</th>
+                                        <th scope="col">Akcja</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="position : ${positions}">
+                                        <td><span th:text="${position.name}">Nazwa</span></td>
+                                        <td><span th:text="${position.positionType.label}">Typ</span></td>
+                                        <td><span th:text="${position.quantity}">Ilość</span></td>
+                                        <td> 
+                                            <button th:attr="onclick=|openEditModal(${position.id})|" class="btn btn-primary">
+                                                <i class="bi bi-pencil">Edytuj</i>
+                                            </button>
+
+                                            <a href="#" class="delete-link btn btn-danger" th:href="@{/position-edit/delete(id=${position.id},stageId=${stageId})}">
+                                                <i class="bi bi-trash">Usuń</i>
+                                            </a>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td colspan="4">
+                                            <button type="button" class="btn btn-primary" onclick="openSaveModal()">Dodaj nowe stanowisko</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+ 
+        <div class="modal fade" id="editPositionModal" tabindex="-1" role="dialog" aria-labelledby="editPositionModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editPositionModalLabel">Edycja stanowiska</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+              
+                        <form id="editPositionForm">
+                            <input type="hidden" id="positionId" name="id">
+                            <input type="hidden" id="stageId" name="stageId" th:value="${param.stageId}">
+                            <div class="form-group">
+                                <label for="positionName">Nazwa</label>
+                                <input type="text" class="form-control" id="positionName" name="name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="positionType">Typ stanowiska</label>
+                                <select class="form-control" id="positionType" name="positionType" required>
+                                    <option th:each="type : ${allPositionTypes}" th:value="${type.name()}" th:text="${type.label}">Typ</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="positionQuantity">Ilość</label>
+                                <input type="number" class="form-control" id="positionQuantity" name="quantity" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Zapisz</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+
+        <script>
+            function openEditModal(positionId) {
+                $.ajax({
+                    type: 'GET',
+                    url: '/position-edit/position?id=' + positionId,
+                    success: function(response) {
+                        $('#positionId').val(response.id);
+                        $('#positionName').val(response.name);
+                        $('#positionQuantity').val(response.quantity);
+                        $('#stageId').val(response.stageId);
+
+                        // Ustaw wartość <select> dla typu stanowiska
+                        // Znajdź opcję w selekcie, która ma wartość odpowiadającą typowi stanowiska z odpowiedzi i zaznacz ją jako wybraną
+                        $("#positionType option").each(function() {
+                            if ($(this).val() == response.positionType.name) {
+                                $(this).prop('selected', true);
+                            }
+                        });
+
+                         // Ustawiamy odpowiedni spektakl jako wybrany
+                        var typeSelect = document.getElementById('positionType');
+                        var typeOptions = typeSelect.options;
+                        for (var i = 0; i < typeOptions.length; i++) {
+                            if (typeOptions[i].value === response.toString()) {
+                                typeOptions[i].selected = true;
+                                break;
+                            }
+                        }
+
+                        // Otwórz modal
+                        $('#editPositionModal').modal('show');
+                    }
+                });
+            }
+
+            function openSaveModal(positionId) {
+               
+                $('#editPositionModal').modal('show');
+                
+            }
+
+            $('#editPositionForm').on('submit', function(e) {
+                e.preventDefault();
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/position-edit',
+                    data: $(this).serialize(),
+                    success: function(response) {
+                        window.location.reload();
+                    }
+                });
+            });
+
+            document.addEventListener('DOMContentLoaded', function () {
+                var deleteLinks = document.querySelectorAll('.delete-link');
+                deleteLinks.forEach(function(link) {
+                    link.addEventListener('click', function(event) {
+                        var confirmDelete = confirm('Czy na pewno chcesz usunąć to wydarzenie?');
+                        if (!confirmDelete) {
+                            event.preventDefault();
+                        }
+                    });
+                });
+            });
+
+        </script>
+        
+    </div>
+</body>
+</html>
