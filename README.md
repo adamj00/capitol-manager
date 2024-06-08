@@ -25,7 +25,9 @@ Aby się zalogować, użyj następujących danych testowych:
 
 ## Uruchomienie Lokalne
 
-Plik `.jar` dostępny w katalogu `/release`.
+```bash
+./gradlew bootJar
+```
 
 ```bash
 java -jar capitol-manager-1.jar
