@@ -29,7 +29,7 @@ INSERT INTO public.users (id, email, first_name, last_name, phone_number, passwo
 INSERT INTO public.users (id, email, first_name, last_name, phone_number, password, role) VALUES (348, 'marek.fiackowiak@gmail.com', 'Marek', 'Fiąckowiak', '123123123', '$2a$10$bFH/2pKHVg9QXyvn0rcFO.b8bP6PonBpdZjS8GvJsFIiQUiAkt9Ou', 'EMPLOYEE');
 INSERT INTO public.users (id, email, first_name, last_name, phone_number, password, role) VALUES (347, 'anna.mirko@gmail.com', 'Anna', 'Mirko', '123123123', '$2a$10$bFH/2pKHVg9QXyvn0rcFO.b8bP6PonBpdZjS8GvJsFIiQUiAkt9Ou', 'EMPLOYEE');
 INSERT INTO public.users (id, email, first_name, last_name, phone_number, password, role) VALUES (353, 'mateusz.kwiatkowski@gmail.com', 'Mateusz', 'Kwiatkowski', '123123121', '$2a$10$bFH/2pKHVg9QXyvn0rcFO.b8bP6PonBpdZjS8GvJsFIiQUiAkt9Ou', 'EMPLOYEE');
-INSERT INTO public.users (id, email, first_name, last_name, phone_number, password, role) VALUES (63, 'koordynato@przyklad.pl', 'Dominika', 'Koordynatorka', '123-123-132', '$2a$10$bFH/2pKHVg9QXyvn0rcFO.b8bP6PonBpdZjS8GvJsFIiQUiAkt9Ou', 'MANAGER');
+INSERT INTO public.users (id, email, first_name, last_name, phone_number, password, role) VALUES (63, 'koordynator@przyklad.pl', 'Dominika', 'Koordynatorka', '123-123-132', '$2a$10$bFH/2pKHVg9QXyvn0rcFO.b8bP6PonBpdZjS8GvJsFIiQUiAkt9Ou', 'MANAGER');
 
 INSERT INTO public.stages (id, name, number_of_seats, address) VALUES (44, 'Scena ciśnień', 240, 'Teatr Muzyczny Capitol, ul. Piłsudskiego 67, 50-019 Wrocław');
 INSERT INTO public.stages (id, name, number_of_seats, address) VALUES  (1, 'Duża scena', 700, 'Teatr Muzyczny Capitol, ul. Piłsudskiego 67, 50-019 Wrocław');
