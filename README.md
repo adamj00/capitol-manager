@@ -34,4 +34,4 @@ Przejdź do `http://localhost:8080` po uruchomieniu aplikacji.
 
 ## Dokumentacja
 
-Dokumentacja jest dostępna w części pisemnej pracy inżynierskiej: [plik](https://github.com/adamj00/capitol-manager)
+Dokumentacja jest dostępna w części pisemnej pracy inżynierskiej: [plik](thesis/Praca_inżynierska_zarzadzanie_obluga_widowni_teatru.pdf)
