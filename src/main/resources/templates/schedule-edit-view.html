@@ -36,13 +36,20 @@
                 background-color: #FFFFFF; /* Białe tło dla aktywnych komórek */
             }
             .inactive-cell {
-                background-color: #7a7575; /* Szare tło dla nieaktywnych komórek */
+                background-color: #7a75758f !important; /* Szare tło dla nieaktywnych komórek */
+            }
+
+            .checked-cell {
+                background-color: #28a746a4 !important; /* Zielone tło dla zaznaczonych komórek */
+            }
+            .unchecked-cell {
+                background-color: #dc3546a2 !important; /* Czerwone tło dla niezaznaczonych komórek */
             }
         </style>
 
         
 
-        <div class="container mt-3">
+       
 
             <div class="row mb-3 align-items-center">
                 <div class="col-auto">
@@ -87,13 +94,12 @@
                             <td class="sticky-column" th:text="${employee.name}">Jan Kowalski</td>
                             <!-- Pętla po wydarzeniach dla checkboxów -->
                             <td th:each="event, eventStat : ${events}"
-                                th:class="${#lists.contains(employee.availableForEvents, event.id) ? 'active-cell' : 'inactive-cell'}">
+                                th:class="${#lists.contains(employee.availableForEvents, event.id) ? 'unassigned-cell' : 'inactive-cell'}">
                                 <div class="checkbox-container">
-                                    <input type="checkbox" th:data-user-id="${employee.id}" th:data-event-id="${event.id}"
+                                    <input th:if="${#lists.contains(employee.availableForEvents, event.id)}" type="checkbox" th:data-user-id="${employee.id}" th:data-event-id="${event.id}"
                                         th:id="'event' + ${eventStat.index} + '_employee' + ${empStat.index}"
                                         th:name="'event' + ${eventStat.index}" th:value="${employee.id}" 
-                                        th:checked="${#lists.contains(employee.assignedEvents, event.id)}"
-                                        th:disabled="${!#lists.contains(employee.availableForEvents, event.id)}">
+                                        th:checked="${#lists.contains(employee.assignedEvents, event.id)}">
                                     <label class="form-check-label" th:for="'event' + ${eventStat.index} + '_employee' + ${empStat.index}"></label>
                                 </div>
                             </td>
@@ -101,7 +107,7 @@
                     </tbody>
                 </table>
             </div>
-        </div>
+        
 
         <script th:inline="javascript">
             /*<![CDATA[*/
@@ -156,9 +162,8 @@
                 }
         
                 // Pobierz wszystkie checkboxy
-                var checkboxes = document.querySelectorAll('input[type="checkbox"]');
         
-                // Dodaj nasłuchiwacz zdarzeń do każdego checkboxa
+                var checkboxes = document.querySelectorAll('input[type="checkbox"]');
                 checkboxes.forEach(function(checkbox) {
                     checkbox.addEventListener('change', function() {
                         // Pobierz indeks wydarzenia z id checkboxa
@@ -189,14 +194,34 @@
 
                         // Call the function to send the POST request
                         sendPostRequest(userId, eventId, this.checked);
+
+                        // Zaktualizuj kolor tła komórki
+                        const cell = this.closest('td'); // Znajdź najbliższą komórkę tabeli
+                        if (this.checked) {
+                            cell.classList.add('checked-cell');
+                            cell.classList.remove('unchecked-cell');
+                        } else {
+                            cell.classList.add('unchecked-cell');
+                            cell.classList.remove('checked-cell');
+                        }
                     });
                 });
-        
-                // Zaktualizuj kolor tła dla wszystkich kafelków przy inicjalnym ładowaniu
+
+                // Zaktualizuj kolor tła dla wszystkich komórek przy inicjalnym ładowaniu
+                checkboxes.forEach(function(checkbox) {
+                    const cell = checkbox.closest('td'); // Znajdź najbliższą komórkę tabeli
+                    if (checkbox.checked) {
+                        cell.classList.add('checked-cell');
+                        cell.classList.remove('unchecked-cell');
+                    } else {
+                        cell.classList.add('unchecked-cell');
+                        cell.classList.remove('checked-cell');
+                    }
+                });
                 updateAllEventTilesBackground();
             });
             /*]]>*/
-        </script>
+            </script>
     </div>
 
 </html>

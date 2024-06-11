@@ -1,6 +1,17 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
 
     <div layout:fragment="content">
+        <style>
+            .centered-checkbox {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .enlarged-checkbox {
+                transform: scale(1.5);
+            }
+        </style>
 
         <style>
             .scrollable-table-container {
@@ -16,12 +27,17 @@
             .event-title {
                 white-space: nowrap;
             }
+            
+            .table-bordered th,
+            .table-bordered td {
+                border-width: 2px;
+            }
 
             .active-cell {
                 background-color: #FFFFFF; /* Białe tło dla aktywnych komórek */
             }
             .inactive-cell {
-                background-color: #7a7575; /* Szare tło dla nieaktywnych komórek */
+                background-color: #7a757513 !important; /* Szare tło dla nieaktywnych komórek */
             }
 
             .select-container {
@@ -40,11 +56,23 @@
                 cursor: pointer; /* Kursor wskazujący na możliwość kliknięcia */
                 text-align-last: center; /* Wyśrodkowanie tekstu w liście rozwijanej */
             }
+
+            .checkbox-cell {
+                text-align: center;
+                vertical-align: middle;
+            }
+
+            .assigned-cell {
+                background-color: #28a74685 !important; /* Zielone tło dla przypisanych stanowisk */
+            }
+            .unassigned-cell {
+                background-color: #e52a3d9e !important; /* Czerwone tło dla nieprzypisanych stanowisk */
+            }
         </style>
 
         
 
-        <div class="container mt-3">
+       
 
             <div class="row mb-3 align-items-center">
                 <div class="col-auto">
@@ -54,7 +82,10 @@
                     </a>
 
                     <a href="javascript:void(0);" th:onclick="'confirmAutoAssign(' + ${eventGroup} + ');'" class="btn btn-primary mb-3">
-                        <i class="bi bi-pencil-fill"></i> Automatycznie przypisz stanowiska
+                        <i class="bi bi-pencil-fill"></i> Automatycznie przypisz stanowiska dla zaznaczonych wydarzeń
+                    </a>
+                    <a href="javascript:void(0);" id="toggle-checkboxes-btn" onclick="toggleCheckboxes(true)" class="btn btn-primary mb-3">
+                        <i class="bi bi-check2-square"></i> Zaznacz wszystkie
                     </a>
                 </div>
                 <div class="col text-center">
@@ -76,14 +107,16 @@
                             <!-- Komórka dla kolumny z imieniem i nazwiskiem -->
                             <th class="name-column">Imię i nazwisko</th>
                             <!-- Pętla po wydarzeniach dla nazw -->
-                            <th class="event-title" th:each="event, eventStat : ${events}">
+                            <th class="event-title checkbox-cell" th:each="event, eventStat : ${events}">
                                 <div class="card" th:id="'event-tile-' + ${eventStat.index}">
                                     <div class="card-body">
                                         <h5 class="card-title" th:text="${event.title}">Nazwa wydarzenia</h5>
                                         
-                                        <!-- Tu powinna byc informacja o brakujących stanowiskach -->
+                                        <input type="checkbox" class="centered-checkbox enlarged-checkbox event-checkbox" th:value="${event.id}" />
+
                                     </div>
                                 </div>
+                               
                             </th>
                         </tr>
                     </thead>
@@ -91,9 +124,10 @@
                         <!-- Pętla po pracownikach -->
                         <tr th:each="employee, empStat : ${employees}">
                             <td th:text="${employee.name}">Jan Kowalski</td>
+                        
                             <!-- Pętla po wydarzeniach -->
                             <td th:each="event, eventStat : ${events}"
-                                th:class="${#lists.contains(employee.assignedEvents, event.id) ? 'active-cell' : 'inactive-cell'}">
+                                th:class="${#lists.contains(employee.assignedEvents, event.id) ? 'unassigned-cell' : 'inactive-cell'}">
                                 <div class="select-container">
                                     <select class="position-select"
                                             th:data-user-id="${employee.id}" th:data-event-id="${event.id}"
@@ -114,21 +148,20 @@
                     </tbody>
                 </table>
             </div>
-        </div>
+        
 
         <script th:inline="javascript">
             /*<![CDATA[*/
         
             document.addEventListener('DOMContentLoaded', function () {
         
-                // Funkcja do wysyłania żądania POST i aktualizacji list rozwijanych
                 function assignPosition(userId, eventId, positionId, selectElement) {
                     // Przygotuj dane do wysłania w żądaniu
                     const formData = new FormData();
                     formData.append('userId', userId);
                     formData.append('eventId', eventId);
                     formData.append('positionId', positionId);
-        
+
                     // Wyślij żądanie POST
                     fetch('/positionAssigning/assignPosition', {
                         method: 'POST',
@@ -136,10 +169,23 @@
                     }).then(response => {
                         if (response.ok) {
                             console.log("Zaktualizowano listę");
+                            updateCellBackground(selectElement, positionId);
                         } else {
                             throw new Error('Błąd serwera');
                         }
                     });
+                }
+
+                // Funkcja do aktualizacji koloru tła komórki
+                function updateCellBackground(selectElement, positionId) {
+                    const cell = selectElement.closest('td');
+                    if (positionId) {
+                        cell.classList.remove('unassigned-cell');
+                        cell.classList.add('assigned-cell');
+                    } else {
+                        cell.classList.remove('assigned-cell');
+                        cell.classList.add('unassigned-cell');
+                    }
                 }
         
         
@@ -170,7 +216,7 @@
                     });
                 }
 
-                // Function to update the selected attribute of the options
+                // W funkcji updateSelectedOptions lub podobnej funkcji, która aktualizuje przypisania
                 function updateSelectedOptions() {
                     document.querySelectorAll('.position-select').forEach(function(select) {
                         var userId = select.getAttribute('data-user-id');
@@ -180,6 +226,7 @@
                         select.querySelectorAll('option').forEach(function(option) {
                             if (assignedPosition && option.value == assignedPosition.positionId) {
                                 option.selected = true;
+                                updateCellBackground(select, option.value); // Aktualizuj tło komórki
                             } else {
                                 option.selected = false;
                             }
@@ -191,9 +238,37 @@
             });
 
             function confirmAutoAssign(eventGroupId) {
-                var confirmAction = confirm("Automatyczne przydzielanie stanowisk usunie dotychaczasowe przypisania");
+                var checkedEvents = Array.from(document.querySelectorAll('.event-checkbox:checked')).map(checkbox => checkbox.value);
+                var url = "/autoPositionAssignment?eventGroupId=" + eventGroupId + "&eventsToAssign=" + checkedEvents.join(',');
+                var confirmAction = confirm("Automatyczne przydzielanie stanowisk usunie dotychczasowe przypisania dla zaznaczonych wydarzeń");
                 if (confirmAction) {
-                    window.location.href = "/autoPositionAssignment?eventGroupId=" + eventGroupId;
+                    window.location.href = url;
+                }
+            }
+        
+            // Skrypt do zaznaczania wszystkich checkboxów
+            function selectAllCheckboxes() {
+                var checkboxes = document.querySelectorAll('.event-checkbox');
+                checkboxes.forEach(function(checkbox) {
+                    checkbox.checked = true;
+                });
+            }
+
+            function toggleCheckboxes(checkAll) {
+                var checkboxes = document.querySelectorAll('.event-checkbox');
+                var toggleButton = document.getElementById('toggle-checkboxes-btn');
+                
+                checkboxes.forEach(function(checkbox) {
+                    checkbox.checked = checkAll;
+                });
+
+                // Aktualizacja tekstu przycisku i funkcji onclick
+                if (checkAll) {
+                    toggleButton.innerHTML = '<i class="bi bi-square"></i> Odznacz wszystkie';
+                    toggleButton.setAttribute('onclick', 'toggleCheckboxes(false)');
+                } else {
+                    toggleButton.innerHTML = '<i class="bi bi-check2-square"></i> Zaznacz wszystkie';
+                    toggleButton.setAttribute('onclick', 'toggleCheckboxes(true)');
                 }
             }
         

@@ -48,7 +48,7 @@ public class DateUtils {
 		String weekDay = weekDays.get(localDateTime.getDayOfWeek().getValue() - 1);
 		String time = localDateTime.toLocalTime().toString();
 
-		return weekDay + " " + dayString + " " + time;
+		return weekDay + "\n" + dayString + "\n" + time;
 	}
 
 	public static String formatLocalDateTimeWithGodzina(LocalDateTime localDateTime) {

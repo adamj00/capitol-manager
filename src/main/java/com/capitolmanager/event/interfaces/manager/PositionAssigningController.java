@@ -43,9 +43,10 @@ public class PositionAssigningController {
 	@ResponseBody
 	ResponseEntity<String> assignPosition(@RequestParam Long eventId,
 		@RequestParam Long userId,
-		@RequestParam Long positionId) {
+		@RequestParam(required = false, defaultValue = "0") Long positionId) {
 
-		scheduleApplicationService.assignPosition(eventId, userId, positionId);
+
+		scheduleApplicationService.assignPosition(eventId, userId, positionId == 0 ? null : positionId);
 
 		return ResponseEntity.ok("");
 	}
