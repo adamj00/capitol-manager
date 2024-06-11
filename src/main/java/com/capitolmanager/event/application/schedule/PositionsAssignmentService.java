@@ -1,13 +1,16 @@
 
 package com.capitolmanager.event.application.schedule;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
@@ -37,13 +40,14 @@ public class PositionsAssignmentService {
 		this.eventPositionAssignmentRepository = eventPositionAssignmentRepository;
 	}
 
-	public void assignPositionsAutomatically(Long eventGroupId) {
+	public void assignPositionsAutomatically(Long eventGroupId, List<Long> eventsToAssign) {
 
 		EventGroup eventGroup = eventGroupQueries.get(eventGroupId);
 
-		clearPositionAssignments(eventGroup);
+		clearPositionAssignments(eventGroup, eventsToAssign);
 
 		List<Event> events = eventGroup.getEvents().stream()
+			.filter(event -> eventsToAssign.contains(event.getId()))
 			.sorted(Comparator.comparing(Event::getEventStartTime))
 			.toList();
 
@@ -62,13 +66,22 @@ public class PositionsAssignmentService {
 			.toList();
 	}
 
-	private void clearPositionAssignments(EventGroup eventGroup) {
+	private void clearPositionAssignments(EventGroup eventGroup, List<Long> eventsToClear) {
 
 		for (Event event : eventGroup.getEvents()) {
-			for (EventPositionAssignment assignment : event.getAssignments()) {
-				assignment.setPosition(null);
-				eventPositionAssignmentRepository.saveOrUpdate(assignment);
+
+			if (eventsToClear.contains(event.getId())) {
+
+				clearPositionAssignmentsForEvent(event);
 			}
+		}
+	}
+
+	private void clearPositionAssignmentsForEvent(Event event) {
+
+		for (EventPositionAssignment assignment : event.getAssignments()) {
+			assignment.setPosition(null);
+			eventPositionAssignmentRepository.saveOrUpdate(assignment);
 		}
 	}
 
@@ -81,26 +94,25 @@ public class PositionsAssignmentService {
 			.toList();
 	}
 
-	private List<Position> getPositionHistoryForUser(EventGroup eventGroup, User user) {
+	private List<Pair<Position, LocalDate>> getPositionHistoryForUser(EventGroup eventGroup, User user) {
 
 		return eventGroup.getEvents().stream()
 			.sorted(Comparator.comparing(Event::getEventStartTime))
 			.flatMap(event -> event.getAssignments().stream())
-			.filter(assignment -> user.equals(assignment.getUser()))
-			.map(EventPositionAssignment::getPosition)
-			.filter(Objects::nonNull)
+			.filter(assignment -> user.equals(assignment.getUser()) && assignment.getPosition() != null)
+			.map(assignment -> Pair.of(assignment.getPosition(), assignment.getEvent().getEventStartTime().toLocalDate()))
 			.toList();
 	}
 
 	private void assignPositionsForEvent(Event event) {
 
-		List<Position> requiredPositions = getRequiredPositonsSortedByPriority(event);
+		List<Position> requiredPositions = getRequiredPositionsSortedByPriority(event);
 		List<EmployeeWithPositionsHistory> availableEmployees = getEmployeesWithPositionsHistory(event);
 
 		Set<EventPositionAssignment> assignments = event.getAssignments();
 
 		for (Position position : requiredPositions) {
-			User bestChoiceUser = determineBestEmployeeChoice(position, availableEmployees);
+			User bestChoiceUser = determineBestEmployeeChoice(position, availableEmployees, event);
 
 			if (bestChoiceUser == null) {
 				return;
@@ -122,7 +134,7 @@ public class PositionsAssignmentService {
 		event.setAssignments(assignments);
 	}
 
-	private List<Position> getRequiredPositonsSortedByPriority(Event event) {
+	private List<Position> getRequiredPositionsSortedByPriority(Event event) {
 
 		List<Position> stagePositions = event.getShow().getStage().getRequiredPositions();
 
@@ -140,36 +152,36 @@ public class PositionsAssignmentService {
 			.toList();
 	}
 
-	private User determineBestEmployeeChoice(Position position, List<EmployeeWithPositionsHistory> availableEmployees) {
+	private User determineBestEmployeeChoice(Position position, List<EmployeeWithPositionsHistory> availableEmployees, Event event) {
 
 		return availableEmployees.stream()
 			.map(employeeWithPositionsHistory -> new EmployeeWithStats(employeeWithPositionsHistory.getUser(),
 				calculateQuantityOfPositionTypeForUser(employeeWithPositionsHistory, position.getPositionType()),
-				calculateDistance(employeeWithPositionsHistory, position.getPositionType()))).min(Comparator.comparing(EmployeeWithStats::getQuantity)
-				.thenComparing(EmployeeWithStats::getDistance))
+				calculateDistance(employeeWithPositionsHistory, position.getPositionType(), event)))
+			.min(Comparator.comparing(EmployeeWithStats::getDistance)
+				.thenComparing(EmployeeWithStats::getQuantity))
 			.map(EmployeeWithStats::getUser).orElse(null);
 	}
 
 	private int calculateQuantityOfPositionTypeForUser(EmployeeWithPositionsHistory employeeWithPositionsHistory, PositionType positionType) {
 
 		return (int) employeeWithPositionsHistory.positionHistory.stream()
-			.filter(position -> position.getPositionType() == positionType)
+			.filter(position -> position.getFirst().getPositionType() == positionType)
 			.count();
 	}
 
-	private int calculateDistance(EmployeeWithPositionsHistory employeeWithPositionsHistory, PositionType positionType) {
+	private int calculateDistance(EmployeeWithPositionsHistory employeeWithPositionsHistory, PositionType positionType, Event event) {
 
-		var history = employeeWithPositionsHistory.getPositionHistory();
-		for (int i = 0; i < history.size(); i++) {
-			if (history.get(i).getPositionType() == positionType) {
+		List<Pair<Position, LocalDate>> history = employeeWithPositionsHistory.getPositionHistory();
 
-				return history.size() - i;
-			}
-		}
+		Optional<Long> minDistance = history.stream()
+			.filter(position -> position.getFirst().getPositionType().equals(positionType))
+			.map(position -> Math.abs(position.getSecond().toEpochDay() - event.getEventStartTime().toLocalDate().toEpochDay()))
+			.min(Long::compareTo);
 
-		return -1;
+		return minDistance.map(Long::intValue)
+			.orElse(Integer.MAX_VALUE);
 	}
-
 	static class EmployeeWithStats {
 
 		private final User user;
@@ -195,16 +207,16 @@ public class PositionsAssignmentService {
 
 		public int getDistance() {
 
-			return distance;
+			return -distance;
 		}
 	}
 
 	static class EmployeeWithPositionsHistory {
 
 		private final User user;
-		private final List<Position> positionHistory;
+		private final List<Pair<Position, LocalDate>> positionHistory;
 
-		public EmployeeWithPositionsHistory(User user, List<Position> positionHistory) {
+		public EmployeeWithPositionsHistory(User user, List<Pair<Position, LocalDate>> positionHistory) {
 
 			this.user = user;
 			this.positionHistory = positionHistory;
@@ -215,7 +227,7 @@ public class PositionsAssignmentService {
 			return user;
 		}
 
-		public List<Position> getPositionHistory() {
+		public List<Pair<Position, LocalDate>> getPositionHistory() {
 
 			return positionHistory;
 		}

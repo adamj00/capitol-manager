@@ -1,6 +1,8 @@
 
 package com.capitolmanager.event.interfaces.manager;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.Assert;
@@ -27,9 +29,9 @@ public class AutomaticPositionAssignmentController {
 	}
 
 	@GetMapping
-	String assignAndRedirect(@RequestParam Long eventGroupId) {
+	String assignAndRedirect(@RequestParam Long eventGroupId, @RequestParam List<Long> eventsToAssign) {
 
-		positionsAssignmentService.assignPositionsAutomatically(eventGroupId);
+		positionsAssignmentService.assignPositionsAutomatically(eventGroupId, eventsToAssign);
 
 		return "redirect:/positionAssigning?eventGroup=" + eventGroupId;
 	}

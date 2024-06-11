@@ -80,7 +80,8 @@ public class HomepageService {
 			StringUtils.getDurationString(event.getShow().getDuration()),
 			getPositionNameForUserAndEvent(userId, event),
 			event.getShow().getStage().getName(),
-			event.toString()
+			event.toString(),
+			event.getShow().getAdditionalInformation()
 		);
 	}
 

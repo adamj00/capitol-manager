@@ -203,6 +203,9 @@
 					
 							<dt class="col-sm-4">Scena:</dt>
 							<dd class="col-sm-8" id="stage"><span></span></dd>
+
+							<dt class="col-sm-4">Dodatkowe informacje:</dt>
+							<dd class="col-sm-8" id="additionalInfo"><span></span></dd>
 						</dl>
 					</div>
 					<div class="modal-footer">
@@ -238,7 +241,8 @@
 									}
 									
 									document.getElementById('stage').querySelector('span').textContent = data.stage;
-								
+									
+									document.getElementById('additionalInfo').querySelector('span').textContent = data.additionalInfo;
 									
 									new bootstrap.Modal(document.getElementById('eventModal')).show();
 								})

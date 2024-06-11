@@ -180,7 +180,7 @@ public class ScheduleApplicationService {
 
 		Event event = eventQueries.get(eventId);
 
-		var position = positionQueries.findById(positionId)
+		var position = positionId == null ? null : positionQueries.findById(positionId)
 			.orElseThrow(EntityNotFoundException::new);
 
 		User user = userQueries.get(userId);
