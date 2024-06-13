@@ -81,10 +81,10 @@
                         <i class="bi bi-arrow-left"></i> Powrót
                     </a>
 
-                    <a href="javascript:void(0);" th:onclick="'confirmAutoAssign(' + ${eventGroup} + ');'" class="btn btn-primary mb-3">
+                    <a th:if="${!#lists.isEmpty(employees)}" href="javascript:void(0);" th:onclick="'confirmAutoAssign(' + ${eventGroup} + ');'" class="btn btn-primary mb-3">
                         <i class="bi bi-pencil-fill"></i> Automatycznie przypisz stanowiska dla zaznaczonych wydarzeń
                     </a>
-                    <a href="javascript:void(0);" id="toggle-checkboxes-btn" onclick="toggleCheckboxes(true)" class="btn btn-primary mb-3">
+                    <a th:if="${!#lists.isEmpty(employees)}" href="javascript:void(0);" id="toggle-checkboxes-btn" onclick="toggleCheckboxes(true)" class="btn btn-primary mb-3">
                         <i class="bi bi-check2-square"></i> Zaznacz wszystkie
                     </a>
                 </div>
@@ -93,11 +93,11 @@
                 </div>
             </div>
 
-            <div th:if="${#lists.isEmpty(events)}" class="alert alert-info" role="alert">
-                Brak wydarzeń do wyświetlenia.
+            <div th:if="${#lists.isEmpty(employees)}" class="alert alert-info" role="alert">
+                Najpierw przejdź <a th:href="'/scheduleEdit?eventGroup=' + ${eventGroup}" class="alert-link">tutaj</a> i przypisz bileterów do wydarzeń.
             </div>
 
-            <div th:if="${!#lists.isEmpty(events)}" class="scrollable-table-container">
+            <div th:if="${!#lists.isEmpty(employees)}" class="scrollable-table-container">
                 <table class="table table-bordered">
                     <thead>
                         <tr>
