@@ -63,6 +63,7 @@
 					box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 				}
 				.event-tile {
+					cursor: pointer;
 					border: 1px solid #dee2e6;
 					margin-bottom: .5rem;
 					padding: .5rem;
@@ -165,7 +166,7 @@
 									<div class="day-number" th:text="${dayWithEvents.date != null} ? ${dayWithEvents.date.dayOfMonth} : ''"></div>
 									<div th:if="${dayWithEvents.date != null}"
 										th:each="event : ${dayWithEvents.events}"
-										th:id="'event' + ${event.id}"
+										th:id="${event.id}"
 										class="event-tile">
 										<div class="event-title" th:text="${event.title}"></div>
 										<div class="stage-name" th:text="${event.stage}"></div> 
@@ -217,7 +218,7 @@
 
 			<script>
 				document.addEventListener('DOMContentLoaded', (event) => {
-					document.querySelectorAll('.event-list-item').forEach(item => {
+					document.querySelectorAll('.event-list-item, .event-tile').forEach(item => {
 						item.addEventListener('click', function(e) {
 							const eventId = this.getAttribute('id');
 							fetch(`/eventDetails?eventId=${eventId}`)
