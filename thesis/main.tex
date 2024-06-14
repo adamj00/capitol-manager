@@ -27,7 +27,7 @@ This engineering thesis presents the design and implementation process of a web 
 % w przypadku kilku promotorow, lub koniecznosci podania ich afiliacji, linie
 % w ponizszym poleceniu mozna zlamac poleceniem \fmlinebreak
 \advisor        {dr inż. Leszek Grocholski}
-\date          {21 czerwca 2024}                     % Data zlozenia pracy
+\date          {14 czerwca 2024}                     % Data zlozenia pracy
 % Dane do oswiadczenia o autorskim wykonaniu
 %\transcriptnum {}                     % Numer indeksu
 %\advisorgen    {dr. Jana Kowalskiego} % Nazwisko promotora w dopelniaczu
@@ -74,7 +74,7 @@ Arkusze Google Sheets stanowią obecnie podstawowe narzędzie do zarządzania pr
 Pierwszą z nich jest zakładka ,,dyspozycyjność'', która ma postać tabeli z kolumną zawierającą imiona i nazwiska pracowników po lewej stronie. Każda kolejna kolumna odpowiada poszczególnym wydarzeniom, zawierając informacje takie, jak: data, nazwa spektaklu, godzina oraz scena. Pracownicy zaznaczają w tej tabeli swoją dyspozycyjność na dane wydarzenie, wpisując ,,tak'' w odpowiedniej komórce. Brak dyspozycyjności oznaczany jest poprzez wpisanie ,,nie''. Po upływie terminu na zaznaczanie dyspozycyjności kierownik ukrywa zakładkę ,,dyspozycyjność'' i tworzy nową zakładkę ,,zatwierdzone''.
 
 
-\begin{figure}[h!] % Opcja 'h' oznacza 'here', czyli umieszczenie obrazka w miejscu definicji
+\begin{figure}[h] % Opcja 'h' oznacza 'here', czyli umieszczenie obrazka w miejscu definicji
 \centering % Wycentrowanie obrazka
 \includegraphics[width=1.0\textwidth]{dyspo-sheets.png} % Wstawienie obrazka
 \caption{Fragment akrusza do zaznaczania dyspozycyjności} % Podpis pod obrazkiem
@@ -127,7 +127,7 @@ When I Work to komercyjne oprogramowanie zaprojektowane do zarządzania grafikam
     \label{fig:wiw}
 \end{figure}
 
-\newpage
+
 
 \subsubsection{Wady i zalety}
 
@@ -138,6 +138,7 @@ When I Work to komercyjne oprogramowanie zaprojektowane do zarządzania grafikam
   \item Aplikacja mobilna umożliwia pracownikom łatwy dostęp do grafiku pracy i zgłaszanie dyspozycyjności w dowolnym miejscu i czasie.
   \item Automatyzacja procesu tworzenia grafiku może znacznie oszczędzić czas menedżerów i zwiększyć efektywność planowania.
 \end{itemize}
+
 
 \textbf{Wady:}
 \begin{itemize}
@@ -154,8 +155,8 @@ Poniżej wymienionio wymagania funkcjonalne i niefunkcjonalne aplikacji. Został
 
 Wymagania funkcjonalne zostały podzielone na trzy kategorie, w zależności od roli użytkownika w systemie: wymagania dla bileterów, wymagania dla koordynatorów oraz wymagania ogólne.
 
-\newpage
 
+\newpage
 \subsubsection*{Wymagania dla bileterów}
 \begin{enumerate}
   \item Bileter może wyświetlać informacje kontaktowe innych pracowników.
@@ -347,7 +348,7 @@ na bieżący tydzień. Aby zapoznać się ze szczegółami wydarzenia, w tym z p
 
 Poniżej wyświetlana jest lista nadchodzących zmian oraz kalendarz z wydarzeniami przypisanymi do użytkownika w danym miesiącu.
 
-\begin{figure}[h!]
+\begin{figure}[h]
     \centering
     \includegraphics[width=\linewidth]{ekran_glowny_bileter.png}
     \caption{Ekran główny serwisu}
@@ -367,13 +368,13 @@ Aby wylogować się z konta, należy skorzystać z opcji \textit{Moje konto} $\r
 
 Dane o pracownikach zarejestrowanych w systemie dostępne są w sekcji \textit{Pracownicy}. Sekcja ta zawiera imiona, nazwiska oraz numery telefonów pracowników z wyróżnionymi na początku listy koordynatorami.
 
-\begin{figure}[h!]
+\begin{figure}[h]
     \centering
     \includegraphics[width=\linewidth]{user-list.png}
     \caption{Lista pracowników z wyróżnionymi koordynatorami.}
     \label{fig:user-list}
 \end{figure}
-\newpage
+
 
 \subsection{Wyświetlanie informacji o scenach i spektaklach}
 
@@ -381,7 +382,7 @@ Dane o pracownikach zarejestrowanych w systemie dostępne są w sekcji \textit{P
 \label{stages}
 W sekcji \textit{Informacje} $\rightarrow$ \textit{Sceny} znajduje się tabela z danymi dotyczącymi wszystkich scen, w tym nazwy scen, liczby miejsc siedzących oraz adresy.
 
-\begin{figure}[h!]
+\begin{figure}[h]
     \centering
     \includegraphics[width=\linewidth]{stage-list.png}
     \caption{Lista scen.}
@@ -391,22 +392,22 @@ W sekcji \textit{Informacje} $\rightarrow$ \textit{Sceny} znajduje się tabela z
 \subsubsection{Spektakle}
 Dane dotyczące repertuaru teatru dostępne są w sekcji \textit{Informacje} $\rightarrow$ \textit{Spektakle}, gdzie dla każdego spektaklu podane są tytuł, scena, czas trwania oraz dodatkowe informacje.
 
-\begin{figure}[h!]
+\begin{figure}[h]
     \centering
     \includegraphics[width=\linewidth]{show-list.png}
     \caption{Lista spektakli.}
     \label{fig:show-list}
 \end{figure}
 
-\newpage
+
 
 \subsection{Grafiki}
 
 Sekcja \textit{Grafik} prezentuje aktywne grupy wydarzeń. Dla grup z dostępnym grafikiem można go wyświetlić, wybierając \textit{Pokaż wydarzenia}. Wyświetlana jest także liczba zmian przypisanych do użytkownika w ramach danej grupy.
-
+\newpage
 W przypadku możliwości zgłoszenia dyspozycyjności dla danej grupy wydarzeń, użytkownik może to uczynić, klikając \textit{Wypełnij dyspozycyjność}. Na kafelku grupy wyświetlany jest stopień wypełnienia dyspozycyjności oraz procentowa dyspozycyjność, czyli odsetek wydarzeń, na które użytkownik zaznaczył swój udział.
 
-\begin{figure}[h!]
+\begin{figure}[h]
     \centering
     \includegraphics[width=\linewidth]{grupy_wydarzen.png}
     \caption{Grupy wydarzeń z możliwością wyświetlenia lub wypełnienia dyspozycyjności.}
@@ -445,7 +446,7 @@ Aby zaraportować czas pracy po zmianie, należy wybrać \textit{Raportowanie cz
 
 Możliwe jest wyświetlenie listy raportów z wybranego miesiąca oraz podsumowania przepracowanych godzin. Wybór miesiąca odbywa się poprzez wybranie nazwy miesiąca i roku, a następnie kliknięcie \textit{Filtruj}. Usunięcie raportu możliwe jest po użyciu przycisku \textit{Usuń}.
 
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
     \includegraphics[width=\linewidth]{payroll.png}
     \caption{Lista raportów czasu pracy z danego miesiąca.}
@@ -454,8 +455,8 @@ Możliwe jest wyświetlenie listy raportów z wybranego miesiąca oraz podsumowa
 
 Aby utworzyć nowy raport, należy wybrać \textit{Utwórz}. W kolejnym kroku określa się datę, godzinę rozpoczęcia i zakończenia zmiany (z dokładnością do 15 minut), a zatwierdzenie odbywa się poprzez kliknięcie \textit{Zatwierdź}.
 
-\newpage
 
+\newpage
 
 \section{Instrukcja obsługi – część dla koordynatora}
 
@@ -464,7 +465,7 @@ Aby utworzyć nowy raport, należy wybrać \textit{Utwórz}. W kolejnym kroku ok
 
 Wyświetlenie listy użytkowników możliwe jest po wybraniu \textit{Pracownicy} z menu. Prezentowana jest tabela zawierająca dane koordynatorów i bileterów.
 
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
     \includegraphics[width=\linewidth]{user-list-manager.png}
     \caption{Lista pracowników dostępna dla koordynatora.}
@@ -479,7 +480,7 @@ Aby stworzyć konto pracownika, należy kliknąć \textit{Utwórz} na widoku \na
 
 Konto jest tworzone po wciśnięciu \textit{Zapisz}, a domyślne hasło dla nowego konta to \textit{capitol}.
 
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
     \includegraphics[width=\linewidth]{user-edit.png}
     \caption{Formularz tworzenia nowego konta pracownika.}
@@ -499,7 +500,7 @@ Aby wyświetlić raporty godzin pracy dla danego pracownika, należy wybrać opc
 
 Lista scen, na których odbywają się spektakle, jest dostępna po wybraniu \textit{Konfiguracja} $\rightarrow$ \textit{Sceny}. Z tego miejsca można przejść do tworzenia nowej sceny, edycji istniejącej sceny oraz zarządzania stanowiskami.
 
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
     \includegraphics[width=\linewidth]{stage-list-manager.png}
     \caption{Lista scen dostępna dla koordynatora.}
@@ -512,7 +513,7 @@ Aby dodać nową scenę, wybiera się \textit{Utwórz} na widoku listowym scen, 
 \subsubsection{Edycja sceny}
 Edycja sceny możliwa jest po wybraniu \textit{Edytuj} przy wybranej scenie. Z poziomu edycji można również usunąć scenę lub przejść do edycji stanowisk. Usunięcie sceny jest zablokowane, jeśli scena jest przypisana do spektaklu.
 
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
     \includegraphics[width=\linewidth]{stage-edit.png}
     \caption{Formularz edycji sceny.}
@@ -523,7 +524,7 @@ Edycja sceny możliwa jest po wybraniu \textit{Edytuj} przy wybranej scenie. Z p
 
 Stanowiska określają liczbę pracowników potrzebnych do obsługi wydarzenia i są przypisywane do scen. Aby skonfigurować stanowiska dla sceny, wybiera się \textit{Edytuj stanowiska} na widoku listy scen lub edycji sceny.
 
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
     \includegraphics[width=\linewidth]{position-edit.png}
     \caption{Edycja stanowisk dla konkretnej sceny.}
@@ -531,6 +532,7 @@ Stanowiska określają liczbę pracowników potrzebnych do obsługi wydarzenia i
 \end{figure}
 
 Edycja stanowisk umożliwia dodawanie i modyfikowanie stanowisk dla sceny. W modalu edycji określa się nazwę stanowiska, typ oraz liczbę potrzebnych pracowników.
+
 
 \subsection{Konfiguracja spektakli}
 \label{show-edit}
@@ -541,12 +543,7 @@ Konfiguracja spektakli jest dostępna po wybraniu opcji \textit{Konfiguracja} $\
 
 Tworzenie nowego spektaklu lub edycja istniejącego odbywa się z widoku listy spektakli. W formularzu edycyjnym podaje się tytuł spektaklu, czas trwania, scenę oraz dodatkowe informacje.
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\linewidth]{show-edit.png}
-    \caption{Formularz edycji spektaklu.}
-    \label{fig:show-edit}
-\end{figure}
+\newpage
 
 \subsection{Konfiguracja wydarzeń}
 
@@ -557,7 +554,7 @@ Dostęp do grup wydarzeń umożliwia opcja \textit{Grafik} w menu.
 
 Aby utworzyć nową grupę wydarzeń, należy skorzystać z przycisku \textit{+}. Aby zmienić nazwę grupy wydarzeń, należy kliknąć na tę nazwę i wprowadzić nową w ukazanym oknie modalnym.
 
-\begin{figure}
+\begin{figure}[h]
     \centering
     \includegraphics[width=1\linewidth]{grupy.png}
     \caption{Ekran do zarządzania grupami wydarzeń}
@@ -574,7 +571,7 @@ Aby dodać wydarzenie, wystarczy najechać kursorem na konkretny dzień i wybra�
 
 Edycja lub usunięcie wydarzenia jest możliwa po najechaniu na nie kursorem i wybraniu odpowiedniej ikony.
 
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
     \includegraphics[width=1\linewidth]{event-list.png}
     \caption{Formularz umożliwiający konfigurowanie wydarzeń}
@@ -585,7 +582,7 @@ Edycja lub usunięcie wydarzenia jest możliwa po najechaniu na nie kursorem i w
 
 Aby umożliwić użytkownikom wypełnienie dyspozycyjności dla danej grupy wydarzeń, należy zaznaczyć pole wyboru \textit{Pokaż dyspozycyjność}. Po zakończonym okresie zgłaszania dyspozycyjności pole to powinno zostać odznaczone, aby zapobiec dalszemu korzystaniu z tej funkcji przez bileterów.
 
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
     \includegraphics[width=1\linewidth]{av-actice.png}
     \caption{Przełącznik umożliwiający włączenie lub wyłączenie funkcji wypełniania dyspozyzyjności}
@@ -598,11 +595,15 @@ Po zebraniu informacji o dyspozycyjności bileterów, przystępuje się do przyp
 
 W interfejsie przypisywania pracowników znajduje się tabela, gdzie po lewej stronie wymienieni są pracownicy, a w kolumnach przedstawione są wydarzenia. Przypisanie biletera do wydarzenia odbywa się poprzez zaznaczenie pola wyboru w odpowiedniej komórce tabeli. Nieaktywne pola wyboru wskazują na niedyspozycyjność biletera w danym dniu.
 
+W ostatniej kolumnie tabeli znajdują się informacja o liczbie wydarzeń przypisanych do biletera w stosunku do jego dyspozycyjności.
+
 Wydarzenia, do których przypisano wystarczającą liczbę bileterów, są oznaczone kolorem zielonym, a te wymagające jeszcze przypisania – kolorem czerwonym.
 
-\begin{figure}[H]
+Wydarzenia są podzielone na strony. Aby przełączać si między stronami, należy skorzystać z przycisków \textit{Poprzednia strona} i \textit{Następna strona}.
+
+\begin{figure}[h]
     \centering
-    \includegraphics[width=1\linewidth]{schedule.png}
+    \includegraphics[width=1\linewidth]{assign-users.png}
     \caption{Widok przypisywania pracowników do wydarzeń}
     \label{fig:enter-label}
 \end{figure}
@@ -611,7 +612,7 @@ Wydarzenia, do których przypisano wystarczającą liczbę bileterów, są oznac
 
 Aby przypisania stały się widoczne dla bileterów, konieczne jest zaznaczenie opcji \textit{Pokazuj grafik}.
 
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
     \includegraphics[width=1\linewidth]{toggle-schedule-act.png}
     \caption{Przełącznik do sterowania widocznością wydarzeń z danej grupy}
@@ -657,7 +658,7 @@ Aplikacja została zaprojektowana z wykorzystaniem architektury wzorowanej na Do
 \subsection{Domain-Driven Design}
 
 Domain-Driven Design (DDD) to podejście do projektowania oprogramowania, które kładzie nacisk na zrozumienie modelu domenowego oraz jego efektywne odwzorowanie w kodzie aplikacji. Koncepcja DDD zakłada, że logika biznesowa jest kluczowym elementem oprogramowania i powinna być punktem centralnym w procesie projektowania systemu informatycznego.
-
+\newpage
 Model domenowy w DDD jest bogatym modelem, który zawiera zarówno elementy strukturalne, takie jak encje i obiekty wartości, jak i behawioralne, takie jak usługi, wydarzenia domenowe i agregaty. DDD promuje również głębokie zrozumienie domeny poprzez bliską współpracę z ekspertami biznesowymi, co pozwala na tworzenie oprogramowania, które dokładnie odpowiada potrzebom i zasadom danej dziedziny.
 
 Architektura aplikacji oparta na DDD jest podzielona na cztery główne warstwy:
@@ -707,7 +708,12 @@ W ramach projektu przygotowano testy jednostkowe dla niektórych serwisów aplik
 
 \subsection{JUnit}
 
-JUnit jest jednym z najpopularniejszych frameworków do pisania testów jednostkowych w języku Java. Pozwala on na szybkie i efektywne tworzenie testów, które mogą być automatycznie uruchamiane i sprawdzane pod kątem poprawności działania kodu. Framework JUnit dostarcza zestaw adnotacji pozwalających określać metody testowe, a także asercje do weryfikacji oczekiwanych wyników. JUnit jest nieoceniony w procesie ciągłej integracji i ciągłego dostarczania oprogramowania, ponieważ umożliwia łatwe włączenie testów jednostkowych do procesu budowania i wdrażania aplikacji\cite{junit}.
+JUnit jest jednym z najpopularniejszych frameworków do pisania testów jednostkowych w języku Java. Pozwala on na szybkie i efektywne tworzenie testów, które mogą być automatycznie uruchamiane i sprawdzane pod kątem poprawności działania kodu. Framework JUnit dostarcza zestaw adnotacji pozwalających określać metody testowe, a także asercje do weryfikacji oczekiwanych wyników.
+
+
+\newapge
+
+JUnit jest nieoceniony w procesie ciągłej integracji i ciągłego dostarczania oprogramowania, ponieważ umożliwia łatwe włączenie testów jednostkowych do procesu budowania i wdrażania aplikacji\cite{junit}.
 
 \subsection{Mockito}
 
