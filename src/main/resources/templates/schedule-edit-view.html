@@ -12,6 +12,7 @@
                 width: auto;
                 min-width: 180px;
                 white-space: nowrap;
+
             }
             .event-title {
                 white-space: nowrap;
@@ -45,6 +46,24 @@
             .unchecked-cell {
                 background-color: #dc3546a2 !important; /* Czerwone tło dla niezaznaczonych komórek */
             }
+
+            .assigned-shifts-column {
+                text-align: center; /* Wyśrodkowanie tekstu w kolumnie */
+                min-width: 120px; /* Minimalna szerokość kolumny */
+                font-weight: bold;
+                background-color: rgba(40, 63, 167, 0.19)!important;
+            }
+            .assigned-shifts-column-head {
+                text-align: center; /* Wyśrodkowanie tekstu w kolumnie */
+                min-width: 120px; /* Minimalna szerokość kolumny */
+                font-weight: bold;
+            }
+
+            .centered-cell {
+                text-align: center; /* Wyśrodkowanie tekstu w komórce */
+                margin:auto;
+                display:block;
+            }
         </style>
 
         
@@ -60,10 +79,11 @@
                 </div>
                 <div class="col text-center">
                     <h2 th:text="'Przypisywanie pracowników: ' + ${title}">May 2024</h2>
+                    <br>
+                    <h3 th:text="'Strona ' + ${pageNumber} + '/' + ${pagesCount}">Strona 1/2</h3>
                 </div>
             </div>
 
-            <!-- Jeśli lista events jest pusta pokaż napis -->
 
             <div th:if="${#lists.isEmpty(events)}" class="alert alert-info" role="alert">
                 Brak wydarzeń do wyświetlenia.
@@ -73,12 +93,26 @@
                 <table class="table table-bordered">
                     <thead>
                         <tr>
-                            <!-- Pusta komórka dla kolumny z imieniem i nazwiskiem -->
-                            <th class="name-column"></th>
+                         
+                            <th class="centered-cell">  
+                             
+                                <a th:if="${pageNumber > 1}" th:href="@{/scheduleEdit(eventGroup=${eventGroup}, pageNumber=${pageNumber - 1})}" class="btn btn-primary mb-3">
+                                    <i class="bi bi-arrow-left"></i> Poprzednia strona
+                                </a>
+                             </th>
+
                             <!-- Pętla po wydarzeniach dla dat rozpoczęcia -->
                             <th th:each="event, eventStat : ${events}">
                                 <div style="text-align: center;" th:text="${event.eventStartTime}">Data i godzina rozpoczęcia</div>
                             </th>
+
+                            <th class="centered-cell">
+                            
+                                <a th:if="${pageNumber < pagesCount}" th:href="@{/scheduleEdit(eventGroup=${eventGroup}, pageNumber=${pageNumber + 1})}" class="btn btn-primary mb-3">
+                                    Następna strona <i class="bi bi-arrow-right"></i> 
+                                </a>
+                            </th>
+                            
                         </tr>
                         <tr>
                             <!-- Komórka dla kolumny z imieniem i nazwiskiem -->
@@ -93,6 +127,7 @@
                                     </div>
                                 </div>
                             </th>
+                            <th class="assigned-shifts-column-head">Przydzielonych zmian</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -110,6 +145,7 @@
                                     <label class="form-check-label" th:for="'event' + ${eventStat.index} + '_employee' + ${empStat.index}"></label>
                                 </div>
                             </td>
+                            <td class="assigned-shifts-column" th:text="${employee.assignedEvents.size()} + '/' + ${employee.availableForEvents.size()}">0/0</td>
                         </tr>
                     </tbody>
                 </table>
@@ -130,7 +166,7 @@
                         eventTile.style.backgroundColor = 'rgba(255, 0, 0, 0.25)';
                     }
                 }
-                function sendPostRequest(userId, eventId, value) {
+                function sendPostRequest(userId, eventId, value, checkbox) {
                     // Prepare data to be sent in the request
                     const formData = new FormData();
                     formData.append('user', userId);
@@ -144,8 +180,17 @@
                     }).then(response => {
                         if (response.ok) {
                             console.log('Schedule updated successfully.');
+                            return response.json(); // Przetworzenie odpowiedzi JSON z serwera
                         } else {
                             console.error('Failed to update schedule.');
+                        }
+                    }).then(data => {
+                        if (data) {
+                            // Znajdź komórkę z liczbą przydzielonych zmian dla tego pracownika
+                            console.log(data);
+                            var assignedShiftsCell = checkbox.closest('tr').querySelector('.assigned-shifts-column');
+                            // Zaktualizuj liczbę przydzielonych zmian
+                            assignedShiftsCell.textContent = data + '/' + assignedShiftsCell.textContent.split('/')[1];
                         }
                     }).catch(error => {
                         console.error('Error:', error);
@@ -200,7 +245,7 @@
                         var eventId = this.getAttribute('data-event-id');
 
                         // Call the function to send the POST request
-                        sendPostRequest(userId, eventId, this.checked);
+                        sendPostRequest(userId, eventId, this.checked, this);
 
                         // Zaktualizuj kolor tła komórki
                         const cell = this.closest('td'); // Znajdź najbliższą komórkę tabeli

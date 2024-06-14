@@ -39,6 +39,8 @@ import com.capitolmanager.utils.DateUtils;
 @Service
 public class ScheduleApplicationService {
 
+	private static final int PAGE_SIZE = 5;
+
 	private final EventGroupQueries eventGroupQueries;
 	private final UserQueries userQueries;
 	private final AvailabilityQueries availabilityQueries;
@@ -96,12 +98,18 @@ public class ScheduleApplicationService {
 			.toList();
 	}
 
-	public List<EventScheduleDto> getEvents(Long eventGroupId) {
+	public List<EventScheduleDto> getEvents(Long eventGroupId, int pageNumber) {
 
 		EventGroup eventGroup = eventGroupQueries.get(eventGroupId);
 
-		return eventGroup.getEvents().stream()
+		List<Event> allEvents = eventGroup.getEvents().stream()
 			.sorted(Comparator.comparing(Event::getEventStartTime))
+			.toList();
+
+		int fromIndex = (pageNumber - 1) * PAGE_SIZE;
+		int toIndex = Math.min(fromIndex + PAGE_SIZE, allEvents.size());
+
+		return allEvents.subList(fromIndex, toIndex).stream()
 			.map(event -> new EventScheduleDto(event.getId(), event.getShow().getTitle(),
 				getAssignedEmployeesCount(event),
 				getRequiredEmployeesCount(event),
@@ -109,7 +117,7 @@ public class ScheduleApplicationService {
 			.toList();
 	}
 
-	public void updateSchedule(Long userId, Long eventId, boolean value) {
+	public int updateSchedule(Long userId, Long eventId, boolean value) {
 
 		Event event = eventQueries.get(eventId);
 
@@ -138,6 +146,13 @@ public class ScheduleApplicationService {
 			eventRepository.saveOrUpdate(event);
 			eventPositionAssignmentRepository.delete(eventPositionAssignment);
 		}
+
+
+		return (int)event.getEventGroup().getEvents().stream()
+			.filter(e -> e.getAssignments().stream()
+				.anyMatch(assignment -> assignment.getUser() != null &&
+					assignment.getUser().getId().equals(userId)))
+			.count();
 	}
 
 	public String getEventGroupName(Long eventGroupId) {
@@ -234,6 +249,13 @@ public class ScheduleApplicationService {
 		eventGroupRepository.saveOrUpdate(eventGroup);
 	}
 
+
+	public int getPagesCount(Long eventGroupId) {
+
+		EventGroup eventGroup = eventGroupQueries.get(eventGroupId);
+
+		return (int) Math.ceil((double) eventGroup.getEvents().size() / PAGE_SIZE);
+	}
 
 	private ScheduleListDto mapEventGroupToListDto(EventGroup eventGroup, Long userId) {
 

@@ -25,7 +25,7 @@
                                         <label for="month"><strong>Miesiąc:</strong></label>
                                         <select id="month" name="month" class="form-control">
                                             <option value="">Wybierz miesiąc</option>
-                                            <option th:each="month : ${months}" th:value="${month}" th:text="${month}"></option>
+                                            <option th:each="month : ${months}" th:value="${month}" th:text="${month}" th:selected="${month == #dates.format(#dates.createNow(), 'MM')}"></option>
                                         </select>
                                     </div>
                                     <div class="col-md-6">

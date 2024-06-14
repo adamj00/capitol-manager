@@ -33,7 +33,8 @@ public class ScheduleEditController {
 	}
 
 	@GetMapping
-	String getView(Model model, @RequestParam(required = false) Long eventGroup) {
+	String getView(Model model, @RequestParam(required = false) Long eventGroup,
+		@RequestParam(required = false, defaultValue = "1") int pageNumber) {
 
 		if (eventGroup == null) {
 
@@ -41,21 +42,24 @@ public class ScheduleEditController {
 		}
 
 		model.addAttribute("employees", scheduleApplicationService.getEmployees(eventGroup));
-		model.addAttribute("events", scheduleApplicationService.getEvents(eventGroup));
+		model.addAttribute("events", scheduleApplicationService.getEvents(eventGroup, pageNumber));
 		model.addAttribute("title", scheduleApplicationService.getEventGroupName(eventGroup));
+		model.addAttribute("pageNumber", pageNumber);
+		model.addAttribute("eventGroup", eventGroup);
+		model.addAttribute("pagesCount", scheduleApplicationService.getPagesCount(eventGroup));
 
 		return VIEW_NAME;
 	}
 
 	@PostMapping("/change")
 	@ResponseBody
-	public ResponseEntity<String> changeSchedule(
+	public ResponseEntity<Integer> changeSchedule(
 		@RequestParam("user") Long userId,
 		@RequestParam("event") Long eventId,
 		@RequestParam("value") boolean value) {
 
-		scheduleApplicationService.updateSchedule(userId, eventId, value);
+		int assignedEvents = scheduleApplicationService.updateSchedule(userId, eventId, value);
 
-		return ResponseEntity.ok("");
+		return ResponseEntity.ok(assignedEvents);
 	}
 }
